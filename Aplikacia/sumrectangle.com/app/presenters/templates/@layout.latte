@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Hejny,FMFI,Sumrectangle">
+    <meta name="author" content="Daniel Linhart">
+    <title>SumRectangle</title>
+    <link href="./media/css/bootstrap.min.css" rel="stylesheet">
+    <link href="./media/css/main.screen.css" rel="stylesheet">
+    <link rel="stylesheet" href="./media/fonts/font-awesome/css/font-awesome.min.css">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800,300' rel='stylesheet' type='text/css'>
+    <script src="./media/js/jquery.min.js"></script>
+    <script src="./media/js/bootstrap.js"></script>
+    <script src="./media/js/sumrectangle.js"></script>
+	{block head}{/block}
+	<script> document.body.className+=' js' </script>
+</head>
+
+<body>
+	<div n:foreach="$flashes as $flash" n:class="flash, $flash->type">{$flash->message}</div>
+
+	{include content}
+
+	{block scripts}
+	<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+	<script src="https://nette.github.io/resources/js/netteForms.min.js"></script>
+	{/block}
+</body>
+</html>
