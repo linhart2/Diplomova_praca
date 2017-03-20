@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+  <string name="firebase_database_url" translatable="false">https://sumrectangle.firebaseio.com</string>
+  <string name="gcm_defaultSenderId" translatable="false">80041684698</string>
+  <string name="google_storage_bucket" translatable="false">sumrectangle.appspot.com</string>
+  <string name="google_api_key" translatable="false">AIzaSyADUg1N3ji3_ibFXR4D7crMS-u7QfQofjk</string>
+  <string name="google_crash_reporting_api_key" translatable="false">AIzaSyADUg1N3ji3_ibFXR4D7crMS-u7QfQofjk</string>
+  <string name="google_app_id" translatable="false">1:80041684698:android:b4c7ac916f975994</string>
+  <string name="default_web_client_id" translatable="false">80041684698-hjbt8hej3gemd2vcmbcgn1ulfbngugk5.apps.googleusercontent.com</string>
+</resources>
