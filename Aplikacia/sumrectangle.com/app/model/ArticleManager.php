@@ -18,25 +18,21 @@ class ArticleManager
 	    $this->database = $database;
     }
 
-    public function getPublicArticles()
-    {
-        return $this->database->table('posts')
-        ->where('created_at < ', new \DateTime())
-        ->order('created_at DESC');
-    }
-
     public function findAll() {
         return $this->database->select('id, email, name, role')->from($this->table);
     }
     public function register($data) {        
         unset($data["password2"]);
         $data["role"] = "guest";
+        $data["country"] = "slovakia";
         $data["password"] = NS\Passwords::hash($data["password"]);
-        return $this->database->table('users')->insert([
-	        'name' => $data->name,
-	        'email' => $data->email,
+        return $this->database->table('teachers')->insert([
+	        'first_name' => $data->first_name,
+            'last_name' => $data->last_name,
+	        'mail' => $data->mail,
 	        'password' => $data->password,
-	        'role' => $data->role,
+	        'zip' => $data->zip,
+            'country' => $data->country,
 	    ]);
         
     }
