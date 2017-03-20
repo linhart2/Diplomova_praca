@@ -23,21 +23,27 @@ class RegisterPresenter extends Nette\Application\UI\Presenter {
 
     protected function createComponentRegisterForm() {
         $form = new Form;
-        $form->addText('name', 'Jméno');
-        $form->addText('email', 'E-mail: *', 35)
+        $form->addText('first_name', 'Meno');
+        $form->addText('last_name', 'Priezvisko');
+        $form->addText('mail', 'E-mail: *', 35)
                 ->setEmptyValue('@')
                 ->addRule(Form::FILLED, 'Vyplňte Váš email')
                 ->addCondition(Form::FILLED)
                 ->addRule(Form::EMAIL, 'Neplatná emailová adresa');
         $form->addPassword('password', 'Heslo: *', 20)
-                ->setOption('description', 'Alespoň 6 znaků')
+                ->setOption('description', 'Aspoň 6 znakov')
                 ->addRule(Form::FILLED, 'Vyplňte Vaše heslo')
-                ->addRule(Form::MIN_LENGTH, 'Heslo musí mít alespoň %d znaků.', 6);
+                ->addRule(Form::MIN_LENGTH, 'Heslo musí mať aspoň %d znakov.', 6);
         $form->addPassword('password2', 'Heslo znovu: *', 20)
                 ->addConditionOn($form['password'], Form::VALID)
                 ->addRule(Form::FILLED, 'Heslo znovu')
-                ->addRule(Form::EQUAL, 'Hesla se neshodují.', $form['password']);
-        $form->addSubmit('send', 'Registrovat');
+                ->addRule(Form::EQUAL, 'Heslá sa nezhodujú.', $form['password']);
+        $form->addText('zip', 'PSČ:')
+                ->setRequired()
+                ->addRule(Form::PATTERN, 'PSČ musí mít 5 číslic', '([0-9]\s*){5}');
+        $form->addSelect('country', 'Země:')
+            ->setPrompt('Zvolte zemi');
+        $form->addSubmit('send', 'Registrovať');
         $form->onSuccess[] = [$this, 'registerFormSubmitted'];
         return $form;
     }

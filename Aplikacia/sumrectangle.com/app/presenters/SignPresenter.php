@@ -12,7 +12,7 @@ class SignPresenter extends Nette\Application\UI\Presenter
     protected function createComponentSignInForm()
     {
         $form = new Form;
-        $form->addText('username', 'Username:')
+        $form->addText('username', 'Email:')
             ->setRequired('Please enter your username.');
         $form->addPassword('password', 'Password:')
             ->setRequired('Please enter your password.');
@@ -36,7 +36,7 @@ class SignPresenter extends Nette\Application\UI\Presenter
             $form->addError($e->getMessage());
             return;
         }
-        $this->redirect('Homepage:');
+        $this->redirect('Application:app');
     }
     public function actionIn(){
     
