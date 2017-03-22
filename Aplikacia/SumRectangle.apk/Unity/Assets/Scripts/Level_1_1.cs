@@ -135,23 +135,6 @@ public class Level_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
 			}
 		}
 		f.UpdateResult (c.GetJson(pomSlot));
-        /*foreach (Transform slotTransform in slots_control[0])
-        {
-            GameObject item = slotTransform.GetComponent<Slot>().item;
-            if (item)
-            {
-                kontrola.Add(int.Parse(item.name.Substring(0, item.name.IndexOf("("))));
-            }
-        }
-        foreach (Transform slotTransform in slots_control[1])
-        {
-            GameObject item = slotTransform.GetComponent<Slot>().item;
-            if (item)
-            {
-                kontrola.Add(int.Parse(item.name.Substring(0, item.name.IndexOf("("))));
-            }
-        } */       
-
         if (kontrola.Count == 3)
         {
             bool pom = skontroluj.Vyhodnot(kontrola);
@@ -198,7 +181,7 @@ public class Level_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
         yield return new WaitForSeconds(2.0f);
 
         unlock_level.enabled = false;
-        Application.LoadLevel(0);
+        Application.LoadLevel(2);
     }
 
     IEnumerator congrats_hide()
@@ -206,7 +189,7 @@ public class Level_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
         yield return new WaitForSeconds(2.0f);
 
         gratulation.enabled = false;
-        Application.LoadLevel(UnityEngine.Random.RandomRange(1, 3));
+        Application.LoadLevel(UnityEngine.Random.RandomRange(2, 4));
     }
 
     IEnumerator nespravne_hide()

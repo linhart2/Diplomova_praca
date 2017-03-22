@@ -61,28 +61,28 @@ public class SelectLevelScript : MonoBehaviour
 
     public void StartLevel_1() //this function will be used on our Play button
     {
-        Application.LoadLevel(Random.RandomRange(1, 3)); //this will load our first level from our build settings. "1" is the second scene in our game
+        Application.LoadLevel(Random.RandomRange(2, 4)); //this will load our first level from our build settings. "1" is the second scene in our game
 
     }
     public void StartLevel_2() //this function will be used on our Play button
     {
-        Application.LoadLevel(Random.RandomRange(3, 5)); //this will load our first level from our build settings. "1" is the second scene in our game
+        Application.LoadLevel(Random.RandomRange(4, 6)); //this will load our first level from our build settings. "1" is the second scene in our game
 
     }
     public void StartLevel_3() //this function will be used on our Play button
     {
-        Application.LoadLevel(Random.RandomRange(5, 7)); //this will load our first level from our build settings. "1" is the second scene in our game
+        Application.LoadLevel(Random.RandomRange(6, 8)); //this will load our first level from our build settings. "1" is the second scene in our game
 
     }
     public void StartLevel_4() //this function will be used on our Play button
     {
-        Application.LoadLevel(Random.RandomRange(7, 9)); //this will load our first level from our build settings. "1" is the second scene in our game
+        Application.LoadLevel(Random.RandomRange(8, 10)); //this will load our first level from our build settings. "1" is the second scene in our game
 
     }
 
     public void EditLevel() //this function will be used on our Play button
     {
-        Application.LoadLevel(9); //this will load our first level from our build settings. "1" is the second scene in our game
+        Application.LoadLevel(10); //this will load our first level from our build settings. "1" is the second scene in our game
 
     }
 }

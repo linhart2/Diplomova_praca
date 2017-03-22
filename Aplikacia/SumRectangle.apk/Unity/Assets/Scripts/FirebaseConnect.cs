@@ -7,6 +7,7 @@ using Firebase.Unity.Editor;
 
 public class FirebaseCommunication {
 	DatabaseReference mDatabaseRef;
+	public string JsonData;
 
 	public FirebaseCommunication(){
 		FirebaseApp.DefaultInstance.SetEditorDatabaseUrl("https://sumrectangle.firebaseio.com/");
@@ -62,7 +63,7 @@ public class FirebaseCommunication {
 			Debug.LogError(args.DatabaseError.Message);
 			return;
 		}
-		Debug.Log (args.Snapshot);
+		//Debug.Log (args.Snapshot);
 		// Do something with the data in args.Snapshot
 	}
 		
