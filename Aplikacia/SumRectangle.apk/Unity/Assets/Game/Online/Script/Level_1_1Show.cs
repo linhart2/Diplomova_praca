@@ -170,7 +170,7 @@ public class Level_1_1Show : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
 				pomIndex++;
 			}
 		}
-		f.UpdateResult (c.GetJson(pomSlot));
+		/*f.UpdateResult (c.GetJson(pomSlot));*/
         if (kontrola.Count == 3)
         {
             bool pom = skontroluj.Vyhodnot(kontrola);

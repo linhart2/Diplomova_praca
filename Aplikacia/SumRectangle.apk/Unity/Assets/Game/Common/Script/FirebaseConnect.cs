@@ -19,29 +19,23 @@ public class FirebaseCommunication {
 	}
 
 	public void CreateNewClass(string class_id, string name) {
-		//User user = new User(name, email);
-		//string json = JsonUtility.ToJson(user);
-		User user = new User(name, name);
-		string json = JsonUtility.ToJson(user);
-		mDatabaseRef.Child("test").SetValueAsync("ssssssss");
-
+		/*
 		mDatabaseRef.Child(class_id).Child("class_name").SetValueAsync(name);
 		mDatabaseRef.Child (class_id).Child ("member").Child ("email").Child ("student_name").SetValueAsync ("danielLinhart");
 		mDatabaseRef.Child (class_id).Child ("member").Child ("email").Child ("example").Child("result").SetValueAsync ("000000000");
-		mDatabaseRef.Child (class_id).Child ("member").Child ("email").Child ("example").Child("result_bool").SetValueAsync ("true");
+		mDatabaseRef.Child (class_id).Child ("member").Child ("email").Child ("example").Child("result_bool").SetValueAsync ("true");*/
 	}
 
-	public void UpdateResult(string examp) {
-		// Create new entry at /user-scores/$userid/$scoreid and at
-		// /leaderboard/$scoreid simultaneously
+	public void UpdateResult(Dictionary<string,string> ex) {
 		//string key = mDatabaseRef.Child("scores").Push().Key;
+		LeaderBoardEntry entry = new LeaderBoardEntry(ex);
+		Dictionary<string, object> entryValues = entry.ToDictionary();
 
 		Dictionary<string, object> childUpdates = new Dictionary<string, object>();
-		childUpdates["/Class_ID/member/email/example/result"] = examp;
+		childUpdates["/Class_ID/member/email/example/result/"] = entryValues;
 
 		mDatabaseRef.UpdateChildrenAsync(childUpdates);
 	}
-
 	public void ReadData(string key){
 		FirebaseDatabase.DefaultInstance
 			.GetReference(key)
@@ -69,36 +63,23 @@ public class FirebaseCommunication {
 		
 }
 
-public class User {
-	public string username;
-	public string email;
-
-	public User() {
-	}
-
-	public User(string username, string email) {
-		this.username = username;
-		this.email = email;
-	}
-}
-
+//[System.Serializable]
 public class LeaderBoardEntry {
-	public string uid;
-	public int score = 0;
+	public Dictionary<string,string> exam;
 
 	public LeaderBoardEntry() {
 	}
 
-	public LeaderBoardEntry(string uid, int score) {
-		this.uid = uid;
-		this.score = score;
+	public LeaderBoardEntry(Dictionary<string,string> exam) {
+		this.exam = exam;
 	}
 
 	public Dictionary<string, object> ToDictionary() {
 		Dictionary<string, object> result = new Dictionary<string, object>();
-		result["uid"] = uid;
-		result["score"] = score;
-
+		foreach (KeyValuePair<string, string> item in exam)
+		{
+			result[item.Key] = item.Value;
+		}
 		return result;
 	}
 }

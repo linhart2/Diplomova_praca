@@ -7,7 +7,6 @@ using UIAddons;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using System.Linq;
-using UnityEditor;
 
 public class Level_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
 {

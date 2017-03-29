@@ -20,12 +20,7 @@ public class BackButton : MonoBehaviour {
         hide_question = hide_question.GetComponent<Button>();
         question = question.GetComponent<Canvas>();
         question.enabled = false;
-        
-
-
     }
-
-  
 
     public void BackLevel(int pom)
 

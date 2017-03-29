@@ -4,7 +4,8 @@ using UnityEngine.UI;
 
 public class AnimationBack : MonoBehaviour {
 
-    public Button back;    
+    public Button back;
+	public int navrat;
 
     // Use this for initialization
     void Start () {
@@ -12,8 +13,7 @@ public class AnimationBack : MonoBehaviour {
     }
 
 	public void BackLevel(int value)
-
     {        
-        Application.LoadLevel(value);
+		Application.LoadLevel(navrat);
     }
 }
