@@ -13,7 +13,8 @@ CREATE TABLE IF NOT EXISTS `students` (
 	`student_id` int(10) unsigned NOT NULL,
 	`first_name` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
 	`last_name` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
-	`mail` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL
+	`mail` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+	`password` varchar(60) COLLATE utf8_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `classes` (
@@ -61,7 +62,8 @@ CREATE TABLE IF NOT EXISTS `showhomework` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 ALTER TABLE `teachers`
-	ADD PRIMARY KEY (`teacher_id`);
+	ADD PRIMARY KEY (`mail`),
+	ADD KEY (`teacher_id`);
 
 ALTER TABLE `teachers`
 	MODIFY `teacher_id` int(10) unsigned NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=1;
@@ -69,14 +71,49 @@ ALTER TABLE `teachers`
 ALTER TABLE `students`
 	ADD PRIMARY KEY (`student_id`);
 
+ALTER TABLE `students`
+	MODIFY `student_id` int(10) unsigned NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=1;
+
 ALTER TABLE `classes`
 	ADD PRIMARY KEY (`class_id`);
 
+ALTER TABLE `classes`
+	MODIFY `class_id` int(10) unsigned NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=1;
+
 ALTER TABLE `exams`
 	ADD PRIMARY KEY (`exam_id`);
+ALTER TABLE `exams`
+	MODIFY `exam_id` int(10) unsigned NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=1;
 
 ALTER TABLE `homeworks`
 	ADD PRIMARY KEY (`homework_id`);
+ALTER TABLE `homeworks`
+	MODIFY `homework_id` int(10) unsigned NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=1;
+
+
+/* Fake Data*/
+INSERT INTO `teachers` (`first_name`, `last_name`, `mail`, `password`, `zip`, `country`, `school`)
+VALUES ('Daniel', 'Linhart', 'danko.linhart@gmail.com', '$2y$10$Y1uKwazxZTBR5aX7lqmuOO079ytsLzqBCfjPDdw.WIswk..v8pXWC', 98511, 'slovakia', NULL);
+INSERT INTO `teachers` (`first_name`, `last_name`, `mail`, `password`, `zip`, `country`, `school` )
+VALUES ('Jerry', 'Siemens','Jerry@Siemens.sk','$2y$10$Y1uKwazxZTBR5aX7lqmuOO079ytsLzqBCfjPDdw.WIswk..v8pXWC','4006','Skagen 21','Stavanger Norway');
+INSERT INTO `teachers` (`first_name`, `last_name`, `mail`, `password`, `zip`, `country`, `school` )
+VALUES ('Tom', 'B. Erichsen','tom@Erichsen.sk','$2y$10$Y1uKwazxZTBR5aX7lqmuOO079ytsLzqBCfjPDdw.WIswk..v8pXWC','4006','Skagen 21','Stavanger Norway');
+INSERT INTO `teachers` (`first_name`, `last_name`, `mail`, `password`, `zip`, `country`, `school` )
+VALUES ('Gena', 'Lenovo','Gena@Lenovo.sk','$2y$10$Y1uKwazxZTBR5aX7lqmuOO079ytsLzqBCfjPDdw.WIswk..v8pXWC','4006','Skagen 21','Stavanger Norway');
+INSERT INTO `teachers` (`first_name`, `last_name`, `mail`, `password`, `zip`, `country`, `school` )
+VALUES ('Tomas', 'Brblo','Tomas@Brblo.sk','$2y$10$Y1uKwazxZTBR5aX7lqmuOO079ytsLzqBCfjPDdw.WIswk..v8pXWC','4006','Skagen 21','Stavanger Norway');
+INSERT INTO `teachers` (`first_name`, `last_name`, `mail`, `password`, `zip`, `country`, `school` )
+VALUES ('Izidor', 'Telekom','Izidor@Telekom.sk','$2y$10$Y1uKwazxZTBR5aX7lqmuOO079ytsLzqBCfjPDdw.WIswk..v8pXWC','4006','Skagen 21','Stavanger Norway');
+INSERT INTO `teachers` (`first_name`, `last_name`, `mail`, `password`, `zip`, `country`, `school` )
+VALUES ('Ferenc', 'Fake','Ferenc@Fake.sk','$2y$10$Y1uKwazxZTBR5aX7lqmuOO079ytsLzqBCfjPDdw.WIswk..v8pXWC','4006','Skagen 21','Stavanger Norway');
+INSERT INTO `teachers` (`first_name`, `last_name`, `mail`, `password`, `zip`, `country`, `school` )
+VALUES ('Aladar', 'Biely','Aladar@Biely.sk','$2y$10$Y1uKwazxZTBR5aX7lqmuOO079ytsLzqBCfjPDdw.WIswk..v8pXWC','4006','Skagen 21','Stavanger Norway');
+INSERT INTO `teachers` (`first_name`, `last_name`, `mail`, `password`, `zip`, `country`, `school` )
+VALUES ('Cigan', 'Robota','Cigan@Robota.sk','$2y$10$Y1uKwazxZTBR5aX7lqmuOO079ytsLzqBCfjPDdw.WIswk..v8pXWC','4006','Skagen 21','Stavanger Norway');
+INSERT INTO `teachers` (`first_name`, `last_name`, `mail`, `password`, `zip`, `country`, `school` )
+VALUES ('Daj', 'Podporu','Daj@Podporu.sk','$2y$10$Y1uKwazxZTBR5aX7lqmuOO079ytsLzqBCfjPDdw.WIswk..v8pXWC','4006','Skagen 21','Stavanger Norway');
+INSERT INTO `teachers` (`first_name`, `last_name`, `mail`, `password`, `zip`, `country`, `school` )
+VALUES ('Kapitan', 'Danko','Kapitan@Danko.sk','$2y$10$Y1uKwazxZTBR5aX7lqmuOO079ytsLzqBCfjPDdw.WIswk..v8pXWC','4006','Skagen 21','Stavanger Norway');
 
 
 
