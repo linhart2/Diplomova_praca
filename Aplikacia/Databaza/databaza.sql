@@ -61,7 +61,8 @@ CREATE TABLE IF NOT EXISTS `showhomework` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 ALTER TABLE `teachers`
-	ADD PRIMARY KEY (`teacher_id`);
+	ADD PRIMARY KEY (`mail`),
+	ADD KEY (`teacher_id`);
 
 ALTER TABLE `teachers`
 	MODIFY `teacher_id` int(10) unsigned NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=1;
@@ -77,6 +78,21 @@ ALTER TABLE `exams`
 
 ALTER TABLE `homeworks`
 	ADD PRIMARY KEY (`homework_id`);
+
+
+INSERT INTO `teachers` (`first_name`, `last_name`, `mail`, `password`, `zip`, `country`, `school`)
+VALUES
+	('Aladar', 'Biely', 'Aladar@Biely.sk', '$2y$10$Y1uKwazxZTBR5aX7lqmuOO079ytsLzqBCfjPDdw.WIswk..v8pXWC', 4006, 'Skagen 21', 'Stavanger Norway');
+INSERT INTO `teachers` (`first_name`, `last_name`, `mail`, `password`, `zip`, `country`, `school`)
+VALUES
+	('Cigan', 'Robota', 'Cigan@Robota.sk', '$2y$10$Y1uKwazxZTBR5aX7lqmuOO079ytsLzqBCfjPDdw.WIswk..v8pXWC', 4006, 'Skagen 21', 'Stavanger Norway');
+INSERT INTO `teachers` (`first_name`, `last_name`, `mail`, `password`, `zip`, `country`, `school`)
+VALUES
+	('Daj', 'Podporu', 'Daj@Podporu.sk', '$2y$10$Y1uKwazxZTBR5aX7lqmuOO079ytsLzqBCfjPDdw.WIswk..v8pXWC', 4006, 'Skagen 21', 'Stavanger Norway');
+INSERT INTO `teachers` (`first_name`, `last_name`, `mail`, `password`, `zip`, `country`, `school`)
+VALUES
+	('Daniel', 'Linhart', 'danko.linhart@gmail.com', '$2y$10$Y1uKwazxZTBR5aX7lqmuOO079ytsLzqBCfjPDdw.WIswk..v8pXWC', 98511, 'slovakia', NULL);
+
 
 
 
