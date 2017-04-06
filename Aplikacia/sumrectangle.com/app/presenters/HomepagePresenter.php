@@ -3,7 +3,7 @@
 namespace App\Presenters;
 
 use Nette;
-use App\Model\ArticleManager;
+use App\Model\DatabaseConnect;
 
 
 

@@ -13,6 +13,6 @@ session:
 
 services:
 	router: App\RouterFactory::createRouter
-	- App\Model\ArticleManager
+	- App\Model\DatabaseConnect
 	authenticator: Authenticator
 
