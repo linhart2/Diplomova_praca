@@ -1,0 +1,206 @@
+{block #navigation}
+    <div id="tf-home">
+        <div id="sticky-anchor"></div>
+        <nav id="tf-menu" class="navbar navbar-inverse">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" n:href="Homepage:">SumRectangle</a>
+                </div>
+                <div class="collapse navbar-collapse" id="myNavbar">
+                    <ul class="nav navbar-nav">
+                        <li><a n:href="Homepage:#tf-home">Home</a></li>
+                        <li><a n:href="Homepage:#about">About</a></li>
+                        <li><a n:href="Homepage:#download">Download</a></li>
+                        <li><a n:href="Homepage:#learn">Learn more</a></li>
+                        <li><a n:href="Homepage:#support">Support</a></li>
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right">
+                        {if $user->loggedIn}
+                            <li><a n:href="Application:app"><span class="glyphicon glyphicon-user"></span>Go to App.</a></li>
+                            <li><a n:href="Sign:out"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+                        {else}
+                            <li><a n:href="Register:register"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+                            <li><a n:href="Sign:in"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+                        {/if}
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <div class="container">
+            <div class="content">
+                <h1>I create webistes</h1>
+                <h3>that communicates, connects and engages customers</h3>
+                <br>
+                <a href="#tf-contact" class="btn btn-primary my-btn">Contact</a>
+                <a href="#tf-portfolio" class="btn btn-primary my-btn2">Portfolio</a>
+            </div>
+        </div>
+    </div>
+{/block}
+{block content}
+    <section class="mainpage">
+        <div id="about">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="title-container">
+                            <h1>About project</h1>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <p id="">Lorem ipsum dolor sit amet, an duo lorem minim. Qualisque dissentias vix ei, vel inani elitr ad. Ridens possit euripidis at has. Stet fastidii te mel. Qui putant explicari te. Perpetua sententiae id vis, et qui eius decore, alterum aliquando id vel.
+                            Utinam vivendum reformidans nam id. Eu mel vitae nonumy patrioque, nulla dicit delenit et mea, no postulant iudicabit pri. Nisl esse te eam. Maiorum persecuti sed ad.
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                        <h2>Web</h2>
+                        <p>Lorem ipsum dolor sit amet, an duo lorem minim. Qualisque dissentias vix ei, vel inani elitr ad. Ridens possit euripidis at has. Stet fastidii te mel. Qui putant explicari te. Perpetua sententiae id vis, et qui eius decore, alterum aliquando id vel.
+                            Utinam vivendum reformidans nam id. Eu mel vitae nonumy patrioque, nulla dicit delenit et mea, no postulant iudicabit pri. Nisl esse te eam. Maiorum persecuti sed ad.
+                            Ad volutpat dignissim qui, dicam soluta instructior an pro. Mei sale autem congue ad, possit facilisi no duo. Dico libris iriure id nec, duo ex inciderint referrentur, no nam vero mollis timeam. Meis officiis maluisset has ea. Adhuc putant ut duo, no duo mutat albucius. Latine regione argumentum sit et, vim et legere disputationi. Iisque persecuti consectetuer ex mei, no sed iracundia consetetur, labores volumus eleifend no cum.
+                            Inermis cotidieque nam no, utinam instructior comprehensam no sed, mea sint quodsi doctus te. Corpora omittantur et usu, in qui porro platonem deseruisse. Id his clita causae legimus, offendit persecuti quo ne, nec aperiam insolens ei. At affert complectitur mea, et sale labores fuisset quo. Molestie molestiae similique usu an.
+                            Vix brute civibus persecuti ne, id mea illum fastidii. Quo utroque salutandi no, cu duo eros atqui maluisset. Nec an appellantur repudiandae. Ridens appetere phaedrum sed te. Eu mei rebum definitionem vituperatoribus.
+                        </p>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                        <h2>Mobil application</h2>
+                        <p>Lorem ipsum dolor sit amet, an duo lorem minim. Qualisque dissentias vix ei, vel inani elitr ad. Ridens possit euripidis at has. Stet fastidii te mel. Qui putant explicari te. Perpetua sententiae id vis, et qui eius decore, alterum aliquando id vel.
+                            Utinam vivendum reformidans nam id. Eu mel vitae nonumy patrioque, nulla dicit delenit et mea, no postulant iudicabit pri. Nisl esse te eam. Maiorum persecuti sed ad.
+                            Ad volutpat dignissim qui, dicam soluta instructior an pro. Mei sale autem congue ad, possit facilisi no duo. Dico libris iriure id nec, duo ex inciderint referrentur, no nam vero mollis timeam. Meis officiis maluisset has ea. Adhuc putant ut duo, no duo mutat albucius. Latine regione argumentum sit et, vim et legere disputationi. Iisque persecuti consectetuer ex mei, no sed iracundia consetetur, labores volumus eleifend no cum.
+                            Inermis cotidieque nam no, utinam instructior comprehensam no sed, mea sint quodsi doctus te. Corpora omittantur et usu, in qui porro platonem deseruisse. Id his clita causae legimus, offendit persecuti quo ne, nec aperiam insolens ei. At affert complectitur mea, et sale labores fuisset quo. Molestie molestiae similique usu an.
+                            Vix brute civibus persecuti ne, id mea illum fastidii. Quo utroque salutandi no, cu duo eros atqui maluisset. Nec an appellantur repudiandae. Ridens appetere phaedrum sed te. Eu mei rebum definitionem vituperatoribus.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="download">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="title-container">
+                            <h1>Download</h1>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                        <h3>IOS</h3>
+                        <p>Utinam vivendum reformidans nam id. Eu mel vitae nonumy patrioque
+                        </p>
+                    </div>
+                    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                        <h3>Android</h3>
+                        <p>Utinam vivendum reformidans nam id. Eu mel vitae nonumy patrioque
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="learn">
+            <div class="container">
+                <div class="row">
+                    <div class="title-container">
+                        <div class="h1">Learn more</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
+                        <img src="#" alt="pic1">
+                        <p>Lorem ipsum dolor sit amet, an duo lorem minim. Qualisque dissentias vix ei, vel inani elitr ad. Ridens possit euripidis at has. Stet fastidii te mel. Qui putant explicari te. Perpetua sententiae id vis, et qui eius decore, alterum aliquando id vel.
+                            Utinam vivendum reformidans nam id.
+                        </p>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
+                        <img src="#" alt="pic1">
+                        <p>Lorem ipsum dolor sit amet, an duo lorem minim. Qualisque dissentias vix ei, vel inani elitr ad. Ridens possit euripidis at has. Stet fastidii te mel. Qui putant explicari te. Perpetua sententiae id vis, et qui eius decore, alterum aliquando id vel.
+                            Utinam vivendum reformidans nam id.
+                        </p>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
+                        <img src="#" alt="pic1">
+                        <p>Lorem ipsum dolor sit amet, an duo lorem minim. Qualisque dissentias vix ei, vel inani elitr ad. Ridens possit euripidis at has. Stet fastidii te mel. Qui putant explicari te. Perpetua sententiae id vis, et qui eius decore, alterum aliquando id vel.
+                            Utinam vivendum reformidans nam id.
+                        </p>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
+                        <img src="#" alt="pic1">
+                        <p>Lorem ipsum dolor sit amet, an duo lorem minim. Qualisque dissentias vix ei, vel inani elitr ad. Ridens possit euripidis at has. Stet fastidii te mel. Qui putant explicari te. Perpetua sententiae id vis, et qui eius decore, alterum aliquando id vel.
+                            Utinam vivendum reformidans nam id.
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+                        <img src="#" alt="pic1">
+                        <p>Lorem ipsum dolor sit amet, an duo lorem minim. Qualisque dissentias vix ei, vel inani elitr ad. Ridens possit euripidis at has. Stet fastidii te mel. Qui putant explicari te. Perpetua sententiae id vis, et qui eius decore, alterum aliquando id vel.
+                            Utinam vivendum reformidans nam id.
+                        </p>
+                    </div>
+                    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                        <iframe width="100%" height="360" src="https://www.youtube.com/embed/JGwWNGJdvx8" frameborder="0" allowfullscreen></iframe></div>
+                    <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+                        <img src="#" alt="pic1">
+                        <p>Lorem ipsum dolor sit amet, an duo lorem minim. Qualisque dissentias vix ei, vel inani elitr ad. Ridens possit euripidis at has. Stet fastidii te mel. Qui putant explicari te. Perpetua sententiae id vis, et qui eius decore, alterum aliquando id vel.
+                            Utinam vivendum reformidans nam id.
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
+                        <img src="#" alt="pic1">
+                        <p>Lorem ipsum dolor sit amet, an duo lorem minim. Qualisque dissentias vix ei, vel inani elitr ad. Ridens possit euripidis at has. Stet fastidii te mel. Qui putant explicari te. Perpetua sententiae id vis, et qui eius decore, alterum aliquando id vel.
+                            Utinam vivendum reformidans nam id.
+                        </p>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
+                        <img src="#" alt="pic1">
+                        <p>Lorem ipsum dolor sit amet, an duo lorem minim. Qualisque dissentias vix ei, vel inani elitr ad. Ridens possit euripidis at has. Stet fastidii te mel. Qui putant explicari te. Perpetua sententiae id vis, et qui eius decore, alterum aliquando id vel.
+                            Utinam vivendum reformidans nam id.
+                        </p>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
+                        <img src="#" alt="pic1">
+                        <p>Lorem ipsum dolor sit amet, an duo lorem minim. Qualisque dissentias vix ei, vel inani elitr ad. Ridens possit euripidis at has. Stet fastidii te mel. Qui putant explicari te. Perpetua sententiae id vis, et qui eius decore, alterum aliquando id vel.
+                            Utinam vivendum reformidans nam id.
+                        </p>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
+                        <img src="#" alt="pic1">
+                        <p>Lorem ipsum dolor sit amet, an duo lorem minim. Qualisque dissentias vix ei, vel inani elitr ad. Ridens possit euripidis at has. Stet fastidii te mel. Qui putant explicari te. Perpetua sententiae id vis, et qui eius decore, alterum aliquando id vel.
+                            Utinam vivendum reformidans nam id.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="support">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="title-container">
+                            <h1>Support</h1>
+                        </div>
+                        <p>Lorem ipsum dolor sit amet, an duo lorem minim. Qualisque dissentias vix ei, vel inani elitr ad. Ridens possit euripidis at has. Stet fastidii te mel. Qui putant explicari te. Perpetua sententiae id vis, et qui eius decore, alterum aliquando id vel.
+                        Utinam vivendum reformidans nam id.
+                        </p>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    <footer>
+
+    </footer>
+{/block}

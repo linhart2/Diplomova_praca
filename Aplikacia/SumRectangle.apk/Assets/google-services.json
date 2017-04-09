@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "80041684698",
+    "firebase_url": "https://sumrectangle.firebaseio.com",
+    "project_id": "sumrectangle",
+    "storage_bucket": "sumrectangle.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:80041684698:android:b4c7ac916f975994",
+        "android_client_info": {
+          "package_name": "com.daniel.rectangle"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "80041684698-9h2sf7sfa9omg50l4r27hq4sf9pf79q0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.daniel.rectangle",
+            "certificate_hash": "0b538e7ca1b13c332e810bb92c76cb843a3ab2c8"
+          }
+        },
+        {
+          "client_id": "80041684698-hjbt8hej3gemd2vcmbcgn1ulfbngugk5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyADUg1N3ji3_ibFXR4D7crMS-u7QfQofjk"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "80041684698-hjbt8hej3gemd2vcmbcgn1ulfbngugk5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
