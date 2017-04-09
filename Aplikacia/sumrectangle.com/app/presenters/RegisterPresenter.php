@@ -4,17 +4,17 @@ namespace App\Presenters;
 
 use Nette;
 use Nette\Application\UI\Form;
-use App\Model\ArticleManager;
+use App\Model\DatabaseConnect;
 
 
 class RegisterPresenter extends Nette\Application\UI\Presenter {
 
     /** @var Users */
-    private $articleManager;
+    private $databaseConnect;
 
-    public function __construct(ArticleManager $articleManager)
+    public function __construct(DatabaseConnect $databaseConnect)
     {
-        $this->articleManager = $articleManager;
+        $this->databaseConnect = $databaseConnect;
     }
 
     public function renderRegister(){
@@ -51,7 +51,7 @@ class RegisterPresenter extends Nette\Application\UI\Presenter {
     public function registerFormSubmitted($form) 
     {
 	    $values = $form->getValues();
-	    $new_user_id = $this->articleManager->register($values);
+	    $new_user_id = $this->databaseConnect->register($values);
 	    if($new_user_id){
 	        $this->flashMessage('Registrace se zdařila, jo!');
 	        $this->redirect('Sign:in');

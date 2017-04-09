@@ -116,6 +116,21 @@ INSERT INTO `teachers` (`first_name`, `last_name`, `mail`, `password`, `zip`, `c
 VALUES ('Kapitan', 'Danko','Kapitan@Danko.sk','$2y$10$Y1uKwazxZTBR5aX7lqmuOO079ytsLzqBCfjPDdw.WIswk..v8pXWC','4006','Skagen 21','Stavanger Norway');
 
 
+INSERT INTO `teachers` (`first_name`, `last_name`, `mail`, `password`, `zip`, `country`, `school`)
+VALUES
+	('Aladar', 'Biely', 'Aladar@Biely.sk', '$2y$10$Y1uKwazxZTBR5aX7lqmuOO079ytsLzqBCfjPDdw.WIswk..v8pXWC', 4006, 'Skagen 21', 'Stavanger Norway');
+INSERT INTO `teachers` (`first_name`, `last_name`, `mail`, `password`, `zip`, `country`, `school`)
+VALUES
+	('Cigan', 'Robota', 'Cigan@Robota.sk', '$2y$10$Y1uKwazxZTBR5aX7lqmuOO079ytsLzqBCfjPDdw.WIswk..v8pXWC', 4006, 'Skagen 21', 'Stavanger Norway');
+INSERT INTO `teachers` (`first_name`, `last_name`, `mail`, `password`, `zip`, `country`, `school`)
+VALUES
+	('Daj', 'Podporu', 'Daj@Podporu.sk', '$2y$10$Y1uKwazxZTBR5aX7lqmuOO079ytsLzqBCfjPDdw.WIswk..v8pXWC', 4006, 'Skagen 21', 'Stavanger Norway');
+INSERT INTO `teachers` (`first_name`, `last_name`, `mail`, `password`, `zip`, `country`, `school`)
+VALUES
+	('Daniel', 'Linhart', 'danko.linhart@gmail.com', '$2y$10$Y1uKwazxZTBR5aX7lqmuOO079ytsLzqBCfjPDdw.WIswk..v8pXWC', 98511, 'slovakia', NULL);
+
+
+
 
 /* 
 ALTER TABLE `moderators`

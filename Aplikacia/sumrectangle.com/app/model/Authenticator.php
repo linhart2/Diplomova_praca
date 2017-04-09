@@ -25,6 +25,6 @@ class Authenticator extends Nette\Object implements NS\IAuthenticator
         if (!NS\Passwords::verify($password, $row->password)) {
             throw new NS\AuthenticationException('Invalid password.');
         }
-        return new NS\Identity($row->teacher_id, array('first_name' => $row->first_name, 'last_name' => $row->last_name));
+        return new NS\Identity($row->teacher_id, array('first_name' => $row->first_name, 'last_name' => $row->last_name, 'teacher_id' => $row->teacher_id));
     }
 }
