@@ -1,4 +1,0 @@
-app/config/config.local.neon
-/vendor
-/composer.lock
-/tests
