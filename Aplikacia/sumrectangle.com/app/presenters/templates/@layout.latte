@@ -9,7 +9,7 @@
     <title>SumRectangle</title>
     <link href="{$basePath}/media/css/bootstrap.min.css" rel="stylesheet">
     <link href="{$basePath}/media/css/main.screen.css" rel="stylesheet">
-    <link rel="stylesheet" href="{$basePath}/media/fonts/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="{$basePath}/media/css/font-awesome.min.css">
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800,300' rel='stylesheet' type='text/css'>
     <script src="{$basePath}/media/js/jquery.min.js"></script>
     <script src="{$basePath}/media/js/bootstrap.js"></script>
@@ -54,10 +54,9 @@
 
         {/ifset}
     </header>
-	<div style="position: absolute;top: 50%;left: 50%;" n:foreach="$flashes as $flash" n:class="flash, $flash->type">{$flash->message}</div>
+	<div style="position: absolute;top:50px;background-color: #1A7E1E;color: white;width: 100%;height: auto;text-align: center;font-size: 2em;" n:foreach="$flashes as $flash" n:class="flash, $flash->type">{$flash->message}</div>
 
     {include content}
-
 
     <footer>
 

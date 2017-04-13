@@ -1,7 +1,6 @@
 <?php
 use Nette\Security as NS;
-use Tracy\Debugger;
-Debugger::enable(); 
+
 
 class Authenticator extends Nette\Object implements NS\IAuthenticator
 {
@@ -21,7 +20,6 @@ class Authenticator extends Nette\Object implements NS\IAuthenticator
         if (!$row) {
             throw new NS\AuthenticationException('User not found.');
         }
-
         if (!NS\Passwords::verify($password, $row->password)) {
             throw new NS\AuthenticationException('Invalid password.');
         }

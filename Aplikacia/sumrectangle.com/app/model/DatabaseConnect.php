@@ -6,15 +6,25 @@ use Nette;
 use Nette\Security as NS;
 
 
-class DatabaseConnect
+
+class DatabaseConnect extends Nette\Application\UI\Presenter
 {
 	use Nette\SmartObject;
 
     private $database;
 
+
     public function __construct(Nette\Database\Context $database)
 	{
 	    $this->database = $database;
+    }
+    public function getClasses()
+    {
+        if ($this->getUser()->isLoggedIn()) {
+            return $this->database->table('classes')
+                ->where('teacher_id = ', $this->getUser()->getId());
+        }
+        $this->error($this->getUser()->getId());
     }
 
     public function findAll() {
@@ -37,11 +47,25 @@ class DatabaseConnect
     }
 
     public function addClass($data) {
+        if ($this->getUser()->isLoggedIn()) {
+            return $this->database->table('classes')->insert([
+                'teacher_id' => $this->getUser()->getId(),
+                'class_name' => $data->class_name,
+            ]);
+        }
+        $this->error($this->getUser()->getId());
 
-        return $this->database->table('classes')->insert([
-            'teacher_id' => $id,
-            'class_name' => $data->class_name,
-        ]);
+    }
+
+    public function addExam($data) {
+        if ($this->getUser()->isLoggedIn()) {
+            return $this->database->table('classes')->insert([
+                'teacher_id' => $this->getSession()->getId(),
+                'class_name' => $data->class_name,
+            ]);
+        }
+        $this->error($this->getUser()->getId());
+
 
     }
 
