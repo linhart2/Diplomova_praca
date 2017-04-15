@@ -36,7 +36,7 @@ class SignPresenter extends Nette\Application\UI\Presenter
             $form->addError($e->getMessage());
             return;
         }
-        $this->redirect('Application:app');
+        $this->redirect('Application:showclass');
     }
     public function actionIn(){
     

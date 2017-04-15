@@ -21,7 +21,7 @@
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
                         {if $user->loggedIn}
-                            <li><a n:href="Application:app"><span class="glyphicon glyphicon-user"></span>Go to App.</a></li>
+                            <li><a n:href="Application:showclass"><span class="glyphicon glyphicon-user"></span>Go to App.</a></li>
                             <li><a n:href="Sign:out"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
                         {else}
                             <li><a n:href="Register:register"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>

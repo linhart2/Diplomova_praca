@@ -44,18 +44,22 @@ class RegisterPresenter extends Nette\Application\UI\Presenter {
         $form->addSelect('country', 'Země:')
             ->setPrompt('Zvolte zemi');
         $form->addSubmit('send', 'Registrovať');
-        $form->onSuccess[] = [$this, 'registerFormSubmitted'];
+        $form->onSuccess[] = [$this, 'registerFormSucceeded'];
         return $form;
     }
 
-    public function registerFormSubmitted($form) 
+    public function registerFormSucceeded($form, $values)
     {
-	    $values = $form->getValues();
-	    $new_user_id = $this->databaseConnect->register($values);
-	    if($new_user_id){
-	        $this->flashMessage('Registrace se zdařila, jo!');
-	        $this->redirect('Sign:in');
-	    }
+
+        $post = $this->databaseConnect->register($values);
+        $post = $this->databaseConnect->dataControler($values,'mail','teachers');
+        if($post){
+            $this->flashMessage('Registracia uspesna!');
+            $this->redirect('Sign:in');
+        }else{
+            $this->flashMessage('Registracia neuspesna!');
+        }
+
 	}
 
 }

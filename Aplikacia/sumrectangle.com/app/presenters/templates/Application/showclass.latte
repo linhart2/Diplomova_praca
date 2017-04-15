@@ -23,7 +23,7 @@
                         <a class="dropdown-toggle" data-toggle="dropdown" href="#">Show
                             <span class="caret"></span></a>
                         <ul class="dropdown-menu">
-                            <li><a href="#">Show my class</a></li>
+                            <li><a n:href="Application:showclass">Show my class</a></li>
                             <li><a href="#">Show my exams</a></li>
                             <li><a href="#">Show my homeworks</a></li>
                         </ul>
@@ -33,7 +33,7 @@
                 <ul class="nav navbar-nav navbar-right">
                     <!-- <li><a n:href="Register:register"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li> -->
                     {if $user->loggedIn}
-                        <li><a n:href="Application:app"><span class="glyphicon glyphicon-user"></span> Logged {$user->roles['first_name']} {$user->roles['last_name']}</a></li>
+                        <li><a n:href="Application:showclass"><span class="glyphicon glyphicon-user"></span> Logged {$user->roles['first_name']} {$user->roles['last_name']}</a></li>
                         <li><a n:href="Sign:out"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
                     {else}
                         <li><a n:href="Register:register"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
@@ -96,7 +96,8 @@
                 <div class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown">{$post->class_name}</a>
                     <div class="dropdown-content">
-                        <a href="#">Open</a>
+
+                        <a n:href="showstudent $post->class_id">Open</a>
                         <a n:href="editclass $post->class_id">Edit</a>
                         <a n:href="deleteclass $post->class_id">Delete</a>
                     </div>
