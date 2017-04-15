@@ -123,6 +123,13 @@ function draw(values){
     }
 }
 
+function removeItem(ref) {
+    // Now we can get back to that item we just pushed via .child().
+    ref.remove(function(error) {
+        alert(error ? "Uh oh!" : "Success!");
+    });
+}
+
 $( document ).ready(function() {
     console.log( "ready!" );
     main();
@@ -158,6 +165,7 @@ $( document ).ready(function() {
         dict[data.key] = data.val();
         draw(dict);
     });
+
 
 
 

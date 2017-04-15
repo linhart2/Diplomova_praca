@@ -41,7 +41,7 @@
                         <ul class="nav navbar-nav navbar-right">
                             <!-- <li><a n:href="Register:register"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li> -->
                             {if $user->loggedIn}
-                                <li><a n:href="Application:app"><span class="glyphicon glyphicon-user"></span> Logged {$user->roles['first_name']} {$user->roles['last_name']}</a></li>
+                                <li><a n:href="Application:showclass"><span class="glyphicon glyphicon-user"></span> Logged {$user->roles['first_name']} {$user->roles['last_name']}</a></li>
                                 <li><a n:href="Sign:out"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
                             {else}
                                 <li><a n:href="Register:register"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
