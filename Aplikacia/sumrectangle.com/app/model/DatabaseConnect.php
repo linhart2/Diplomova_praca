@@ -20,7 +20,6 @@ class DatabaseConnect extends Nette\Application\UI\Presenter
     }
     public function register($data) {
         unset($data["password2"]);
-        $data["role"] = "guest";
         $data["country"] = "slovakia";
         $data["password"] = NS\Passwords::hash($data["password"]);
         return $this->database->table('teachers')->insert([
@@ -30,8 +29,11 @@ class DatabaseConnect extends Nette\Application\UI\Presenter
             'password' => $data->password,
             'zip' => $data->zip,
             'country' => $data->country,
+            'school' => $data->country,
         ]);
-
+    }
+    public function dataControler($value,$col,$table) {
+        return $this->database->table($table)->where('? = ?',$col, $value->mail);
     }
 
     public function getClasses()

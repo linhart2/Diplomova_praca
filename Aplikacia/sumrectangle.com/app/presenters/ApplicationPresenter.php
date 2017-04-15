@@ -25,6 +25,8 @@ class ApplicationPresenter extends Nette\Application\UI\Presenter
     {
         $this->template->posts = $this->databaseConnect->getClasses();
     }
+
+
     protected function createComponentClassForm() {
         $form = new Form;
         $form->addText('class_name', 'Meno triedy')
@@ -44,10 +46,14 @@ class ApplicationPresenter extends Nette\Application\UI\Presenter
         } else {
             $post = $this->databaseConnect->addClass($values);
         }
-
-        $this->flashMessage('Trieda bola pridana!', 'success');
-        $this->redirect('Application:showclass');
+        if($post){
+            $this->flashMessage('Trieda bola pridana!', 'success');
+            $this->redirect('Application:showclass');
+        }else{
+            $this->flashMessage('Niekde sa to pokazilo!', 'fail');
+        }
     }
+
     public function actionEditclass($classId)
     {
         $post = $this->databaseConnect->editClass($classId);
