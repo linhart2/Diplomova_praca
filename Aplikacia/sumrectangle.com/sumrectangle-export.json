@@ -1,0 +1,47 @@
+{
+  "1" : {
+    "members" : {
+      "d@d" : {
+        "235" : {
+          "board" : {
+            "FirstLine" : 2,
+            "Slot" : 2,
+            "SlotM" : 3
+          },
+          "result" : {
+            "SlotM_0" : 2,
+            "SlotM_1" : 3,
+            "SlotM_2" : 5,
+            "Slot_0" : "null",
+            "Slot_1" : "null",
+            "Slot_2" : "null"
+          }
+        }
+      }
+    }
+  },
+  "Class_ID" : {
+    "member" : {
+      "email" : {
+        "example" : {
+          "board" : {
+            "FirstLine" : 2,
+            "Slot" : 2,
+            "SlotM" : 3
+          },
+          "result" : {
+            "SlotM_0" : "6",
+            "SlotM_1" : "10",
+            "SlotM_2" : "4",
+            "Slot_0" : "null",
+            "Slot_1" : "null",
+            "Slot_2" : "null"
+          }
+        }
+      }
+    }
+  },
+  "exams" : {
+    "skuska" : "{\"1\":\"{\\\"Slot_3\\\":1,\\\"Slot_2\\\":1,\\\"Slot_1\\\":2}\"}"
+  }
+}

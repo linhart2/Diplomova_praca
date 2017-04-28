@@ -1,13 +1,8 @@
 /**
  * Created by Lingo on 05/02/2017.
  */
-// Hello.
-//
-// This is The Scripts used for ___________ Theme
-//
-//
 
-function main() {
+function scrollNav() {
 
     (function () {
         'use strict';
@@ -130,10 +125,7 @@ function removeItem(ref) {
     });
 }
 
-$( document ).ready(function() {
-    console.log( "ready!" );
-    main();
-    // Initialize Firebase
+function initFirebase() {
     var config = {
         apiKey: "AIzaSyDA8nnfmBPzxZ0pNxjxVObPt_pXOmg_lgM",
         authDomain: "sumrectangle.firebaseapp.com",
@@ -142,31 +134,9 @@ $( document ).ready(function() {
         messagingSenderId: "80041684698"
     };
     firebase.initializeApp(config);
-    firebase.database().ref('Class_ID/member/email/example/board/').once('value').then(function(snapshot) {
-        Slot = snapshot.val()["Slot"];
-        SlotM = snapshot.val()["SlotM"];
-        FirstLine = snapshot.val()["FirstLine"];
-
-    });
-    firebase.database().ref('Class_ID/member/email/example/result/').once('value').then(function(snapshot) {
-        snapshot.forEach(function(child) {
-            dict[child.key] = child.val();
-        });
-        draw(dict);
-    });
-    var boardRef = firebase.database().ref('Class_ID/member/email/example/board/');
-    boardRef.on('value', function(data) {
-        Slot = data.val()["Slot"];
-        SlotM = data.val()["SlotM"];
-        FirstLine = data.val()["FirstLine"];
-    });
-    var resultRef = firebase.database().ref('Class_ID/member/email/example/result/');
-    resultRef.on('child_changed', function(data) {
-        dict[data.key] = data.val();
-        draw(dict);
-    });
-
-
-
+}
+$( document ).ready(function() {
+    scrollNav();
+    initFirebase();
 
 });
