@@ -1,52 +1,3 @@
-/**
- * Created by Lingo on 05/02/2017.
- */
-
-function scrollNav() {
-
-    (function () {
-        'use strict';
-
-        /*====================================
-         Main Navigation Stick to Top when Scroll
-         ======================================*/
-        function sticky_relocate() {
-            try {
-            var window_top = $(window).scrollTop();
-            var div_top = $('#sticky-anchor').offset().top;
-
-                if (window_top > div_top) {
-                    $('#tf-menu').addClass('stick');
-                } else {
-                    $('#tf-menu').removeClass('stick');
-                }
-            }catch(err) {
-            }
-        }
-
-        $(function () {
-            $(window).scroll(sticky_relocate);
-            sticky_relocate();
-        });
-
-
-        $(function() {
-            $('a[href*="#"]:not([href="#"])').click(function() {
-                if (location.pathname.replace(/^\//,'') == this.pathname.replace(/^\//,'') && location.hostname == this.hostname) {
-                    var target = $(this.hash);
-                    target = target.length ? target : $('[name=' + this.hash.slice(1) +']');
-                    if (target.length) {
-                        $('html,body').animate({
-                            scrollTop: target.offset().top - 70
-                        }, 1000);
-                        return false;
-                    }
-                }
-            });
-        });
-    }());
-}
-// Game//
 var box=[];
 var dict={};
 var Slot;
@@ -54,7 +5,7 @@ var SlotM;
 var FirstLine;
 
 function getBoard(){
-    var pom = Slot-1;
+    var pom = Slot;
     $("<div class=boxy ></div>").appendTo('.game');
     for(var i=0; i<FirstLine;i++) {
         $("<div style='display: flex;justify-content: center;' class=boxPanel" + i + " id=panel" + i + " ></div>").appendTo('.boxy');
@@ -117,33 +68,40 @@ function draw(values){
         }
     }
 }
-function PopupAlert(text) {
-    if (confirm("Naozaj chcete odstranit " + text) == true) {
-        return true;
-    } else {
-        return false;
-    }
-}
 
-function removeItem(ref) {
-    // Now we can get back to that item we just pushed via .child().
-    ref.remove(function(error) {
-        alert(error ? "Uh oh!" : "Success!");
+function getParamBoard() {
+    firebase.database().ref('Class_ID/member/email/example/board/').once('value').then(function(snapshot) {
+        Slot = snapshot.val()["Slot"];
+        SlotM = snapshot.val()["SlotM"];
+        FirstLine = snapshot.val()["FirstLine"];
     });
 }
-
-function initFirebase() {
-    var config = {
-        apiKey: "AIzaSyDA8nnfmBPzxZ0pNxjxVObPt_pXOmg_lgM",
-        authDomain: "sumrectangle.firebaseapp.com",
-        databaseURL: "https://sumrectangle.firebaseio.com",
-        storageBucket: "sumrectangle.appspot.com",
-        messagingSenderId: "80041684698"
-    };
-    firebase.initializeApp(config);
+function getResultBoard() {
+    firebase.database().ref('Class_ID/member/email/example/result/').once('value').then(function(snapshot) {
+        snapshot.forEach(function(child) {
+            dict[child.key] = child.val();
+        });
+        draw(dict);
+    });
+}
+function rewriteParamBoard() {
+    var boardRef = firebase.database().ref('Class_ID/member/email/example/board/');
+    boardRef.on('value', function(data) {
+        Slot = data.val()["Slot"];
+        SlotM = data.val()["SlotM"];
+        FirstLine = data.val()["FirstLine"];
+    });
+}
+function rewriteValueInBoard() {
+    var resultRef = firebase.database().ref('Class_ID/member/email/example/result/');
+    resultRef.on('child_changed', function(data) {
+        dict[data.key] = data.val();
+        draw(dict);
+    });
 }
 $( document ).ready(function() {
-    scrollNav();
-    initFirebase();
-
+    getParamBoard();
+    getResultBoard();
+    rewriteParamBoard();
+    rewriteValueInBoard();
 });

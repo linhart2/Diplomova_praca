@@ -1,3 +1,37 @@
+{block #header}
+    <header>
+        <nav class="navbar navbar-inverse">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" n:href="Homepage:">SumRectangle</a>
+                </div>
+                <div class="collapse navbar-collapse" id="myNavbar">
+                    <ul class="nav navbar-nav">
+                        <li><a n:href="Homepage:#tf-home">Home</a></li>
+                        <li><a n:href="Homepage:#about">About</a></li>
+                        <li><a n:href="Homepage:#download">Download</a></li>
+                        <li><a n:href="Homepage:#learn">Learn more</a></li>
+                        <li><a n:href="Homepage:#support">Support</a></li>
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right">
+                        {if $user->loggedIn}
+                            <li><a n:href="Application:showclass"><span class="glyphicon glyphicon-user"></span>Go to App.</a></li>
+                            <li><a n:href="Sign:out"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+                        {else}
+                            <li><a n:href="Register:register"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+                            <li><a n:href="Sign:in"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+                        {/if}
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+{/block}
 {block #content}
 <section class="registration">
     <div id="register">
@@ -11,3 +45,4 @@
         </div>
     </div>
 </section>
+{/block}

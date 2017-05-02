@@ -55,7 +55,6 @@
 .navbar-inverse {
     background-color: #222;
     border-color: #080808;
-    position: static;
 }
 
 /* Body */
@@ -70,27 +69,22 @@ body{
     padding: 2% 0;
 }
 
-
-/* MainPage */
-section.login, section.registration, section.application {
-padding-top: 150px;
-}
-
 /* application/app */
 
 .dropdown {
     position: relative;
-    display: inline-block;
+    display: block;
     cursor: pointer;
 }
 .dropdown-content {
     display: none;
-    position: absolute;
-    background-color: #f9f9f9;
+    background-color: transparent;
     min-width: 160px;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     z-index: 1;
+    border-top: white solid 1px;
 }
+
 .dropdown-content a {
     color: black;
     padding: 12px 16px;
@@ -106,6 +100,77 @@ padding-top: 150px;
 .dropdown:hover .dropbtn {
     background-color: #3e8e41;
 }
+/* ZOZNAM */
+ul li a {
+    display: block;
+}
+ul.GroupList li a{
+    color: black;
+    padding: 12px 20px 12px 40px;
+}
+ul.GroupList li a:hover{
+    color: black;
+    background-color: #fbdfa6;
+    padding: 12px 20px 12px 40px;
+    text-decoration: none;
+
+}
+ul.GroupList {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+li.GroupList {
+    display: list-item;
+    text-align: -webkit-match-parent;
+}
+ul.GroupList li {
+    cursor: pointer;
+    position: relative;
+    background: transparent;
+    font-size: 18px;
+    transition: 0.2s;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+ul.GroupList li:nth-child(odd) {
+    background: rgba(169, 121, 25, 0.5);
+}
+ul.GroupList li a.close {
+    position: absolute;
+    right: 0;
+    top: 0;
+    padding: 10px 14px 10px 14px;
+    text-shadow: none;
+    font-size: 29px;
+}
+ul.GroupList li a.close:hover {
+    background-color: red;
+    color: white;
+    opacity: 1;
+}
+ul.GroupList li a.edit {
+    position: absolute;
+    right: 57px;
+    top: 0px;
+    padding: 10px 14px 10px 14px;
+    float: right;
+    text-shadow: none;
+    font-size: 29px;
+    font-weight: 700;
+    line-height: 1;
+    opacity: 1;
+}
+ul.GroupList li a.edit:hover{
+    background-color: #1A7E1E;
+    color: white;
+    opacity: 1;
+}
+
+
+
 
 
 
@@ -117,4 +182,23 @@ padding-top: 150px;
     border: 1px solid black;
     background-color: transparent;
     display: inline-block;
+}
+.box:hover{
+    background-color: gray;
+    border: 1px solid black;
+}
+.numbers{
+    cursor: pointer;
+}
+@media (max-width: 690px){
+    .modal-dialog {
+        width: 350px;
+        margin: 30px auto;
+    }
+}
+@media (min-width: 768px){
+    .modal-dialog {
+        width: 670px;
+        margin: 30px auto;
+    }
 }
