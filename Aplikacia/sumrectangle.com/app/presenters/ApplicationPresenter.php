@@ -68,13 +68,17 @@ class ApplicationPresenter extends Nette\Application\UI\Presenter
         }
     }
 
-    public function renderShowstudent($classId)
+
+    public function renderShowstudent($classId,$className)
     {
         $this->session->classId = $this->getParameter('classId');
+        $this->template->className = $className;
         $this->template->posts = $this->databaseConnect->getStudentIntoClass($classId);
     }
-    public function renderOpenstudent($studentId)
+    public function renderOpenstudent($studentId, $studentFirstName, $studentLastName)
     {
+        $this->template->studentFirstName = $studentFirstName;
+        $this->template->studentLastName = $studentLastName;
         $this->template->posts = $this->databaseConnect->getStudentIntoClass($studentId);
     }
     public function actionDeletestudent($studentId)

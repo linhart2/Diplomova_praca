@@ -139,12 +139,15 @@ function controlTask() {
     return false;
 }
 function deleteTask(id) {
+    if( PopupAlert("priklad ?") ) {
     $("#priklad"+id).remove();
     delete prikladyJson[id];
+    }
 }
 function editTask() {
     console.log("Edit");
 }
+
 function removeTask(){
     $("#2_param").empty();
     $("<button type=button onclick=selectTemplate() id=Butt_Add_Exam>Pridaj priklad</button>").appendTo(".BasicParameters");
@@ -159,7 +162,7 @@ function saveExam() {
         prikladyJsonPc = 1;
         $(".exams_array ul").empty();
         $("#ExamsName").val("");
-        window.location.replace("../../www/application/showclass");
+        //window.location.replace("../../www/application/showclass");
     }else{
     console.log("Nazov ulohy je priliz kratky");}
 }

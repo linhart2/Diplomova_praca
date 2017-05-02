@@ -22,43 +22,26 @@
                 </div>
             </div>
         </div>
-        <div class="container create-exams">
-            <div class="modal fade" id="createExams" role="dialog">
-                <div class="modal-dialog">
 
-                    <!-- Modal content-->
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal">&times;</button>
-                            <h4 class="modal-title">Modal Header</h4>
-                        </div>
-                        <div class="modal-body">
-                            {control examForm}
-                            <p>Create exams</p>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                        </div>
-                    </div>
-
+        <div class="container show-classes">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <ul class="GroupList">
+                        <li n:foreach="$posts as $post" class="post">
+                            <div class="dropdown">
+                                <a n:href="showstudent $post->class_id, $post->class_name" class="dropdown-toggle">{$post->class_name}</a>
+                                <div class="dropdown-content">
+                                    <a n:href="showstudent $post->class_id">Pridaj ulohu</a>
+                                    <a n:href="editclass $post->class_id">Zobraz ulohy</a>
+                                    <a n:href="showstudent $post->class_id">Zobraz statistiky</a>
+                                </div>
+                            </div>
+                            <a class='edit' n:href="editclass $post->class_id" ><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
+                            <a class='close' onclick="return PopupAlert('triedu')" n:href="deleteclass $post->class_id"><i class='fa fa-window-close-o' aria-hidden=true></i></a>
+                        </li>
+                    </ul>
                 </div>
             </div>
-        </div>
-        <div class="container show-classes">
-            <ul class="GroupList">
-                <li n:foreach="$posts as $post" class="post">
-                    <div class="dropdown">
-                        <a n:href="showstudent $post->class_id" class="dropdown-toggle">{$post->class_name}</a>
-                        <div class="dropdown-content">
-                            <a n:href="showstudent $post->class_id">Pridaj ulohu</a>
-                            <a n:href="editclass $post->class_id">Zobraz ulohy</a>
-                            <a n:href="showstudent $post->class_id">Zobraz statistiky</a>
-                        </div>
-                    </div>
-                    <a class='edit' n:href="editclass $post->class_id" ><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
-                    <a class='close' n:href="deleteclass $post->class_id"><i class='fa fa-window-close-o' aria-hidden=true></i></a>
-                </li>
-            </ul>
         </div>
     </section>
 {/block}
