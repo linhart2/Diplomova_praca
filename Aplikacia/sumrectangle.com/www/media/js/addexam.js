@@ -153,20 +153,32 @@ function removeTask(){
     $("<button type=button onclick=selectTemplate() id=Butt_Add_Exam>Pridaj priklad</button>").appendTo(".BasicParameters");
     $("<button type=button id=Save_Exams onclick=saveExam()>Uloz ulohu</button>").appendTo(".BasicParameters");
 }
+
 function saveExam() {
     var examsName = $("#ExamsName").val();
     if (examsName.length >= 4 ){
-        firebase.database().ref('exams/'+examsName).push(prikladyJson);
+        var newPostKey = firebase.database().ref().child('posts').push().key;
+        prikladyJson["examsName"] = examsName;
+        firebase.database().ref('exams/'+getCookie("teacherID")+"/"+newPostKey+"/").set(prikladyJson);
         prikladyJson = {};
         priklad = {};
         prikladyJsonPc = 1;
         $(".exams_array ul").empty();
         $("#ExamsName").val("");
-        //window.location.replace("../../www/application/showclass");
+        controlAppendExam(getCookie("teacherID"));
     }else{
     console.log("Nazov ulohy je priliz kratky");}
 }
-
+function controlAppendExam($name) {
+    console.log($name);
+    firebase.database().ref('exams/'+$name).once('value', function(snapshot){
+        if (snapshot.exists()) {
+            //window.location.replace("../../www/application/showexam/");
+        } else {
+            console.log("Priklad neulozilo do databazy");
+        }
+    });
+}
 
 $(document).ready(function(){
     drawNuberForExam();

@@ -70,7 +70,13 @@
 	<div style="position: static;top:50px;background-color: #1A7E1E;color: white;width: 100%;height: auto;text-align: center;font-size: 2em;" n:foreach="$flashes as $flash" n:class="flash, $flash->type">{$flash->message}</div>
     {include content}
 
-    {ifset #footer}{include #footer}{else}{/ifset}
+    {ifset #footer}{include #footer}{else}
+        <!--<footer class="footer">
+            <div class="container">
+                <p class="text-muted">Place sticky footer content here.</p>
+            </div>
+        </footer> -->
+    {/ifset}
 
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
     <script src="https://nette.github.io/resources/js/netteForms.min.js"></script>

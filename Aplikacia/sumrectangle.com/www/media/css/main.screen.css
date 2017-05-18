@@ -168,6 +168,18 @@ ul.GroupList li a.edit:hover{
     color: white;
     opacity: 1;
 }
+.footer {
+    width: 100%;
+    height: 60px;
+    background-color: #222;
+    display: flex;
+    align-items: center;
+}
+.text-muted {
+    color: #9d9d9d;
+    display: flex;
+    justify-content: center;
+}
 
 
 

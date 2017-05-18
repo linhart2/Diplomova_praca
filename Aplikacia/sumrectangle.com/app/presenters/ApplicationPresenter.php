@@ -23,6 +23,7 @@ class ApplicationPresenter extends Nette\Application\UI\Presenter
 
     public function renderShowclass()
     {
+        setcookie("teacherID", $this->getUser()->getId());
         $this->template->posts = $this->databaseConnect->getClasses();
     }
     protected function createComponentClassForm() {
