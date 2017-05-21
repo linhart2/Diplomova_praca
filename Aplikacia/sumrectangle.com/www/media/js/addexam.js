@@ -149,7 +149,7 @@ function saveExam() {
 function controlAppendExam($name) {
     firebase.database().ref('exams/'+$name).once('value', function(snapshot){
         if (snapshot.exists()) {
-            window.location.replace("../../application/showexams/");
+            window.location.replace("../../www/application/showexams/");
             flashMsg("success","Cvicenie bolo ulozene do DB");
         } else {
             flashMsg("error","Cvicenie neulozilo do DB");

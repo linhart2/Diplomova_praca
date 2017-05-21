@@ -48,6 +48,7 @@ function scrollNav() {
 }
 
 function flashMsg($type,$msg) {
+    $('.flash').remove();
     $( "<div class='flash "+$type+"' >"+$msg+"</div>" ).insertAfter( "header" );
 }
 

@@ -21,7 +21,7 @@ function deleteExam($key) {
                ref.remove(function(error) {
                    $("#"+$key.data.param1).remove();
                });
-               window.location.replace("../../application/showexams/");
+               window.location.replace("../../www/application/showexams/");
                flashMsg("success","Priklad bol odstraneny");
            }
            else{

@@ -22,11 +22,12 @@ function ulozUlohy() {
     flashMsg("success","Ulohy boli ulozene");
 }
 
-function deleteExam($key) {
+function deleteExam(key) {
+    console.log(key);
     if( PopupAlert("cvicenie ?") ) {
-        var ref = firebase.database().ref(class_id+'/exams/'+$key.data.param1);
+        var ref = firebase.database().ref(class_id+'/exams/'+key);
         ref.remove(function(error) {
-            $("#zobrazUlohy #"+$key.data.param1).remove();
+            $("#zobrazUlohy #"+key).remove();
             console.log('remove')
         });
         flashMsg("success","Uloha bola odstranena");
@@ -59,8 +60,10 @@ $( document ).ready(function() {
         class_name =  $(this).attr("name");
         var resultRef = firebase.database().ref(class_id+'/exams');
         resultRef.on('child_added', function(data) {
-            $("<li id="+data.key+"><a href='showexam?pid="+data.key+"&name="+data.val()+"' class='open "+data.key+"'>" + data.val() + "</a><a class='close' ><i class='fa fa-window-close-o' aria-hidden=true></i></a></li>").appendTo("#zobrazUlohy .priklady");
-            $("a.close").click({param1: data.key}, deleteExam);
+            $("<li id="+data.key+"><a href='showexam?pid="+data.key+"&name="+data.val()+"' class='open "+data.key+"'>" + data.val() + "</a><a class='close "+data.key+"' data-dismiss='modal' ><i class='fa fa-window-close-o' aria-hidden=true></i></a></li>").appendTo("#zobrazUlohy .priklady");
+            $("a."+data.key).on("click",function () {
+                deleteExam(data.key);
+            });
         });
     })
 
