@@ -4,8 +4,22 @@
 var box = 0
 var priklad = {};
 var prikladJson;
-var prikladyJson = {};
-var prikladyJsonPc = 1;
+
+
+function getValues(){
+    $("h1.examname").empty().append("Upravujem priklad c."+getURLParameter('name'));
+    var resultRef = firebase.database().ref('exams/'+getCookie("teacherID")+"/"+getURLParameter('pid')+"/"+getURLParameter('name')+"/");
+    resultRef.on('value', function(data) {
+        createTask(data.numChildren());
+        data.forEach(function(childData) {
+            priklad[childData.key.toString()] = childData.val();
+            $("<img style='width: 59px;height: 59px; left: -1px;top: -1px;' src=../media/img/Number/"+childData.val()+".jpg alt=Cislo_"+childData.val()+">").appendTo('#'+childData.key);
+        });
+        $("#inputJson").val(JSON.stringify(priklad));
+    });
+
+
+}
 
 function drawNuberForExam(){
     //Vyplni modal content Cislami od 1 do 100;
@@ -33,33 +47,21 @@ function getBoxId(a){
     box = a['id'];
 }
 
-function selectTemplate(){
-    // zobrazenie moznych templateov
-    $("#Butt_Add_Exam").remove();
-    $("#Save_Exams").remove();
-    if (! $(".SelectTemplate")[0]){
-        $("<div class=SelectTemplate id=SelectTemplate></div>").appendTo(".SecondParameters");
-        $("<button type=button onclick=createTask(1)>Sablona1</button>").appendTo(".SelectTemplate");
-        $("<button type=button onclick=createTask(2)>Sablona2</button>").appendTo(".SelectTemplate");
-        $("<button type=button onclick=createTask(3)>Sablona3</button>").appendTo(".SelectTemplate");
-    }
-}
 function createTask(level){
     //vygeneruje prazdny trojuholnik pola zvoleneho templatu
-    priklad = {};
     $("#2_param").empty();
     if (! $(".CreateTask")[0]){
         $("<div class=CreateTask></div>").appendTo(".SecondParameters");
         switch(level) {
-            case 1:
+            case 3:
                 var pom = 3;
                 var FirstLine = 2;
                 break;
-            case 2:
+            case 6:
                 var pom = 6;
                 var FirstLine = 3;
                 break;
-            case 3:
+            case 10:
                 var pom = 10;
                 var FirstLine = 4;
                 break;
@@ -89,19 +91,9 @@ function createTask(level){
             }
 
         });
-        $("<button type=button onclick=submitTask()>Potvrd priklad</button>").appendTo('.CreateTask');
-        $("<button type=button onclick=removeTask()>Zrus priklad</button>").appendTo('.CreateTask');
+        $("<button type=button onclick=saveExam()>Uloz zmenu</button>").appendTo('.CreateTask');
+        $("<button type=button onclick=removeTask()>Zrus zmenu</button>").appendTo('.CreateTask');
 
-    }
-}
-function submitTask(){
-    if (controlTask()){
-        $("#2_param").empty();
-        prikladyJson[prikladyJsonPc.toString()] = priklad;
-        $("<li id=priklad"+prikladyJsonPc+"><a onclick=''>"+prikladJson+"</a><a class='close' onclick=deleteTask("+prikladyJsonPc+")><i class='fa fa-window-close-o' aria-hidden=true></i></a></li>").appendTo(".exams_array ul");
-        $("<button type=button onclick=selectTemplate() id=Butt_Add_Exam>Pridaj priklad</button>").appendTo(".BasicParameters");
-        $("<button type=button id=Save_Exams onclick=saveExam()>Uloz ulohu</button>").appendTo(".BasicParameters");
-        prikladyJsonPc++;
     }
 }
 function controlTask() {
@@ -117,12 +109,6 @@ function controlTask() {
     }
     return false;
 }
-function deleteTask(id) {
-    if( PopupAlert("priklad ?") ) {
-    $("#priklad"+id).remove();
-    delete prikladyJson[id];
-    }
-}
 
 function removeTask(){
     $("#2_param").empty();
@@ -131,32 +117,26 @@ function removeTask(){
 }
 
 function saveExam() {
-    var examsName = $("#ExamsName").val();
-    if (examsName.length >= 4 ){
-        var newPostKey = firebase.database().ref().child('posts').push().key;
-        prikladyJson["examsName"] = examsName;
-        firebase.database().ref('exams/'+getCookie("teacherID")+"/"+newPostKey+"/").set(prikladyJson);
-        prikladyJson = {};
-        priklad = {};
-        prikladyJsonPc = 1;
-        $(".exams_array ul").empty();
-        $("#ExamsName").val("");
-        controlAppendExam(getCookie("teacherID"));
+    if(controlTask()){
+        var resultRef = firebase.database().ref('exams/'+getCookie("teacherID")+"/"+getURLParameter('pid')+"/"+getURLParameter('name')+"/").set(priklad);
+        if(controlAppendExam('exams/'+getCookie("teacherID")+"/"+getURLParameter('pid')+"/"+getURLParameter('name')+"/"));
     }else{
-        flashMsg("error","Nazov ulohy je priliz kratky");
+        alert("Oprav si chyby");
     }
 }
 function controlAppendExam($name) {
-    firebase.database().ref('exams/'+$name).once('value', function(snapshot){
+    firebase.database().ref($name).once('value', function(snapshot){
         if (snapshot.exists()) {
-            window.location.replace("../../application/showexams/");
-            flashMsg("success","Cvicenie bolo ulozene do DB");
+            //window.location.replace("../../www/application/showexam/");
+            history.back();
+            flashMsg("success","Zmena bola ulozena");
         } else {
-            flashMsg("error","Cvicenie neulozilo do DB");
+            flashMsg("error","Zmenu neulozilo do DB");
         }
     });
 }
 
 $(document).ready(function(){
+    getValues();
     drawNuberForExam();
 });

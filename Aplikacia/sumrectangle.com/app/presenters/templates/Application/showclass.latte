@@ -23,7 +23,7 @@
             </div>
         </div>
 
-        <div class="container show-classes">
+        <div class="container show-classes footer_p">
             <div class="row">
                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                     <ul class="GroupList">
@@ -31,9 +31,9 @@
                             <div class="dropdown">
                                 <a n:href="showstudent $post->class_id, $post->class_name" class="dropdown-toggle">{$post->class_name}</a>
                                 <div class="dropdown-content">
-                                    <a n:href="showstudent $post->class_id">Pridaj ulohu</a>
-                                    <a n:href="editclass $post->class_id">Zobraz ulohy</a>
-                                    <a n:href="showstudent $post->class_id">Zobraz statistiky</a>
+                                    <a class="pridaj_ulohu" id="{$post->class_id}" name="{$post->class_name}" data-toggle="modal" data-target="#pridajUlohu">Pridaj ulohu</a>
+                                    <a class="zobraz_ulohy" id="{$post->class_id}" name="{$post->class_name}" data-toggle="modal" data-target="#zobrazUlohy">Zobraz ulohy</a>
+                                    <a disabled="true">Zobraz statistiky</a>
                                 </div>
                             </div>
                             <a class='edit' n:href="editclass $post->class_id" ><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
@@ -42,6 +42,44 @@
                     </ul>
                 </div>
             </div>
+
+            <div class="modal fade" id="pridajUlohu" role="dialog">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 id="pridajU" class="modal-title">Pridaj ulohu</h4>
+                        </div>
+                        <div class="modal-body">
+                            <ul class="priklady GroupList">
+
+                            </ul>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-default" onclick="ulozUlohy()" data-dismiss="modal">Uloz</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="zobrazUlohy" role="dialog">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 id="zobrazU" class="modal-title">Zoznam uloh</h4>
+                        </div>
+                        <div class="modal-body">
+                            <ul class="priklady GroupList">
+
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
+{/block}
+{block scripts}
+    <script src="{$basePath}/media/js/showclass.js"></script>
 {/block}

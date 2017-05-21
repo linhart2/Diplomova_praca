@@ -43,6 +43,7 @@
             </div>
         </div>
     </header>
+    <div n:foreach="$flashes as $flash" n:class="flash, $flash->type">{$flash->message}</div>
 {/block}
 {block content}
     <section class="mainpage bodyHeight">
@@ -191,7 +192,7 @@
                         <div class="title-container">
                             <h1>Support</h1>
                         </div>
-                        <p>Lorem ipsum dolor sit amet, an duo lorem minim. Qualisque dissentias vix ei, vel inani elitr ad. Ridens possit euripidis at has. Stet fastidii te mel. Qui putant explicari te. Perpetua sententiae id vis, et qui eius decore, alterum aliquando id vel.
+                        <p class="footer_p">Lorem ipsum dolor sit amet, an duo lorem minim. Qualisque dissentias vix ei, vel inani elitr ad. Ridens possit euripidis at has. Stet fastidii te mel. Qui putant explicari te. Perpetua sententiae id vis, et qui eius decore, alterum aliquando id vel.
                         Utinam vivendum reformidans nam id.
                         </p>
 

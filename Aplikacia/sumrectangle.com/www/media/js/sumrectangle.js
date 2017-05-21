@@ -46,6 +46,14 @@ function scrollNav() {
         });
     }());
 }
+
+function flashMsg($type,$msg) {
+    $( "<div class='flash "+$type+"' >"+$msg+"</div>" ).insertAfter( "header" );
+}
+
+
+
+
 // Game//
 var box=[];
 var dict={};
@@ -131,6 +139,9 @@ function removeItem(ref) {
         alert(error ? "Uh oh!" : "Success!");
     });
 }
+function getURLParameter(name) {
+    return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search) || [null, ''])[1].replace(/\+/g, '%20')) || null;
+}
 
 function getCookie(cname) {
     var name = cname + "=";
@@ -161,5 +172,4 @@ function initFirebase() {
 $( document ).ready(function() {
     scrollNav();
     initFirebase();
-
 });
