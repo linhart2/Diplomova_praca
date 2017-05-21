@@ -2,37 +2,37 @@
  * Created by Lingo on 29/04/2017.
  */
 function showExams() {
-    var resultRef = firebase.database().ref('exams/'+getCookie("teacherID")+"/");
+    $("h1.examname").empty().append(getURLParameter('name'));
+    var resultRef = firebase.database().ref('exams/'+getCookie("teacherID")+"/"+getURLParameter('pid')+"/");
     resultRef.on('child_added', function(data) {
-        $("<li id="+data.key+"><a class='open'>" + data.val().examsName + "</a><a class='close' ><i class='fa fa-window-close-o' aria-hidden=true></i></a></li>").appendTo(".GroupList");
-        $("a.close").click({param1: data.key}, deleteExam);
-        $("a.open").click({param1: data.key}, openExam);
+        if(data.key !== 'examsName'){
+            $("<li id="+data.key+"><a href='openexam/?pid="+getURLParameter('pid')+"&name="+data.key+"' class='open'>" + data.key + "</a><a href='editexam/?pid="+getURLParameter('pid')+"&name="+data.key+"' class='edit'><i class='fa fa-pencil-square-o' aria-hidden='true'></i></a><a class='close "+data.key+"' ><i class='fa fa-window-close-o' aria-hidden=true></i></a></li>").appendTo(".GroupList");
+            $("a."+data.key).click({param1: data.key}, deleteExam);
+        }
     });
-}
-function openExam($examName) {
-    $(".GroupList").empty();
-    var resultRef = firebase.database().ref('exams/'+getCookie("teacherID")+"/"+$examName.data.param1+"/");
-    resultRef.once('value', function(data) {
-        data.forEach(function (snapshot) {
-            console.log(snapshot.key+" "+snapshot.val());
-        })
-        $("<li><a>" + data.key + "</a><a class='close' onclick=return PopupAlert('studenta')><i class='fa fa-window-close-o' aria-hidden=true></i></a><a class='edit' ><i class='fa fa-pencil-square-o' aria-hidden=true></i></a></li>").appendTo(".GroupList");
-    });
-
 }
 
 function deleteExam($key) {
-    if( PopupAlert("cvicenie ?") ) {
-        var ref = firebase.database().ref('exams/'+getCookie("teacherID")+"/"+$key.data.param1);
-        ref.remove(function(error) {
-          alert(error ? "Uh oh!" : "Success!");
-          $("#"+$key.data.param1).remove();
+    if( PopupAlert("priklad ?") ) {
+        var ref = firebase.database().ref('exams/'+getCookie("teacherID")+"/"+getURLParameter('pid'));
+        ref.once('value',function (data) {
+           if(data.numChildren() <= 2){
+               var ref = firebase.database().ref('exams/'+getCookie("teacherID")+"/"+getURLParameter('pid'));
+               ref.remove(function(error) {
+                   $("#"+$key.data.param1).remove();
+               });
+               window.location.replace("../../application/showexams/");
+               flashMsg("success","Priklad bol odstraneny");
+           }
+           else{
+               var ref = firebase.database().ref('exams/'+getCookie("teacherID")+"/"+getURLParameter('pid')+"/"+$key.data.param1);
+               ref.remove(function(error) {
+                   $("#"+$key.data.param1).remove();
+               });
+               flashMsg("success","Priklad bol odstraneny");
+           }
         });
     }
-}
-
-function editExam() {
-    console.log("ssss");
 }
 
 $( document ).ready(function() {

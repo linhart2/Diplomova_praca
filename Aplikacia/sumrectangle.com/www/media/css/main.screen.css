@@ -64,6 +64,32 @@ body{
     background-position: center;
     background-attachment: fixed;
 }
+html,body{
+    height: 100%;
+}
+#page {
+    min-height: 100%;
+    position: relative;
+
+}
+.flash{
+    margin-bottom: 20px;
+    background-color: lightskyblue;
+    color: white;
+    margin-top: 1px;
+    text-align: center;
+    font-size: 18px;
+}
+.info{
+    background-color: lightskyblue;
+}
+.success{
+    background-color: #228822;
+}
+.error{
+    background-color: red;
+}
+
 .title-container{
     text-align: center;
     padding: 2% 0;
@@ -168,19 +194,46 @@ ul.GroupList li a.edit:hover{
     color: white;
     opacity: 1;
 }
+ul.GroupList li label{
+    cursor: pointer;
+    display: block;
+    color: black;
+    padding: 12px 20px 12px 20px;
+    margin: 0px;
+    font-weight: normal;
+}
+ul.GroupList li label input{
+    color: black;
+    margin-right: 20px;
+}
+.footer_p{
+    padding-bottom: 80px;
+}
 .footer {
+    position: absolute;
+    bottom: 0px;
     width: 100%;
     height: 60px;
     background-color: #222;
     display: flex;
     align-items: center;
 }
+
 .text-muted {
     color: #9d9d9d;
     display: flex;
     justify-content: center;
 }
 
+.modal-content {
+    background: url(../img/gradient.png);
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+.end {
+    padding-bottom: 80px;
+}
 
 
 

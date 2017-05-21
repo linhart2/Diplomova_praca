@@ -23,9 +23,14 @@ class ApplicationPresenter extends Nette\Application\UI\Presenter
 
     public function renderShowclass()
     {
-        setcookie("teacherID", $this->getUser()->getId());
-        $this->template->posts = $this->databaseConnect->getClasses();
+        if (!$this->getUser()->isLoggedIn()) {
+            $this->redirect('Sign:in');
+        }else{
+            setcookie("teacherID", $this->getUser()->getId());
+            $this->template->posts = $this->databaseConnect->getClasses();
+        }
     }
+
     protected function createComponentClassForm() {
         $form = new Form;
         $form->addText('class_name', 'Meno triedy')
@@ -49,7 +54,7 @@ class ApplicationPresenter extends Nette\Application\UI\Presenter
             $this->flashMessage('Trieda bola pridana!', 'success');
             $this->redirect('Application:showclass');
         }else{
-            $this->flashMessage('Niekde sa to pokazilo!', 'fail');
+            $this->flashMessage('Niekde sa to pokazilo!', 'error');
         }
     }
     public function actionEditclass($classId)
@@ -64,23 +69,82 @@ class ApplicationPresenter extends Nette\Application\UI\Presenter
     {
         $post = $this->databaseConnect->removeClass($classId);
         if($post){
-            $this->flashMessage('Trieda bola odstranena!', 'success');
+            $this->flashMessage('Trieda bola odstranena!', 'info');
             $this->redirect('Application:showclass');
+        }
+    }
+    public function renderAddclass()
+    {
+        if (!$this->getUser()->isLoggedIn()) {
+            $this->redirect('Sign:in');
+        }else{
+        }
+    }
+    public function renderAddexam()
+    {
+        if (!$this->getUser()->isLoggedIn()) {
+            $this->redirect('Sign:in');
+        }else{
+        }
+    }
+    public function renderEditclass()
+    {
+        if (!$this->getUser()->isLoggedIn()) {
+            $this->redirect('Sign:in');
+        }else{
+        }
+    }
+    public function renderEditexam()
+    {
+        if (!$this->getUser()->isLoggedIn()) {
+            $this->redirect('Sign:in');
+        }else{
+        }
+    }
+    public function renderOpenexam()
+    {
+        if (!$this->getUser()->isLoggedIn()) {
+            $this->redirect('Sign:in');
+        }else{
+        }
+    }
+
+    public function renderShowexam()
+    {
+        if (!$this->getUser()->isLoggedIn()) {
+            $this->redirect('Sign:in');
+        }else{
+        }
+    }
+    public function renderShowexams()
+    {
+        if (!$this->getUser()->isLoggedIn()) {
+            $this->redirect('Sign:in');
+        }else{
         }
     }
 
 
+
     public function renderShowstudent($classId,$className)
     {
-        $this->session->classId = $this->getParameter('classId');
-        $this->template->className = $className;
-        $this->template->posts = $this->databaseConnect->getStudentIntoClass($classId);
+        if (!$this->getUser()->isLoggedIn()) {
+            $this->redirect('Sign:in');
+        }else{
+            $this->session->classId = $this->getParameter('classId');
+            $this->template->className = $className;
+            $this->template->posts = $this->databaseConnect->getStudentIntoClass($classId);
+        }
     }
     public function renderOpenstudent($studentId, $studentFirstName, $studentLastName)
     {
-        $this->template->studentFirstName = $studentFirstName;
-        $this->template->studentLastName = $studentLastName;
-        $this->template->posts = $this->databaseConnect->getStudentIntoClass($studentId);
+        if (!$this->getUser()->isLoggedIn()) {
+            $this->redirect('Sign:in');
+        }else{
+            $this->template->studentFirstName = $studentFirstName;
+            $this->template->studentLastName = $studentLastName;
+            $this->template->posts = $this->databaseConnect->getStudentIntoClass($studentId);
+        }
     }
     public function actionDeletestudent($studentId)
     {
