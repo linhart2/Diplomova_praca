@@ -73,6 +73,57 @@ class ApplicationPresenter extends Nette\Application\UI\Presenter
             $this->redirect('Application:showclass');
         }
     }
+    public function renderAddclass()
+    {
+        if (!$this->getUser()->isLoggedIn()) {
+            $this->redirect('Sign:in');
+        }else{
+        }
+    }
+    public function renderAddexam()
+    {
+        if (!$this->getUser()->isLoggedIn()) {
+            $this->redirect('Sign:in');
+        }else{
+        }
+    }
+    public function renderEditclass()
+    {
+        if (!$this->getUser()->isLoggedIn()) {
+            $this->redirect('Sign:in');
+        }else{
+        }
+    }
+    public function renderEditexam()
+    {
+        if (!$this->getUser()->isLoggedIn()) {
+            $this->redirect('Sign:in');
+        }else{
+        }
+    }
+    public function renderOpenexam()
+    {
+        if (!$this->getUser()->isLoggedIn()) {
+            $this->redirect('Sign:in');
+        }else{
+        }
+    }
+
+    public function renderShowexam()
+    {
+        if (!$this->getUser()->isLoggedIn()) {
+            $this->redirect('Sign:in');
+        }else{
+        }
+    }
+    public function renderShowexams()
+    {
+        if (!$this->getUser()->isLoggedIn()) {
+            $this->redirect('Sign:in');
+        }else{
+        }
+    }
+
 
 
     public function renderShowstudent($classId,$className)
