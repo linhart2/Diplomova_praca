@@ -26,20 +26,33 @@
         <div class="container show-classes footer_p">
             <div class="row">
                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                    <ul class="GroupList">
-                        <li n:foreach="$posts as $post" class="post">
-                            <div class="dropdown">
-                                <a n:href="showstudent $post->class_id, $post->class_name" class="dropdown-toggle">{$post->class_name}</a>
-                                <div class="dropdown-content">
-                                    <a class="pridaj_ulohu" id="{$post->class_id}" name="{$post->class_name}" data-toggle="modal" data-target="#pridajUlohu">Pridaj ulohu</a>
-                                    <a class="zobraz_ulohy" id="{$post->class_id}" name="{$post->class_name}" data-toggle="modal" data-target="#zobrazUlohy">Zobraz ulohy</a>
-                                    <a disabled="true">Zobraz statistiky</a>
+                    <div class="all_classes">
+                        <div n:foreach="$posts as $post" class="MainBox">
+                            <a class="ImageBox" n:href="showstudent $post->class_id, $post->class_name">
+                                <div class="c_name">
+                                    {$post->class_name}
                                 </div>
+                            </a>
+                            <div class="ButtonBox1">
+                                <a class="pridaj_ulohu pajpa" id="{$post->class_id}" name="{$post->class_name}" data-toggle="modal" data-target="#pridajUlohu">Pridaj ulohu</a>
+                                <a class="zobraz_ulohy pajpa" id="{$post->class_id}" name="{$post->class_name}" data-toggle="modal" data-target="#zobrazUlohy">Zobraz ulohy</a>
+                                <a disabled="true">Zobraz statistiky</a>
                             </div>
-                            <a class='edit' n:href="editclass $post->class_id" ><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
-                            <a class='close' onclick="return PopupAlert('triedu')" n:href="deleteclass $post->class_id"><i class='fa fa-window-close-o' aria-hidden=true></i></a>
-                        </li>
-                    </ul>
+                            <div class="ButtonBox2">
+                                <a class='edit' n:href="editclass $post->class_id" ><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
+                                <a class='close' onclick="return PopupAlert('triedu')" n:href="deleteclass $post->class_id"><i class='fa fa-window-close-o' aria-hidden=true></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <div class="AddClass">
+                        <a n:href="Application:addclass">
+                            <i class="fa fa-plus-circle" aria-hidden="true"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
 
