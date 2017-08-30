@@ -8,7 +8,6 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using System.Linq;
 using Firebase.Database;
-using SimpleJSON;
 
 public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
 {
@@ -51,8 +50,8 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
 		CreateArrayExam (table);
         draw();
 		slp.Load (lvl);
-		progressBar.slider.value = slp.LoadSliderValue ();
-		zobrazSlider = slp.LoadShowSlider();
+		progressBar.slider.value = slp.progress;
+		zobrazSlider = slp.zobraz;
         gratulation.enabled = false;
         nespravne.enabled = false;
         unlock_level.enabled = false;        
@@ -60,8 +59,8 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
         progressBar.slider.minValue = 0f;
         progressBar.slider.value = 0f;
         slp.Load(lvl);
-		progressBar.slider.value = slp.LoadSliderValue ();
-		zobrazSlider = slp.LoadShowSlider();
+		progressBar.slider.value = slp.progress;
+		zobrazSlider = slp.zobraz;
         StartFillingUpProgressBar();
         HasChanged();
 

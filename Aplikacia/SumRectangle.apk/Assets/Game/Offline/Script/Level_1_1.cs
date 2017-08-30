@@ -16,8 +16,6 @@ public class Level_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
     public static List<int> table;
     string x = "Panel1_";
     GameObject[] slots;  
-    
-
     [SerializeField]
     public Canvas gratulation;      //- object gratulacia
     public Canvas nespravne;        //- object nespravne
@@ -25,19 +23,24 @@ public class Level_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
     public CustomProgressBar progressBar; //- object progress bar
     bool isFillingProgressBar;            //- I dont know                  
     public int lvl;                       //- Level
-    bool zobraz = true;                   //- I dont know  
+    bool zobraz;                   //- zobrazi progressBar v pripade ze nieje splneny pocet uloh  
     public Transform[] slots_control;     //- panel slotov ktore sa kontroluju ci nenastali zmeny
 
     Generator_uloh priklad;
     Kontrola skontroluj;
 
+	SaveLoadProgress slp;
+
     void Start () {
-        reset = reset.GetComponent<Button>();
+		slp = new SaveLoadProgress ();
+		reset = reset.GetComponent<Button>();
         skontroluj = new Kontrola(2);
         priklad = new Generator_uloh(lvl);
         table = priklad.get_array(3);        
         draw();
-        Load();
+		slp.Load(lvl);
+		progressBar.slider.value = slp.progress;
+		zobraz = slp.zobraz;
         gratulation = gratulation.GetComponent<Canvas>();
         gratulation.enabled = false;
         nespravne = nespravne.GetComponent<Canvas>();
@@ -47,7 +50,9 @@ public class Level_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
         progressBar.slider.maxValue = 10f;
         progressBar.slider.minValue = 0f;
         progressBar.slider.value = 0f;
-        Load();
+		slp.Load(lvl);
+		progressBar.slider.value = slp.progress;
+		zobraz = slp.zobraz;
         StartFillingUpProgressBar();
         HasChanged();
     }    
@@ -136,13 +141,13 @@ public class Level_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
                 {
                     zobraz = false;
                     show_unlock();
-                    SaveLock();
-                    Save();
+					slp.SaveLock(lvl);
+					slp.Save(lvl,zobraz,progressBar.slider.value);
                 }
                 else
                 {
                     congrats_show();
-                    Save();
+					slp.Save(lvl,zobraz,progressBar.slider.value);
                 }
             }
             else { nespravne_show(); }
@@ -191,46 +196,7 @@ public class Level_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
             Restart();
     }
 
-    public void Save()
-    {
-        BinaryFormatter bf = new BinaryFormatter();
-        FileStream file = File.Create(Application.persistentDataPath + "/progress" + lvl + ".dat");
-
-
-        Progress data = new Progress();
-        data.progr = progressBar.slider.value;
-        data.zobrazenie = zobraz;
-
-        bf.Serialize(file, data);
-        file.Close();
-    }
-
-    public void SaveLock()
-    {
-        BinaryFormatter bf = new BinaryFormatter();
-        FileStream file = File.Create(Application.persistentDataPath + "/lock.dat");
-
-        Locks data = new Locks();
-        data.locked = lvl + 1;
-
-        bf.Serialize(file, data);
-        file.Close();
-    }
-
-    public void Load()
-    {
-        if (File.Exists(Application.persistentDataPath + "/progress" + lvl + ".dat"))
-        {
-            BinaryFormatter bf = new BinaryFormatter();
-            FileStream file = File.Open(Application.persistentDataPath + "/progress" + lvl + ".dat", FileMode.Open);
-            Progress data = (Progress)bf.Deserialize(file);
-            file.Close();
-            //Debug.Log(Application.persistentDataPath);
-
-            progressBar.slider.value = data.progr;
-            zobraz = data.zobrazenie;
-        }
-    }
+    
 }
 
 namespace UnityEngine.EventSystems

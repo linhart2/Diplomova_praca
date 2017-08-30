@@ -25,12 +25,8 @@ public class Lock : MonoBehaviour {
         lock4 = lock4.GetComponent<Canvas>();
         lock4.enabled = false;
         lock4.enabled = true;
-		locked(slp.LoadLockValue());
-        
-
+		locked(slp.locks);
     }
-
-    
 
     public void locked(int pokrok)
     {
@@ -56,23 +52,21 @@ public class Lock : MonoBehaviour {
 
 class SaveLoadProgress{
 
-	int locks;
-	float progress;
-	bool zobraz;
+	public int locks{ get; set;}
+	public float progress{ get; set;}
+	public bool zobraz{ get; set;}
 
 	public SaveLoadProgress(){
+		zobraz = true;
 	}
 
 	public void Save(int lvl, bool zobraz, float progressBarvalue)
 	{
 		BinaryFormatter bf = new BinaryFormatter();
 		FileStream file = File.Create(Application.persistentDataPath + "/progress" + lvl + ".dat");
-
-
 		Progress data = new Progress();
 		data.progr = progressBarvalue;
 		data.zobrazenie = zobraz;
-
 		bf.Serialize(file, data);
 		file.Close();
 	}
@@ -81,10 +75,8 @@ class SaveLoadProgress{
 	{
 		BinaryFormatter bf = new BinaryFormatter();
 		FileStream file = File.Create(Application.persistentDataPath + "/lock.dat");
-
 		Locks data = new Locks();
 		data.locked = lvl + 1;
-
 		bf.Serialize(file, data);
 		file.Close();
 	}
@@ -113,17 +105,6 @@ class SaveLoadProgress{
 			locks = data.locked;
 		}
 	}
-
-	public float LoadSliderValue(){
-		return progress;
-	}
-	public bool LoadShowSlider(){
-		return zobraz;
-	}
-	public int LoadLockValue(){
-		return locks;
-	}
-
 }
 
 
