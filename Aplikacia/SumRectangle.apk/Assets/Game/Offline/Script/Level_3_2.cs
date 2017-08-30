@@ -25,7 +25,7 @@ public class Level_3_2 : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
     public CustomProgressBar progressBar; //- object progress bar
     bool isFillingProgressBar;            //- I dont know                  
     public int lvl;                       //- Level
-    bool zobraz = true;                   //- I dont know  
+	bool zobraz;
     public Transform[] slots_control;     //- panel slotov ktore sa kontroluju ci nenastali zmeny
     public int pom_suc0;
     public int pom_suc1;               //- kontrolny string 
@@ -42,8 +42,8 @@ public class Level_3_2 : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
         generator_uloh();        
         draw();
 		slp.Load (lvl);
-		progressBar.slider.value = slp.LoadSliderValue ();
-		zobraz = slp.LoadShowSlider();
+		progressBar.slider.value = slp.progress;
+		zobraz = slp.zobraz;
         gratulation = gratulation.GetComponent<Canvas>();
         gratulation.enabled = false;
         nespravne = nespravne.GetComponent<Canvas>();
@@ -54,8 +54,8 @@ public class Level_3_2 : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
         progressBar.slider.minValue = 0f;
         progressBar.slider.value = 0f;
 		slp.Load (lvl);
-		progressBar.slider.value = slp.LoadSliderValue ();
-		zobraz = slp.LoadShowSlider();
+		progressBar.slider.value = slp.progress;
+		zobraz = slp.zobraz;
         StartFillingUpProgressBar();
         HasChanged();
     }

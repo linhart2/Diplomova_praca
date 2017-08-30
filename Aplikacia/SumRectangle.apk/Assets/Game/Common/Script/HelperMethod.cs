@@ -29,7 +29,6 @@ public class HelperMethod : MonoBehaviour {
 		string[] val = value1.Split (',');
 		int value = Random.RandomRange(System.Convert.ToInt32 (val [0]), System.Convert.ToInt32 (val [1]));
 		Application.LoadLevel (value);
-
 	}
 
 	public void Show_question()

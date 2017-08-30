@@ -20,7 +20,7 @@ public class Lock_Edit : MonoBehaviour {
         lock3 = lock3.GetComponent<Canvas>();
         lock3.enabled = false;
         lock3.enabled = true;        
-		locked(slp.LoadLockValue());
+		locked(slp.locks);
 
 
     }
