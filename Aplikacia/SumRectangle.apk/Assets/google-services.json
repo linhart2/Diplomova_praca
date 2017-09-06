@@ -40,6 +40,13 @@
           "status": 2,
           "other_platform_oauth_client": [
             {
+              "client_id": "80041684698-rbm5lh60mlpcmugf259q5kt53tsg0a8c.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.daniel.rectangle"
+              }
+            },
+            {
               "client_id": "80041684698-hjbt8hej3gemd2vcmbcgn1ulfbngugk5.apps.googleusercontent.com",
               "client_type": 3
             }

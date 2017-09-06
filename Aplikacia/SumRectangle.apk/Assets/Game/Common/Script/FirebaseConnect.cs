@@ -13,9 +13,9 @@ public class FirebaseCommunication {
 		FirebaseApp.DefaultInstance.SetEditorDatabaseUrl("https://sumrectangle.firebaseio.com/");
 		mDatabaseRef = FirebaseDatabase.DefaultInstance.RootReference;
 
-		FirebaseDatabase.DefaultInstance
+		/*FirebaseDatabase.DefaultInstance
 			.GetReference("/Class_ID/member/email/example/result/")
-			.ValueChanged += HandleValueChanged;
+			.ValueChanged += HandleValueChanged;*/
 	}
 
 	public void CreateNewClass(string class_id, string name) {
