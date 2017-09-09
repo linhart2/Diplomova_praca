@@ -23,7 +23,7 @@ public class Level_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
     public CustomProgressBar progressBar; //- object progress bar
     bool isFillingProgressBar;            //- I dont know                  
     public int lvl;                       //- Level
-    bool zobraz;                   //- zobrazi progressBar v pripade ze nieje splneny pocet uloh  
+    bool zobraz = true;                   //- zobrazi progressBar v pripade ze nieje splneny pocet uloh  
     public Transform[] slots_control;     //- panel slotov ktore sa kontroluju ci nenastali zmeny
 
     Generator_uloh priklad;
