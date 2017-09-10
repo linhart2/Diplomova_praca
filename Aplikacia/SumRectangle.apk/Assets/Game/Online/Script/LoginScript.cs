@@ -18,7 +18,6 @@ public class LoginScript : MonoBehaviour {
 		btnRegistration.onClick.AddListener (delegate {
 			RegisterNewAccount (txtLoginName.text, txtLoginPassworld.text);
 		});
-		//RegisterNewAccount("lingo3993@azet.sk","Test1234");
 	}
 
 	public void RegisterNewAccount(string email, string password) {
