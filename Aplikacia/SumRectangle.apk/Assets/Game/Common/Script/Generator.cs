@@ -44,17 +44,17 @@ public class Generator_uloh
             this.pole[5].right = this.pole[9];
         }
 
-        this.pom_suc0 = Random.RandomRange(1, 3);
-        this.pom_suc1 = Random.RandomRange(3, 6);
-        this.pom_suc2 = Random.RandomRange(6, 10);
+        this.pom_suc0 = Random.Range(1, 3);
+        this.pom_suc1 = Random.Range(3, 6);
+        this.pom_suc2 = Random.Range(6, 10);
 
         if (this.level == 1)
         {
             bool s = true;
             while (s)
             {
-                this.pole[2].data = Random.RandomRange(1, 10);
-                this.pole[1].data = Random.RandomRange(1, 10);                
+                this.pole[2].data = Random.Range(1, 10);
+                this.pole[1].data = Random.Range(1, 10);                
                 this.pole[0].data = this.pole[1].data + this.pole[2].data;
                 if (this.pole[0].data <= 10)
                 {
@@ -68,9 +68,9 @@ public class Generator_uloh
             bool s=true;
             while (s)
             {
-                this.pole[5].data = Random.RandomRange(1, 12);
-                this.pole[4].data = Random.RandomRange(1, 12);
-                this.pole[3].data = Random.RandomRange(1, 12);
+                this.pole[5].data = Random.Range(1, 12);
+                this.pole[4].data = Random.Range(1, 12);
+                this.pole[3].data = Random.Range(1, 12);
                 this.pole[2].data = this.pole[5].data + this.pole[4].data;
                 this.pole[1].data = this.pole[4].data + this.pole[3].data;
                 this.pole[0].data = this.pole[2].data + this.pole[1].data;                
@@ -82,13 +82,13 @@ public class Generator_uloh
         }
 
         if (this.level == 3) { 
-        this.pole[this.pom_suc0].data = Random.RandomRange(13, 21);
+        this.pole[this.pom_suc0].data = Random.Range(13, 21);
         this.pole[this.pom_suc1].data = 25 - this.pole[this.pom_suc0].data;
         }
         if (this.level >= 4) { 
-            this.pole[this.pom_suc0].data = Random.RandomRange(23, 35);
+            this.pole[this.pom_suc0].data = Random.Range(23, 35);
             this.pole[this.pom_suc1].data = 45 - this.pole[this.pom_suc0].data;
-            this.pole[this.pom_suc2].data = Random.RandomRange(1, 6);
+            this.pole[this.pom_suc2].data = Random.Range(1, 6);
         }
                 
         if (this.level > 2)

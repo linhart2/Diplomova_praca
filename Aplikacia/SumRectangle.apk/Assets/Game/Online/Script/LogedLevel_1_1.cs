@@ -63,7 +63,6 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
 		zobrazSlider = slp.zobraz;
         StartFillingUpProgressBar();
         HasChanged();
-
     }
 	void HandleChildChanged(object sender, ChildChangedEventArgs args) {
 		if (args.DatabaseError != null) {

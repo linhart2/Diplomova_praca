@@ -12,18 +12,6 @@ public class FirebaseCommunication {
 	public FirebaseCommunication(){
 		FirebaseApp.DefaultInstance.SetEditorDatabaseUrl("https://sumrectangle.firebaseio.com/");
 		mDatabaseRef = FirebaseDatabase.DefaultInstance.RootReference;
-
-		/*FirebaseDatabase.DefaultInstance
-			.GetReference("/Class_ID/member/email/example/result/")
-			.ValueChanged += HandleValueChanged;*/
-	}
-
-	public void CreateNewClass(string class_id, string name) {
-		/*
-		mDatabaseRef.Child(class_id).Child("class_name").SetValueAsync(name);
-		mDatabaseRef.Child (class_id).Child ("member").Child ("email").Child ("student_name").SetValueAsync ("danielLinhart");
-		mDatabaseRef.Child (class_id).Child ("member").Child ("email").Child ("example").Child("result").SetValueAsync ("000000000");
-		mDatabaseRef.Child (class_id).Child ("member").Child ("email").Child ("example").Child("result_bool").SetValueAsync ("true");*/
 	}
 
 	public void UpdateResult(Dictionary<string,string> ex) {

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using Firebase.Auth;
 using System;
 
 public class LoginScript : MonoBehaviour {
@@ -10,25 +9,32 @@ public class LoginScript : MonoBehaviour {
 	public Button btnLogin;
 	public Button btnRegistration;
 	public InputField txtLoginName;
-	public InputField txtLoginPassworld; 
+	public InputField txtLoginPassworld;
+	public Firebase.Auth.FirebaseAuth auth;
+	public Firebase.Auth.FirebaseUser user;
 
 	void Start () {
-		Firebase.Auth.FirebaseAuth auth = Firebase.Auth.FirebaseAuth.DefaultInstance;
+		auth = Firebase.Auth.FirebaseAuth.DefaultInstance;
+		RegisterNewAccount("lingo3993@azet.sk","Test1234");
+	}
 
-		auth.CreateUserWithEmailAndPasswordAsync ("danko.linhart@gmail.com", "123456").ContinueWith (task => {
-			if(task.IsCanceled){
-				Debug.Log("Canceled");
+	public void RegisterNewAccount(string email, string password) {
+		auth.CreateUserWithEmailAndPasswordAsync(email, password).ContinueWith(task => {
+			if (task.IsCanceled) {
+				Debug.LogError("SignInWithEmailAndPasswordAsync was canceled.");
 				return;
 			}
-			if(task.IsFaulted){
-				Debug.Log("faulted");
+			if (task.IsFaulted) {
+				Debug.LogError("SignInWithEmailAndPasswordAsync encountered an error: " + task.Exception);
 				return;
 			}
 			Firebase.Auth.FirebaseUser newUser = task.Result;
-			Debug.Log(newUser.UserId);
-			if(task.IsCompleted){
-				Debug.Log("Completed");
-			}
+			Debug.LogFormat("User signed in successfully: {0} ({1})",
+				newUser.DisplayName, newUser.UserId);
 		});
 	}
+
+
+
+
 }
