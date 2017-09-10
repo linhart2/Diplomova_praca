@@ -15,7 +15,10 @@ public class LoginScript : MonoBehaviour {
 
 	void Start () {
 		auth = Firebase.Auth.FirebaseAuth.DefaultInstance;
-		RegisterNewAccount("lingo3993@azet.sk","Test1234");
+		btnRegistration.onClick.AddListener (delegate {
+			RegisterNewAccount (txtLoginName.text, txtLoginPassworld.text);
+		});
+		//RegisterNewAccount("lingo3993@azet.sk","Test1234");
 	}
 
 	public void RegisterNewAccount(string email, string password) {
@@ -31,6 +34,7 @@ public class LoginScript : MonoBehaviour {
 			Firebase.Auth.FirebaseUser newUser = task.Result;
 			Debug.LogFormat("User signed in successfully: {0} ({1})",
 				newUser.DisplayName, newUser.UserId);
+			Application.LoadLevel(19); 
 		});
 	}
 
