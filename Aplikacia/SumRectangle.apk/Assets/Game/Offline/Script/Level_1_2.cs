@@ -23,7 +23,7 @@ public class Level_1_2 : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
     public CustomProgressBar progressBar; //- object progress bar
     bool isFillingProgressBar;            
     public int lvl;                       
-    bool zobraz;                   
+	bool zobraz = true;                   
     public Transform[] slots_control;     //- panel slotov ktore sa kontroluju ci nenastali zmeny
     Generator_uloh priklad;
     Kontrola skontroluj;
