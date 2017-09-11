@@ -15,7 +15,7 @@ public class LoginScript : MonoBehaviour {
 
 	void Start () {
 		auth = Firebase.Auth.FirebaseAuth.DefaultInstance;
-		btnRegistration.onClick.AddListener (delegate {
+		btnLogin.onClick.AddListener (delegate {
 			RegisterNewAccount (txtLoginName.text, txtLoginPassworld.text);
 		});
 	}
