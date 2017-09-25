@@ -28,12 +28,36 @@ public class FirebaseCommunicationLibrary{
 				Firebase.Auth.FirebaseUser newUser = task.Result;
 				Debug.LogFormat("User signed in successfully: {0} ({1})",
 					newUser.DisplayName, newUser.UserId);
-				Application.LoadLevel(19); 	
+				//RegistrationSaveData(meno,priezvisko,email);
 			}
 		});
 	}
 
+	public void RegistrationSaveData(string meno,string priezvisko,string email, string userId ) {
+		
+	}
+
 	public void FirebaseDatabaseInit(){
 		
+	} 
+}
+
+public class Student
+{
+	public string firstName {
+		get;
+		set;
+	}
+	public string lastName {
+		get;
+		set;
+	}
+	public string email {
+		get;
+		set;
+	}
+	public string password {
+		get;
+		set;
 	}
 }
