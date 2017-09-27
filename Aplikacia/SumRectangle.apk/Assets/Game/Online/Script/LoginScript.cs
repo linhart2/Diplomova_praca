@@ -5,9 +5,10 @@ using UnityEngine.UI;
 using System;
 using System.Text.RegularExpressions;
 
-public class LoginScript : MonoBehaviour {
+public class LoginScript : MonoBehaviour
+{
 
-    FirebaseCommunicationLibrary fbC;
+	FirebaseCommunicationLibrary fbC;
 	public Button btnLogin;
 	public Button btnRegistration;
 	public InputField txtLoginName;
@@ -15,21 +16,23 @@ public class LoginScript : MonoBehaviour {
 	private Color red = new Color(1, 0, 0, 1);
 	private Color white = new Color(255, 255, 255, 1);
 
-	void Start () {
-        fbC = new FirebaseCommunicationLibrary();		
-		btnLogin.onClick.AddListener (delegate {
-			Login (txtLoginName.text, txtLoginPassworld.text);
+	void Start()
+	{
+		fbC = new FirebaseCommunicationLibrary();
+		btnLogin.onClick.AddListener(delegate {
+			Login(txtLoginName.text, txtLoginPassworld.text);
 		});
 	}
 
-	public void Login(string email, string password) {
+	public void Login(string email, string password)
+	{
 		setFieldColor(txtLoginName, white);
-        if (!IsValidEmail(txtLoginName.text))
+		if (!IsValidEmail(txtLoginName.text))
 		{
 			setFieldColor(txtLoginName, red);
 			return;
 		}
-        //fbC.Login(email,password, new LoadScene(19));
+		fbC.Login(email, password, new LoadScene(19));
 	}
 
 	private void setFieldColor(InputField name, Color color)

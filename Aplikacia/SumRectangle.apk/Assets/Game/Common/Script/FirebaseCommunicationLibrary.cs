@@ -1,79 +1,144 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 using Firebase;
 using Firebase.Database;
 using Firebase.Unity.Editor;
-using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class FirebaseCommunicationLibrary{
-	public Firebase.Auth.FirebaseAuth auth;
-    public DatabaseReference mDatabaseRef;
-    public ILoadScene scena;
+public class FirebaseCommunicationLibrary
+{
 
+	private Firebase.Auth.FirebaseAuth auth;
+	Firebase.Auth.FirebaseUser user;
+	private DatabaseReference mDatabaseRef;
+	private ILoadScene scena;
 
-	public FirebaseCommunicationLibrary(){
-		auth = FirebaseAuthInit ();
+	public FirebaseCommunicationLibrary()
+	{
+		auth = Firebase.Auth.FirebaseAuth.DefaultInstance;
 		FirebaseApp.DefaultInstance.SetEditorDatabaseUrl("https://sumrectangle.firebaseio.com/");
 		mDatabaseRef = FirebaseDatabase.DefaultInstance.RootReference;
+		//auth.StateChanged += AuthStateChanged;
+		//AuthStateChanged(this, null);
 	}
 
-	private Firebase.Auth.FirebaseAuth FirebaseAuthInit(){
-		return Firebase.Auth.FirebaseAuth.DefaultInstance;
-	}
+	/*void AuthStateChanged(object sender, System.EventArgs eventArgs)
+    {
+        if (auth.CurrentUser != user)
+        {
+            bool signedIn = user != auth.CurrentUser && auth.CurrentUser != null;
+            if (!signedIn && user != null)
+            {
+                Debug.Log("Signed out " + user.UserId);
+                SceneManager.LoadScene(18);
+            }
+            user = auth.CurrentUser;
+            if (signedIn)
+            {
+                Debug.Log("Signed in " + user.UserId);
+                SceneManager.LoadScene(19);
+            }
+        }
+    }
 
-    public void RegistrationNewAccount(string meno,string priezvisko,string email,string heslo,ILoadScene scena){
-        this.scena = scena;
-		auth.CreateUserWithEmailAndPasswordAsync(email, heslo).ContinueWith(task => {
-			if (task.IsCanceled) {
-				Debug.LogError("SignInWithEmailAndPasswordAsync was canceled.");
+    void OnDestroy()
+    {
+        auth.StateChanged -= AuthStateChanged;
+        auth = null;
+    }*/
+
+	public void RegistrationNewAccount(string meno, string priezvisko, string email, string heslo, string hesloAgain, ILoadScene scena)
+	{
+		this.scena = scena;
+		auth.CreateUserWithEmailAndPasswordAsync(email, heslo).ContinueWith(task =>
+		{
+			if (task.IsCanceled)
+			{
+				Debug.LogError("CreateUserWithEmailAndPasswordAsync was canceled.");
 				return;
 			}
-			if (task.IsFaulted) {
-				Debug.LogError("SignInWithEmailAndPasswordAsync encountered an error: " + task.Exception);
+			if (task.IsFaulted)
+			{
+				Debug.LogError("CreateUserWithEmailAndPasswordAsync encountered an error: " + task.Exception);
 				return;
 			}
-			if(task.IsCompleted){
+			if (task.IsCompleted)
+			{
 				Firebase.Auth.FirebaseUser newUser = task.Result;
-				Debug.LogFormat("User signed in successfully: {0} ({1})",
+				Debug.LogFormat("Firebase user created successfully: {0} ({1})",
 					newUser.DisplayName, newUser.UserId);
-                RegistrationSaveData(new Student(meno, priezvisko, email),newUser.UserId);
-                this.scena.LoadScene();
+				Student student = new Student(meno, priezvisko, email);
+				RegistrationSaveData(student, newUser.UserId);
+				this.scena.LoadScene();
 			}
 		});
 	}
 
-    public void RegistrationSaveData(Student student,string userId ) {
-        string json = JsonUtility.ToJson(student);
-		mDatabaseRef.Child("USERS").Child(userId).SetRawJsonValueAsync(json);
-		
+	public void Login(string email, string heslo, ILoadScene scena)
+	{
+		this.scena = scena;
+		Firebase.Auth.Credential credential =
+					Firebase.Auth.EmailAuthProvider.GetCredential(email, heslo);
+		auth.SignInWithCredentialAsync(credential).ContinueWith(task => {
+			if (task.IsCanceled)
+			{
+				Debug.LogError("SignInWithCredentialAsync was canceled.");
+				return;
+			}
+			if (task.IsFaulted)
+			{
+				Debug.LogError("SignInWithCredentialAsync encountered an error: " + task.Exception);
+				return;
+			}
+
+			Firebase.Auth.FirebaseUser newUser = task.Result;
+			Debug.LogFormat("User signed in successfully: {0} ({1})",
+				newUser.DisplayName, newUser.UserId);
+			this.scena.LoadScene();
+		});
 	}
+
+	private void RegistrationSaveData(Student student, string userId)
+	{
+		mDatabaseRef.Child("USERS").Child(userId).SetRawJsonValueAsync(JsonUtility.ToJson(student));
+	}
+
+
+
 }
+
+
 public interface ILoadScene
 {
-    void LoadScene();
+	void LoadScene();
 }
 
-public class LoadScene : ILoadScene{
-    public int scena;
-    public LoadScene(int scena){
-        this.scena = scena;
-    }
+class LoadScene : ILoadScene
+{
+	private int idScene;
 
-    void ILoadScene.LoadScene(){
-        SceneManager.LoadScene(this.scena);
-    }
+	public LoadScene(int idScene)
+	{
+		this.idScene = idScene;
+	}
+	void ILoadScene.LoadScene()
+	{
+		SceneManager.LoadScene(this.idScene);
+	}
 }
-
 
 public class Student
 {
-    string firstName;
-    string lastName;
-    string email;
-    public Student(string meno, string priezvisko, string email){
-        this.firstName = meno;
-        this.lastName = priezvisko;
-        this.email = email;
-    }
+	public string firstName;
+	public string lastName;
+	public string email;
+
+	public Student(string firstName, string lastName, string email)
+	{
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.email = email;
+
+	}
 }
