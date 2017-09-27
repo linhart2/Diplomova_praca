@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Text.RegularExpressions;
+using UnityEngine.SceneManagement;
 
 public class RegistrationFormScript : MonoBehaviour {
 
@@ -19,11 +20,7 @@ public class RegistrationFormScript : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		fbC = new FirebaseCommunicationLibrary ();
-		/*btnRegistrovat.onClick.AddListener (delegate {
-			fbC.RegistrationNewAccount(txtMeno.text,txtPriezvisko.text,txtEmail.text,txtHeslo.text,txtHesloAgain.text);
-		});
-		*/
+		fbC = new FirebaseCommunicationLibrary ();		
 		btnRegistrovat.onClick.AddListener (delegate {
 			registrovat();
 		});
@@ -51,9 +48,7 @@ public class RegistrationFormScript : MonoBehaviour {
 			setFieldColor (txtHesloAgain, red);
 			return;
 		}
-		fbC.RegistrationNewAccount (txtMeno.text, txtPriezvisko.text, txtEmail.text, txtHeslo.text, txtHesloAgain.text);
-		Application.LoadLevel(19);
-
+        fbC.RegistrationNewAccount(txtMeno.text, txtPriezvisko.text, txtEmail.text, txtHeslo.text, new LoadScene(19));
 	}
 
 	private void setFieldColor(InputField name, Color color){

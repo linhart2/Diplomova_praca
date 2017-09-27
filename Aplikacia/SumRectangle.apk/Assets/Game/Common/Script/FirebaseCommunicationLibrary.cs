@@ -1,20 +1,29 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Firebase;
+using Firebase.Database;
+using Firebase.Unity.Editor;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class FirebaseCommunicationLibrary{
 	public Firebase.Auth.FirebaseAuth auth;
-	public Firebase.Auth.FirebaseUser user;
+    public DatabaseReference mDatabaseRef;
+    public ILoadScene scena;
+
 
 	public FirebaseCommunicationLibrary(){
 		auth = FirebaseAuthInit ();
+		FirebaseApp.DefaultInstance.SetEditorDatabaseUrl("https://sumrectangle.firebaseio.com/");
+		mDatabaseRef = FirebaseDatabase.DefaultInstance.RootReference;
 	}
 
 	private Firebase.Auth.FirebaseAuth FirebaseAuthInit(){
 		return Firebase.Auth.FirebaseAuth.DefaultInstance;
 	}
 
-	public void RegistrationNewAccount(string meno,string priezvisko,string email,string heslo,string hesloAgain){
+    public void RegistrationNewAccount(string meno,string priezvisko,string email,string heslo,ILoadScene scena){
+        this.scena = scena;
 		auth.CreateUserWithEmailAndPasswordAsync(email, heslo).ContinueWith(task => {
 			if (task.IsCanceled) {
 				Debug.LogError("SignInWithEmailAndPasswordAsync was canceled.");
@@ -28,36 +37,43 @@ public class FirebaseCommunicationLibrary{
 				Firebase.Auth.FirebaseUser newUser = task.Result;
 				Debug.LogFormat("User signed in successfully: {0} ({1})",
 					newUser.DisplayName, newUser.UserId);
-				//RegistrationSaveData(meno,priezvisko,email);
+                RegistrationSaveData(new Student(meno, priezvisko, email),newUser.UserId);
+                this.scena.LoadScene();
 			}
 		});
 	}
 
-	public void RegistrationSaveData(string meno,string priezvisko,string email, string userId ) {
+    public void RegistrationSaveData(Student student,string userId ) {
+        string json = JsonUtility.ToJson(student);
+		mDatabaseRef.Child("USERS").Child(userId).SetRawJsonValueAsync(json);
 		
 	}
-
-	public void FirebaseDatabaseInit(){
-		
-	} 
 }
+public interface ILoadScene
+{
+    void LoadScene();
+}
+
+public class LoadScene : ILoadScene{
+    public int scena;
+    public LoadScene(int scena){
+        this.scena = scena;
+    }
+
+    void ILoadScene.LoadScene(){
+        SceneManager.LoadScene(this.scena);
+    }
+}
+
 
 public class Student
 {
-	public string firstName {
-		get;
-		set;
-	}
-	public string lastName {
-		get;
-		set;
-	}
-	public string email {
-		get;
-		set;
-	}
-	public string password {
-		get;
-		set;
-	}
+    string firstName;
+    string lastName;
+    string email;
+    public Student(string meno, string priezvisko, string email){
+        this.firstName = meno;
+        this.lastName = priezvisko;
+        this.email = email;
+    }
 }

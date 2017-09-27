@@ -3,41 +3,46 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System;
+using System.Text.RegularExpressions;
 
 public class LoginScript : MonoBehaviour {
 
+    FirebaseCommunicationLibrary fbC;
 	public Button btnLogin;
 	public Button btnRegistration;
 	public InputField txtLoginName;
 	public InputField txtLoginPassworld;
-	public Firebase.Auth.FirebaseAuth auth;
-	public Firebase.Auth.FirebaseUser user;
+	private Color red = new Color(1, 0, 0, 1);
+	private Color white = new Color(255, 255, 255, 1);
 
 	void Start () {
-		auth = Firebase.Auth.FirebaseAuth.DefaultInstance;
+        fbC = new FirebaseCommunicationLibrary();		
 		btnLogin.onClick.AddListener (delegate {
-			RegisterNewAccount (txtLoginName.text, txtLoginPassworld.text);
+			Login (txtLoginName.text, txtLoginPassworld.text);
 		});
 	}
 
-	public void RegisterNewAccount(string email, string password) {
-		auth.CreateUserWithEmailAndPasswordAsync(email, password).ContinueWith(task => {
-			if (task.IsCanceled) {
-				Debug.LogError("SignInWithEmailAndPasswordAsync was canceled.");
-				return;
-			}
-			if (task.IsFaulted) {
-				Debug.LogError("SignInWithEmailAndPasswordAsync encountered an error: " + task.Exception);
-				return;
-			}
-			Firebase.Auth.FirebaseUser newUser = task.Result;
-			Debug.LogFormat("User signed in successfully: {0} ({1})",
-				newUser.DisplayName, newUser.UserId);
-			Application.LoadLevel(19); 
-		});
+	public void Login(string email, string password) {
+		setFieldColor(txtLoginName, white);
+        if (!IsValidEmail(txtLoginName.text))
+		{
+			setFieldColor(txtLoginName, red);
+			return;
+		}
+        //fbC.Login(email,password, new LoadScene(19));
 	}
 
+	private void setFieldColor(InputField name, Color color)
+	{
+		ColorBlock cb = name.colors;
+		cb.normalColor = color;
+		cb.highlightedColor = color;
+		name.colors = cb;
+	}
 
-
+	private bool IsValidEmail(string strIn)
+	{
+		return Regex.IsMatch(strIn, @"^([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$");
+	}
 
 }
