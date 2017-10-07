@@ -5,6 +5,8 @@ using Firebase;
 using Firebase.Database;
 using Firebase.Unity.Editor;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+using System.Linq;
 
 public class FirebaseCommunicationLibrary
 {
@@ -13,13 +15,17 @@ public class FirebaseCommunicationLibrary
 	Firebase.Auth.FirebaseUser user;
 	private DatabaseReference mDatabaseRef;
 	private ILoadScene scena;
+    private ISetText txtField;
     private bool loggedUser = false;
+	private string Fname;
+	private string Lname;
+
 
 	public FirebaseCommunicationLibrary()
 	{
-		auth = Firebase.Auth.FirebaseAuth.DefaultInstance;
 		FirebaseApp.DefaultInstance.SetEditorDatabaseUrl("https://sumrectangle.firebaseio.com/");
 		mDatabaseRef = FirebaseDatabase.DefaultInstance.RootReference;
+		auth = Firebase.Auth.FirebaseAuth.DefaultInstance;	
 		auth.StateChanged += AuthStateChanged;
 		AuthStateChanged(this, null);
 	}
@@ -39,15 +45,17 @@ public class FirebaseCommunicationLibrary
             {
                 Debug.Log("Signed in " + user.UserId);
                 loggedUser = true;
-                this.GetUserData(auth.CurrentUser.UserId);
             }
         }
     }
 
-    void OnDestroy()
+    public void OnDestroy(ILoadScene scena)
     {
+        this.scena = scena;
         auth.StateChanged -= AuthStateChanged;
+        auth.SignOut();
         auth = null;
+        this.scena.LoadScene();
     }
 
 	public void RegistrationNewAccount(string meno, string priezvisko, string email, string heslo, string hesloAgain, ILoadScene scena)
@@ -106,30 +114,25 @@ public class FirebaseCommunicationLibrary
 		mDatabaseRef.Child("USERS").Child(userId).SetRawJsonValueAsync(JsonUtility.ToJson(student));
 	}
 
-	
-
-    private string inicialFname = "D";
-    private string inicialLname = "L";
-    private void GetUserData(string userId){
-        FirebaseDatabase.DefaultInstance
-                        .GetReference("/USERS/"+userId)
-            .GetValueAsync().ContinueWith(task => {
-                if (task.IsFaulted) {
-                    // Handle the error...
-                }
-                else if (task.IsCompleted) {
-                    DataSnapshot snapshot = task.Result;
-                if (snapshot.Key == "firstName"){
-                    inicialFname = snapshot.Value.ToString();
-                }else if(snapshot.Key == "lastName"){
-                    inicialLname = snapshot.Value.ToString();
-                }
-                }
-            });
-    }
+    public void GetUserData(ISetText txtField)
+	{
+        this.txtField = txtField;
+        string userId = auth.CurrentUser.UserId;
+        FirebaseDatabase.DefaultInstance.GetReference("/USERS/" + userId + "/" )
+                    .GetValueAsync().ContinueWith(task => {
+				if (task.IsFaulted){}
+				else if (task.IsCompleted)
+				{
+					DataSnapshot snapshot = task.Result;
+                    this.Fname = snapshot.Child("firstName").Value.ToString();
+                    this.Lname = snapshot.Child("lastName").Value.ToString();
+                    txtField.GetUserName(UserName);
+				}                     
+			});
+	}
 	public bool LoggedUser { get { return loggedUser; } }
-    public string InicialFName { get { return inicialFname; } }
-    public string InicialLName { get { return inicialLname; } }
+    private string UserName { get { return string.Format("{0} {1}",this.Fname,this.Lname); } }
+
 }
 
 
@@ -151,6 +154,22 @@ class LoadScene : ILoadScene
 		SceneManager.LoadScene(this.idScene);
 	}
 }
+public interface ISetText{
+    void GetUserName(string name);
+}
+
+class SetText : ISetText
+{
+    private Text field;
+    public SetText(Text field){
+        this.field = field;
+
+    }
+    public void GetUserName(string name){
+        field.text = string.Format("{0} {1}", field.text, name);
+    }
+}
+
 
 public class Student
 {
@@ -160,8 +179,8 @@ public class Student
 
 	public Student(string firstName, string lastName, string email)
 	{
-		this.firstName = firstName;
-		this.lastName = lastName;
+		this.firstName = firstName.First().ToString().ToUpper() + firstName.Substring(1);            
+		this.lastName = lastName.First().ToString().ToUpper() + lastName.Substring(1);
 		this.email = email;
 	}
 }

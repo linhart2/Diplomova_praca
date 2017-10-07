@@ -27,13 +27,13 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
     Generator_uloh priklad;
     Kontrola skontroluj;
 	SaveLoadProgress slp;
-	FirebaseCommunication f;
+    FirebaseConnect f;
 	CreateJson c;
 
     void Start () {
 		c = new CreateJson ();
 		slp = new SaveLoadProgress ();
-		f = new FirebaseCommunication ();
+		f = new FirebaseConnect ();
 		var refer = FirebaseDatabase.DefaultInstance
 			.GetReference("/Class_ID/member/email/example/result");
 
@@ -64,6 +64,7 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
         StartFillingUpProgressBar();
         HasChanged();
     }
+
 	void HandleChildChanged(object sender, ChildChangedEventArgs args) {
 		if (args.DatabaseError != null) {
 			Debug.LogError(args.DatabaseError.Message);

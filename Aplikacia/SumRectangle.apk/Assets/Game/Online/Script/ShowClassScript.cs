@@ -6,18 +6,16 @@ using UnityEngine.UI;
 public class ShowClassScript : MonoBehaviour {
 
 	FirebaseCommunicationLibrary fbC;
-    public Text txtShowInicialFirstName;
-    public Text txtShowInicialLastName;
-    public Button btnShowName;
+    public Text txtLoggedUser;
+    public Button btnOdhlasit;
 
 	void Start () {
 		fbC = new FirebaseCommunicationLibrary();
-        txtShowInicialFirstName.text = fbC.InicialFName;
-        txtShowInicialLastName.text = fbC.InicialLName;
+        fbC.GetUserData(new SetText(txtLoggedUser));
+        btnOdhlasit.onClick.AddListener(delegate {
+			fbC.OnDestroy(new LoadScene(17));
+		});
 	}
+
 	
-	// Update is called once per frame
-	void Update () {
-		
-	}
 }

@@ -5,11 +5,11 @@ using Firebase;
 using Firebase.Database;
 using Firebase.Unity.Editor;
 
-public class FirebaseCommunication {
+public class FirebaseConnect {
 	DatabaseReference mDatabaseRef;
 	public string JsonData;
 
-	public FirebaseCommunication(){
+	public FirebaseConnect(){
 		FirebaseApp.DefaultInstance.SetEditorDatabaseUrl("https://sumrectangle.firebaseio.com/");
 		mDatabaseRef = FirebaseDatabase.DefaultInstance.RootReference;
 	}
