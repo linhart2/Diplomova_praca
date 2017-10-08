@@ -28,13 +28,13 @@ public class Level_1_1Show : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
     Generator_uloh priklad;
     Kontrola skontroluj;
 	SaveLoadProgress slp;
-	FirebaseCommunication f;
+	FirebaseConnect f;
 	CreateJson c;
 
     void Start () {
 		c = new CreateJson ();
 		slp = new SaveLoadProgress ();
-		f = new FirebaseCommunication ();
+		f = new FirebaseConnect ();
 		FirebaseDatabase.DefaultInstance
 			.GetReference("/Class_ID/member/email/example/result/")
 			.ValueChanged += HandleValueChanged;

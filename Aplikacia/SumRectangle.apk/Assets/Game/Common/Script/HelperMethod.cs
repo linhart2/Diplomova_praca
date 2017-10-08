@@ -1,13 +1,18 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class HelperMethod : MonoBehaviour {
 
 	public Canvas quitMenu;
 	public Canvas question;
+    public Canvas loggedUser;
 	public Animator anim;
+    public Animator animLogedUser;
+
+
 
 	void Start () {
 		
@@ -17,18 +22,33 @@ public class HelperMethod : MonoBehaviour {
 		if (question != null)question.enabled = false;
 		if (anim != null)anim = question.GetComponent<Animator>();
 		if (anim != null)anim.enabled = false;
+		if (loggedUser != null) loggedUser = loggedUser.GetComponent<Canvas>();
+		if (loggedUser != null) loggedUser.enabled = false;
+		if (animLogedUser != null) animLogedUser = loggedUser.GetComponent<Animator>();
+		if (animLogedUser != null) animLogedUser.enabled = false;
+
 	}
 
 	public void SwitchScene(int value)
 	{
-		Application.LoadLevel(value); 
+        SceneManager.LoadScene(value);
 	}
 
 	public void StartLevel(string value1) //this function will be used on our Play button
 	{
 		string[] val = value1.Split (',');
-		int value = Random.RandomRange(System.Convert.ToInt32 (val [0]), System.Convert.ToInt32 (val [1]));
-		Application.LoadLevel (value);
+		int value = Random.Range(System.Convert.ToInt32 (val [0]), System.Convert.ToInt32 (val [1]));
+		SceneManager.LoadScene(value);
+	}
+
+    public void ShowLoggedUser(){
+		if (animLogedUser != null) animLogedUser.enabled = true;
+        loggedUser.enabled = true;
+    }
+	public void HideLoggedUser()
+	{
+		if (animLogedUser != null) animLogedUser.enabled = false;
+		loggedUser.enabled = false;
 	}
 
 	public void Show_question()
