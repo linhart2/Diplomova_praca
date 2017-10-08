@@ -15,10 +15,7 @@ public class FirebaseCommunicationLibrary
 	Firebase.Auth.FirebaseUser user;
 	private DatabaseReference mDatabaseRef;
 	private ILoadScene scena;
-    private ISetText txtField;
-    private bool loggedUser = false;
-	private string Fname;
-	private string Lname;
+    private PlayerData playerData = new PlayerData();
 
 
 	public FirebaseCommunicationLibrary()
@@ -28,6 +25,8 @@ public class FirebaseCommunicationLibrary
 		auth = Firebase.Auth.FirebaseAuth.DefaultInstance;	
 		auth.StateChanged += AuthStateChanged;
 		AuthStateChanged(this, null);
+
+        GlobalData.playerData = playerData;
 	}
 
 	void AuthStateChanged(object sender, System.EventArgs eventArgs)
@@ -38,13 +37,14 @@ public class FirebaseCommunicationLibrary
             if (!signedIn && user != null)
             {
                 Debug.Log("Signed out " + user.UserId);
-                loggedUser = false;
+                playerData.LoggedUser = false;
             }
             user = auth.CurrentUser;
             if (signedIn)
             {
                 Debug.Log("Signed in " + user.UserId);
-                loggedUser = true;
+                this.GetUserData(auth.CurrentUser.UserId);
+                playerData.LoggedUser = true;
             }
         }
     }
@@ -80,6 +80,7 @@ public class FirebaseCommunicationLibrary
 					newUser.DisplayName, newUser.UserId);
 				Student student = new Student(meno, priezvisko, email);
 				RegistrationSaveData(student, newUser.UserId);
+                playerData.Name = UserName(meno, priezvisko);
 				this.scena.LoadScene();
 			}
 		});
@@ -104,8 +105,9 @@ public class FirebaseCommunicationLibrary
 			Firebase.Auth.FirebaseUser newUser = task.Result;
 			Debug.LogFormat("User signed in successfully: {0} ({1})",
 				newUser.DisplayName, newUser.UserId);
-			this.scena.LoadScene();
-            this.loggedUser = true;
+            this.GetUserData(auth.CurrentUser.UserId);
+			playerData.LoggedUser = true;
+            this.scena.LoadScene();
 		});
 	}
 
@@ -114,24 +116,19 @@ public class FirebaseCommunicationLibrary
 		mDatabaseRef.Child("USERS").Child(userId).SetRawJsonValueAsync(JsonUtility.ToJson(student));
 	}
 
-    public void GetUserData(ISetText txtField)
+    public void GetUserData(string userId)
 	{
-        this.txtField = txtField;
-        string userId = auth.CurrentUser.UserId;
         FirebaseDatabase.DefaultInstance.GetReference("/USERS/" + userId + "/" )
                     .GetValueAsync().ContinueWith(task => {
 				if (task.IsFaulted){}
 				else if (task.IsCompleted)
 				{
-					DataSnapshot snapshot = task.Result;
-                    this.Fname = snapshot.Child("firstName").Value.ToString();
-                    this.Lname = snapshot.Child("lastName").Value.ToString();
-                    txtField.GetUserName(UserName);
+					DataSnapshot snapshot = task.Result;                                      
+                    playerData.Name = UserName(snapshot.Child("firstName").Value.ToString(), snapshot.Child("lastName").Value.ToString());                    
 				}                     
 			});
 	}
-	public bool LoggedUser { get { return loggedUser; } }
-    private string UserName { get { return string.Format("{0} {1}",this.Fname,this.Lname); } }
+    private string UserName(string fName, string lName) { return string.Format("{0} {1}", fName, lName); }
 
 }
 
@@ -154,22 +151,6 @@ class LoadScene : ILoadScene
 		SceneManager.LoadScene(this.idScene);
 	}
 }
-public interface ISetText{
-    void GetUserName(string name);
-}
-
-class SetText : ISetText
-{
-    private Text field;
-    public SetText(Text field){
-        this.field = field;
-
-    }
-    public void GetUserName(string name){
-        field.text = string.Format("{0} {1}", field.text, name);
-    }
-}
-
 
 public class Student
 {

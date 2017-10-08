@@ -10,12 +10,14 @@ public class StartMenuScript : MonoBehaviour {
 	public Button btnOnlineVersion;
     public Text txtTest;
     FirebaseCommunicationLibrary fbC;
+    private PlayerData playerData = new PlayerData();
 
 	void Start () {
         fbC = new FirebaseCommunicationLibrary();
+        playerData = GlobalData.playerData;
 		btnOfflineVersion = btnOfflineVersion.GetComponent<Button>();
 		btnOnlineVersion.onClick.AddListener(delegate {
-            if (fbC.LoggedUser)
+            if (playerData.LoggedUser)
             {
                 SceneManager.LoadScene(19);
             }
