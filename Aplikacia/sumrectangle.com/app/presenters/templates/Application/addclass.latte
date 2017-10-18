@@ -8,9 +8,27 @@
             </div>
             <div class="row">
                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                    {control classForm}
+                    <form>
+                        <table>
+                            <tr>
+                                <td><b>Meno triedy:</b></td>
+                                <td><input id="className" type="text" name="className"></td>
+                            </tr>
+                            <tr>
+                                <td><b>Kód pre vstup do triedy:</b></td>
+                                <td><input id="classPasswd" type="text" name="classPasswd"></td>
+                            </tr>
+                            <tr>
+                                <td><button type="button" onclick="addClass();">Pridať</button></td>
+                            </tr>
+                        </table>
+                    </form>
                 </div>
             </div>
         </div>
     </section>
+{/block}
+
+{block scripts}
+    <script src="{$basePath}/media/js/addclass.js"></script>
 {/block}
