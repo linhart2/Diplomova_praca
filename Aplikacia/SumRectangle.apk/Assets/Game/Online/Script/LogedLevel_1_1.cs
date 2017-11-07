@@ -8,6 +8,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using System.Linq;
 using Firebase.Database;
+using UnityEngine.SceneManagement;
 
 public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
 {
@@ -18,7 +19,6 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
     public CustomProgressBar progressBar; //- object progress bar
     public GameObject[] itemPrefab;
     GameObject[] slots;
-    //bool isFillingProgressBar;  
     bool zobrazSlider = true;
     string x = "Panel1_";
     public int lvl;
@@ -26,22 +26,24 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
     public Dictionary<string, string> ExamArray;
     Generator_uloh priklad;
     Kontrola skontroluj;
-    SaveLoadProgress slp;
-    FirebaseConnect f;
-    CreateJson c;
+    SaveLoadProgress saveloadprogress;
+    FirebaseConnect firebase;
+    public Dictionary<string, object> ListStudent = new Dictionary<string, object>();
 
     void Start()
     {
-        c = new CreateJson();
-        slp = new SaveLoadProgress();
-        f = new FirebaseConnect();
-        var refer = FirebaseDatabase.DefaultInstance
-            .GetReference("/Class_ID/member/email/example/result");
+        saveloadprogress = new SaveLoadProgress();
+        firebase = new FirebaseConnect();
+        var controlChangeData = FirebaseDatabase.DefaultInstance
+                                                .GetReference("/Class_ID/member/email/example/result/");
+        controlChangeData.ChildChanged += HandleChildChanged;
+        var controlAllStudentInClass = FirebaseDatabase.DefaultInstance
+            .GetReference("/USERS");
+        controlAllStudentInClass.ChildChanged += HandleShowAllUserInClassChange;
+        controlAllStudentInClass.ChildAdded += HandleShowAllUserInClassAdd;
+        controlAllStudentInClass.ChildRemoved += HandleShowAllUserInClassRemove;
 
-        //ref.ChildAdded += HandleChildAdded;
-        refer.ChildChanged += HandleChildChanged;
-        //ref.ChildRemoved += HandleChildRemoved;
-        //ref.ChildMoved += HandleChildMoved;
+
         gratulation = gratulation.GetComponent<Canvas>();
         nespravne = nespravne.GetComponent<Canvas>();
         unlock_level = unlock_level.GetComponent<Canvas>();
@@ -50,21 +52,61 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
         table = priklad.get_array(3);
         CreateArrayExam(table);
         draw();
-        slp.Load(lvl);
-        progressBar.slider.value = slp.progress;
-        zobrazSlider = slp.zobraz;
+        saveloadprogress.Load(lvl);
+        progressBar.slider.value = saveloadprogress.progress;
+        zobrazSlider = saveloadprogress.zobraz;
         gratulation.enabled = false;
         nespravne.enabled = false;
         unlock_level.enabled = false;
         progressBar.slider.maxValue = 10f;
         progressBar.slider.minValue = 0f;
         progressBar.slider.value = 0f;
-        slp.Load(lvl);
-        progressBar.slider.value = slp.progress;
-        zobrazSlider = slp.zobraz;
+        saveloadprogress.Load(lvl);
+        progressBar.slider.value = saveloadprogress.progress;
+        zobrazSlider = saveloadprogress.zobraz;
         StartFillingUpProgressBar();
         HasChanged();
     }
+
+    public void ShareScreenWith()
+    {
+
+    }
+
+    public void HandleShowAllUserInClassAdd(object sender, ChildChangedEventArgs args)
+    {
+        if (args.DatabaseError != null)
+        {
+            Debug.LogError(args.DatabaseError.Message);
+            return;
+        }
+        string key = args.Snapshot.Key;
+        object value = args.Snapshot.Value;
+        ListStudent[key] = value;
+    }
+    public void HandleShowAllUserInClassChange(object sender, ChildChangedEventArgs args)
+    {
+        if (args.DatabaseError != null)
+        {
+            Debug.LogError(args.DatabaseError.Message);
+            return;
+        }
+        string key = args.Snapshot.Key;
+        object value = args.Snapshot.Value;
+        ListStudent[key] = value;
+    }
+    public void HandleShowAllUserInClassRemove(object sender, ChildChangedEventArgs args)
+    {
+        if (args.DatabaseError != null)
+        {
+            Debug.LogError(args.DatabaseError.Message);
+            return;
+        }
+        string key = args.Snapshot.Key;
+        object value = args.Snapshot.Value;
+        ListStudent.Remove(key);
+    }
+
 
     void HandleChildChanged(object sender, ChildChangedEventArgs args)
     {
@@ -78,6 +120,8 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
         ExamArray[key] = value.ToString();
         Destroy();
         draw();
+
+        Debug.Log(key + "|" + value);
         // Do something with the data in args.Snapshot
     }
     public void CreateArrayExam(List<int> pr)
@@ -144,7 +188,7 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
     public void StartFillingUpProgressBar()
     {
         //progressBar.slider.value;
-        if (progressBar.slider.value == progressBar.slider.maxValue)
+        if (progressBar.slider.value.Equals(progressBar.slider.maxValue))
         {
             progressBar.gameObject.SetActive(false);
         }
@@ -177,24 +221,30 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
                 }
             }
         }
-        f.UpdateResult(ExamArray);
+        firebase.UpdateResult(ExamArray);
+        solution_control(kontrola);
+
+    }
+
+    public void solution_control(List<int> kontrola)
+    {
         if (kontrola.Count == 3)
         {
             bool pom = skontroluj.Vyhodnot(kontrola);
             if (pom)
             {
                 progressAdd();
-                if (zobrazSlider && progressBar.slider.value == progressBar.slider.maxValue)
+                if (zobrazSlider && progressBar.slider.value.Equals(progressBar.slider.maxValue))
                 {
                     zobrazSlider = false;
                     show_unlock();
-                    slp.SaveLock(lvl);
-                    slp.Save(lvl, zobrazSlider, progressBar.slider.value);
+                    saveloadprogress.SaveLock(lvl);
+                    saveloadprogress.Save(lvl, zobrazSlider, progressBar.slider.value);
                 }
                 else
                 {
                     congrats_show();
-                    slp.Save(lvl, zobrazSlider, progressBar.slider.value);
+                    saveloadprogress.Save(lvl, zobrazSlider, progressBar.slider.value);
                 }
             }
             else
@@ -227,7 +277,7 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
         yield return new WaitForSeconds(2.0f);
 
         unlock_level.enabled = false;
-        Application.LoadLevel(18);
+        SceneManager.LoadScene(18);
     }
 
     IEnumerator congrats_hide()
@@ -235,7 +285,8 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
         yield return new WaitForSeconds(2.0f);
 
         gratulation.enabled = false;
-        Application.LoadLevel(UnityEngine.Random.RandomRange(19, 20));
+        //SceneManager.LoadScene(UnityEngine.Random.Range(19, 20));
+        SceneManager.LoadScene(21);
     }
 
     IEnumerator nespravne_hide()
