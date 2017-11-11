@@ -4,11 +4,9 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using System;
 using UIAddons;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.IO;
-using System.Linq;
 using Firebase.Database;
 using UnityEngine.SceneManagement;
+using UnityEditor;
 
 public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
 {
@@ -16,6 +14,7 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
     public Canvas gratulation;      //- object gratulacia
     public Canvas nespravne;        //- object nespravne
     public Canvas unlock_level;     //- object otvoreny novy level
+    public Canvas showSharedWith;      //- object zdielat s....
     public CustomProgressBar progressBar; //- object progress bar
     public GameObject[] itemPrefab;
     GameObject[] slots;
@@ -26,25 +25,28 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
     public Dictionary<string, string> ExamArray;
     Generator_uloh priklad;
     Kontrola skontroluj;
-    SaveLoadProgress saveloadprogress;
+    //SaveLoadProgress saveloadprogress;
     FirebaseConnect firebase;
-    public Dictionary<string, object> ListStudent = new Dictionary<string, object>();
+    public Dictionary<string, GameObject> ListStudent = new Dictionary<string, GameObject>();
+    private PlayerData playerData = new PlayerData();
 
     void Start()
     {
-        saveloadprogress = new SaveLoadProgress();
+        playerData = GlobalData.playerData;
+        //saveloadprogress = new SaveLoadProgress();
         firebase = new FirebaseConnect();
         var controlChangeData = FirebaseDatabase.DefaultInstance
                                                 .GetReference("/Class_ID/member/email/example/result/");
         controlChangeData.ChildChanged += HandleChildChanged;
         var controlAllStudentInClass = FirebaseDatabase.DefaultInstance
-            .GetReference("/USERS");
+                                                       .GetReference("/USERS");
+
         controlAllStudentInClass.ChildChanged += HandleShowAllUserInClassChange;
         controlAllStudentInClass.ChildAdded += HandleShowAllUserInClassAdd;
         controlAllStudentInClass.ChildRemoved += HandleShowAllUserInClassRemove;
 
-
         gratulation = gratulation.GetComponent<Canvas>();
+        showSharedWith = showSharedWith.GetComponent<Canvas>();
         nespravne = nespravne.GetComponent<Canvas>();
         unlock_level = unlock_level.GetComponent<Canvas>();
         skontroluj = new Kontrola(2);
@@ -52,20 +54,42 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
         table = priklad.get_array(3);
         CreateArrayExam(table);
         draw();
-        saveloadprogress.Load(lvl);
-        progressBar.slider.value = saveloadprogress.progress;
-        zobrazSlider = saveloadprogress.zobraz;
+        //saveloadprogress.Load(lvl);
+        //progressBar.slider.value = saveloadprogress.progress;
+        //zobrazSlider = saveloadprogress.zobraz;
         gratulation.enabled = false;
+        showSharedWith.enabled = false;
         nespravne.enabled = false;
         unlock_level.enabled = false;
         progressBar.slider.maxValue = 10f;
         progressBar.slider.minValue = 0f;
         progressBar.slider.value = 0f;
-        saveloadprogress.Load(lvl);
-        progressBar.slider.value = saveloadprogress.progress;
-        zobrazSlider = saveloadprogress.zobraz;
+        //saveloadprogress.Load(lvl);
+        //progressBar.slider.value = saveloadprogress.progress;
+        //zobrazSlider = saveloadprogress.zobraz;
         StartFillingUpProgressBar();
         HasChanged();
+
+        Button btnZrus = GameObject.Find("btnZrus").GetComponent<Button>();
+        btnZrus.onClick.AddListener(delegate
+                    {
+                        showSharedWith.enabled = false;
+                        GameObject.Find("tbOznacVsetkych").GetComponent<Toggle>().isOn = false;
+                        foreach (var student in ListStudent)
+                        {
+                            student.Value.transform.GetChild(0).GetComponent<Toggle>().isOn = false;
+                        }
+                    });
+        Button btnShare = GameObject.Find("Share").GetComponent<Button>();
+        btnShare.onClick.AddListener(delegate
+                        {
+                            showSharedWith.enabled = true;
+                        });
+        Toggle tbOznacVsetkych = GameObject.Find("tbOznacVsetkych").GetComponent<Toggle>();
+        tbOznacVsetkych.onValueChanged.AddListener(delegate
+                        {
+                            SelectAll();
+                        });
     }
 
     public void ShareScreenWith()
@@ -73,6 +97,26 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
 
     }
 
+    public void SelectAll()
+    {
+        bool selectAll = GameObject.Find("tbOznacVsetkych").GetComponent<Toggle>().isOn;
+        if (selectAll)
+        {
+            foreach (var student in ListStudent)
+            {
+                student.Value.transform.GetChild(0).GetComponent<Toggle>().isOn = true;
+            }
+        }
+        else
+        {
+            foreach (var student in ListStudent)
+            {
+                student.Value.transform.GetChild(0).GetComponent<Toggle>().isOn = false;
+            }
+        }
+    }
+
+    #region HandleUsers
     public void HandleShowAllUserInClassAdd(object sender, ChildChangedEventArgs args)
     {
         if (args.DatabaseError != null)
@@ -81,8 +125,10 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
             return;
         }
         string key = args.Snapshot.Key;
-        object value = args.Snapshot.Value;
-        ListStudent[key] = value;
+        string value = args.Snapshot.GetRawJsonValue();
+        Student data = JsonUtility.FromJson<Student>(value);
+        generateStudentToogleList("row" + key, new Vector3(-1.5f, 0, 0), string.Format("{0} {1}", data.firstName, data.lastName));
+
     }
     public void HandleShowAllUserInClassChange(object sender, ChildChangedEventArgs args)
     {
@@ -92,8 +138,10 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
             return;
         }
         string key = args.Snapshot.Key;
-        object value = args.Snapshot.Value;
-        ListStudent[key] = value;
+        string value = args.Snapshot.GetRawJsonValue();
+        Student data = JsonUtility.FromJson<Student>(value);
+        Text text = ListStudent["row" + key].transform.GetChild(0).transform.GetChild(1).GetComponent<Text>();
+        text.text = string.Format("{0} {1}", data.firstName, data.lastName);
     }
     public void HandleShowAllUserInClassRemove(object sender, ChildChangedEventArgs args)
     {
@@ -103,10 +151,10 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
             return;
         }
         string key = args.Snapshot.Key;
-        object value = args.Snapshot.Value;
-        ListStudent.Remove(key);
-    }
+        Destroy(ListStudent["row" + key]);
+        ListStudent.Remove("row" + key);
 
+    }
 
     void HandleChildChanged(object sender, ChildChangedEventArgs args)
     {
@@ -124,6 +172,9 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
         Debug.Log(key + "|" + value);
         // Do something with the data in args.Snapshot
     }
+    #endregion
+
+    #region game
     public void CreateArrayExam(List<int> pr)
     {
         ExamArray = new Dictionary<string, string>();
@@ -238,13 +289,13 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
                 {
                     zobrazSlider = false;
                     show_unlock();
-                    saveloadprogress.SaveLock(lvl);
-                    saveloadprogress.Save(lvl, zobrazSlider, progressBar.slider.value);
+                    //saveloadprogress.SaveLock(lvl);
+                    //saveloadprogress.Save(lvl, zobrazSlider, progressBar.slider.value);
                 }
                 else
                 {
                     congrats_show();
-                    saveloadprogress.Save(lvl, zobrazSlider, progressBar.slider.value);
+                    //saveloadprogress.Save(lvl, zobrazSlider, progressBar.slider.value);
                 }
             }
             else
@@ -296,4 +347,144 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
         nespravne.enabled = false;
         Restart();
     }
+    #endregion
+
+    #region ToogleList
+    public void generateStudentToogleList(string ObjName, Vector3 vector, string txtName)
+    {
+
+        makeRow(GameObject.Find("Content"), ObjName, vector);
+        makeToggle(GameObject.Find(ObjName), txtName);
+
+    }
+
+    void makeRow(GameObject cnvs, string objName, Vector3 vector)
+    {
+        GameObject rowObj = createRowObj(cnvs, objName);
+        CanvasRenderer renderer = rowObj.AddComponent<CanvasRenderer>();
+
+        GridLayoutGroup grid = rowObj.AddComponent<GridLayoutGroup>();
+        grid.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
+        grid.constraintCount = 1;
+        grid.cellSize = new Vector2(740, 40);
+        grid.childAlignment = TextAnchor.MiddleCenter;
+        grid.startAxis = GridLayoutGroup.Axis.Horizontal;
+        grid.startCorner = GridLayoutGroup.Corner.UpperLeft;
+        grid.spacing = new Vector2(12, 0);
+
+        grid.transform.localScale = new Vector3(1, 1, 1);
+        grid.GetComponent<RectTransform>().localPosition = vector;
+        grid.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 0.5f);
+        grid.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 0.5f);
+        grid.GetComponent<RectTransform>().sizeDelta = new Vector2(780, 60);
+        ListStudent[objName] = rowObj;
+    }
+    void makeToggle(GameObject cnvs, string txtName)
+    {
+        GameObject toggleObj = createToggleObj(cnvs, "Toggle");
+        GameObject bgObj = createBackgroundObj(toggleObj);
+        GameObject checkMarkObj = createCheckmarkObj(bgObj);
+        GameObject labelObj = createLabelObj(toggleObj);
+        attachAllComponents(toggleObj, bgObj, checkMarkObj, labelObj, txtName);
+    }
+
+    GameObject createRowObj(GameObject cnvs, string objName)
+    {
+        var panelM = new GameObject(objName);
+        panelM.transform.SetParent(cnvs.transform);
+        panelM.layer = LayerMask.NameToLayer("UI");
+        return panelM;
+    }
+
+
+    //1.Create a *Toggle* GameObject then make it child of the *Canvas*.
+    GameObject createToggleObj(GameObject cnvs, string toogleName)
+    {
+        GameObject toggle = new GameObject(toogleName);
+        toggle.transform.SetParent(cnvs.transform);
+        toggle.layer = LayerMask.NameToLayer("UI");
+        return toggle;
+    }
+
+    //2.Create a Background GameObject then make it child of the Toggle GameObject.
+    GameObject createBackgroundObj(GameObject toggle)
+    {
+        GameObject bg = new GameObject("Background");
+        bg.transform.SetParent(toggle.transform);
+        bg.layer = LayerMask.NameToLayer("UI");
+        return bg;
+    }
+
+    //3.Create a Checkmark GameObject then make it child of the Background GameObject.
+    GameObject createCheckmarkObj(GameObject bg)
+    {
+        GameObject chmk = new GameObject("Checkmark");
+        chmk.transform.SetParent(bg.transform);
+        chmk.layer = LayerMask.NameToLayer("UI");
+        return chmk;
+    }
+
+    //4.Create a Label GameObject then make it child of the Toggle GameObject.
+    GameObject createLabelObj(GameObject toggle)
+    {
+        GameObject lbl = new GameObject("Label");
+        lbl.transform.SetParent(toggle.transform);
+        lbl.layer = LayerMask.NameToLayer("UI");
+        return lbl;
+    }
+
+    //5.Now attach components like Image, Text and Toggle to each GameObject like it appears in the Editor.
+    void attachAllComponents(GameObject toggle, GameObject bg, GameObject chmk, GameObject lbl, string txtName)
+    {
+        //Attach Text to label
+        Text txt = lbl.AddComponent<Text>();
+        txt.text = txtName;
+        txt.alignment = TextAnchor.MiddleLeft;
+        Font arialFont =
+        (Font)Resources.GetBuiltinResource(typeof(Font), "Arial.ttf");
+        txt.font = arialFont;
+        txt.fontSize = 24;
+        txt.lineSpacing = 1;
+        txt.color = new Color(50 / 255, 50 / 255, 50 / 255, 255 / 255);
+
+        txt.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
+        txt.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0);
+        txt.GetComponent<RectTransform>().offsetMax = new Vector2(12.05f, 1.5f);
+        txt.GetComponent<RectTransform>().offsetMin = new Vector2(48.35f, 1.5f);
+        //txt.GetComponent<RectTransform>().sizeDelta = new Vector4(48.35f, 1.5f, -12.05f, 1.5f);
+        txt.transform.localScale = new Vector3(1, 1, 1);
+        //txtRect.y
+
+        //Attach Image Component to the Checkmark
+        Image chmkImage = chmk.AddComponent<Image>();
+        chmkImage.sprite = (Sprite)AssetDatabase.GetBuiltinExtraResource(typeof(Sprite), "UI/Skin/Checkmark.psd");
+        chmkImage.type = Image.Type.Simple;
+        chmkImage.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 0.5f);
+        chmkImage.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 0.5f);
+        chmkImage.GetComponent<RectTransform>().sizeDelta = new Vector2(40, 40);
+        chmkImage.transform.localScale = new Vector3(1, 1, 1);
+
+
+        //Attach Image Component to the Background
+        Image bgImage = bg.AddComponent<Image>();
+        bgImage.sprite = (Sprite)AssetDatabase.GetBuiltinExtraResource(typeof(Sprite), "UI/Skin/UISprite.psd");
+        bgImage.type = Image.Type.Sliced;
+
+        bgImage.GetComponent<RectTransform>().anchorMax = new Vector2(0, 1);
+        bgImage.GetComponent<RectTransform>().anchorMin = new Vector2(0, 1);
+        bgImage.GetComponent<RectTransform>().sizeDelta = new Vector2(40, 40);
+        bgImage.GetComponent<RectTransform>().localPosition = new Vector3(20, -20, 0);
+        bgImage.transform.localScale = new Vector3(1, 1, 1);
+
+        //Attach Toggle Component to the Toggle
+        Toggle toggleComponent = toggle.AddComponent<Toggle>();
+        toggleComponent.transition = Selectable.Transition.ColorTint;
+        toggleComponent.targetGraphic = bgImage;
+        toggleComponent.isOn = false;
+        toggleComponent.toggleTransition = Toggle.ToggleTransition.Fade;
+        toggleComponent.graphic = chmkImage;
+        toggleComponent.transform.localScale = new Vector3(1, 1, 1);
+        toggle.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(0, 0, 0);
+    }
+    #endregion
 }
