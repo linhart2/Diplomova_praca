@@ -6,7 +6,6 @@ using System;
 using UIAddons;
 using Firebase.Database;
 using UnityEngine.SceneManagement;
-using UnityEditor;
 
 public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
 {
@@ -17,6 +16,7 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
     public Canvas showSharedWith;      //- object zdielat s....
     public CustomProgressBar progressBar; //- object progress bar
     public GameObject[] itemPrefab;
+    public GameObject togglePrefab;
     GameObject[] slots;
     bool zobrazSlider = true;
     string x = "Panel1_";
@@ -127,6 +127,7 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
         string key = args.Snapshot.Key;
         string value = args.Snapshot.GetRawJsonValue();
         Student data = JsonUtility.FromJson<Student>(value);
+
         generateStudentToogleList("row" + key, new Vector3(-1.5f, 0, 0), string.Format("{0} {1}", data.firstName, data.lastName));
 
     }
@@ -354,10 +355,9 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
     {
 
         makeRow(GameObject.Find("Content"), ObjName, vector);
-        makeToggle(GameObject.Find(ObjName), txtName);
+        makeTogglePrefabs(GameObject.Find(ObjName), txtName);
 
     }
-
     void makeRow(GameObject cnvs, string objName, Vector3 vector)
     {
         GameObject rowObj = createRowObj(cnvs, objName);
@@ -366,7 +366,7 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
         GridLayoutGroup grid = rowObj.AddComponent<GridLayoutGroup>();
         grid.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
         grid.constraintCount = 1;
-        grid.cellSize = new Vector2(740, 40);
+        grid.cellSize = new Vector2(780, 40);
         grid.childAlignment = TextAnchor.MiddleCenter;
         grid.startAxis = GridLayoutGroup.Axis.Horizontal;
         grid.startCorner = GridLayoutGroup.Corner.UpperLeft;
@@ -376,18 +376,9 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
         grid.GetComponent<RectTransform>().localPosition = vector;
         grid.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 0.5f);
         grid.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 0.5f);
-        grid.GetComponent<RectTransform>().sizeDelta = new Vector2(780, 60);
+        grid.GetComponent<RectTransform>().sizeDelta = new Vector2(820, 60);
         ListStudent[objName] = rowObj;
     }
-    void makeToggle(GameObject cnvs, string txtName)
-    {
-        GameObject toggleObj = createToggleObj(cnvs, "Toggle");
-        GameObject bgObj = createBackgroundObj(toggleObj);
-        GameObject checkMarkObj = createCheckmarkObj(bgObj);
-        GameObject labelObj = createLabelObj(toggleObj);
-        attachAllComponents(toggleObj, bgObj, checkMarkObj, labelObj, txtName);
-    }
-
     GameObject createRowObj(GameObject cnvs, string objName)
     {
         var panelM = new GameObject(objName);
@@ -395,96 +386,15 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
         panelM.layer = LayerMask.NameToLayer("UI");
         return panelM;
     }
-
-
-    //1.Create a *Toggle* GameObject then make it child of the *Canvas*.
-    GameObject createToggleObj(GameObject cnvs, string toogleName)
+    public void makeTogglePrefabs(GameObject ObjName, string txtName)
     {
-        GameObject toggle = new GameObject(toogleName);
-        toggle.transform.SetParent(cnvs.transform);
-        toggle.layer = LayerMask.NameToLayer("UI");
-        return toggle;
-    }
+        GameObject newItem = Instantiate(togglePrefab) as GameObject;
+        newItem.transform.SetParent(ObjName.transform);
+        newItem.layer = LayerMask.NameToLayer("UI");
+        newItem.name = "Toggle";
+        newItem.transform.GetChild(1).GetComponent<Text>().text = txtName;
+        newItem.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
 
-    //2.Create a Background GameObject then make it child of the Toggle GameObject.
-    GameObject createBackgroundObj(GameObject toggle)
-    {
-        GameObject bg = new GameObject("Background");
-        bg.transform.SetParent(toggle.transform);
-        bg.layer = LayerMask.NameToLayer("UI");
-        return bg;
-    }
-
-    //3.Create a Checkmark GameObject then make it child of the Background GameObject.
-    GameObject createCheckmarkObj(GameObject bg)
-    {
-        GameObject chmk = new GameObject("Checkmark");
-        chmk.transform.SetParent(bg.transform);
-        chmk.layer = LayerMask.NameToLayer("UI");
-        return chmk;
-    }
-
-    //4.Create a Label GameObject then make it child of the Toggle GameObject.
-    GameObject createLabelObj(GameObject toggle)
-    {
-        GameObject lbl = new GameObject("Label");
-        lbl.transform.SetParent(toggle.transform);
-        lbl.layer = LayerMask.NameToLayer("UI");
-        return lbl;
-    }
-
-    //5.Now attach components like Image, Text and Toggle to each GameObject like it appears in the Editor.
-    void attachAllComponents(GameObject toggle, GameObject bg, GameObject chmk, GameObject lbl, string txtName)
-    {
-        //Attach Text to label
-        Text txt = lbl.AddComponent<Text>();
-        txt.text = txtName;
-        txt.alignment = TextAnchor.MiddleLeft;
-        Font arialFont =
-        (Font)Resources.GetBuiltinResource(typeof(Font), "Arial.ttf");
-        txt.font = arialFont;
-        txt.fontSize = 24;
-        txt.lineSpacing = 1;
-        txt.color = new Color(50 / 255, 50 / 255, 50 / 255, 255 / 255);
-
-        txt.GetComponent<RectTransform>().anchorMax = new Vector2(1, 1);
-        txt.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0);
-        txt.GetComponent<RectTransform>().offsetMax = new Vector2(12.05f, 1.5f);
-        txt.GetComponent<RectTransform>().offsetMin = new Vector2(48.35f, 1.5f);
-        //txt.GetComponent<RectTransform>().sizeDelta = new Vector4(48.35f, 1.5f, -12.05f, 1.5f);
-        txt.transform.localScale = new Vector3(1, 1, 1);
-        //txtRect.y
-
-        //Attach Image Component to the Checkmark
-        Image chmkImage = chmk.AddComponent<Image>();
-        chmkImage.sprite = (Sprite)AssetDatabase.GetBuiltinExtraResource(typeof(Sprite), "UI/Skin/Checkmark.psd");
-        chmkImage.type = Image.Type.Simple;
-        chmkImage.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 0.5f);
-        chmkImage.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 0.5f);
-        chmkImage.GetComponent<RectTransform>().sizeDelta = new Vector2(40, 40);
-        chmkImage.transform.localScale = new Vector3(1, 1, 1);
-
-
-        //Attach Image Component to the Background
-        Image bgImage = bg.AddComponent<Image>();
-        bgImage.sprite = (Sprite)AssetDatabase.GetBuiltinExtraResource(typeof(Sprite), "UI/Skin/UISprite.psd");
-        bgImage.type = Image.Type.Sliced;
-
-        bgImage.GetComponent<RectTransform>().anchorMax = new Vector2(0, 1);
-        bgImage.GetComponent<RectTransform>().anchorMin = new Vector2(0, 1);
-        bgImage.GetComponent<RectTransform>().sizeDelta = new Vector2(40, 40);
-        bgImage.GetComponent<RectTransform>().localPosition = new Vector3(20, -20, 0);
-        bgImage.transform.localScale = new Vector3(1, 1, 1);
-
-        //Attach Toggle Component to the Toggle
-        Toggle toggleComponent = toggle.AddComponent<Toggle>();
-        toggleComponent.transition = Selectable.Transition.ColorTint;
-        toggleComponent.targetGraphic = bgImage;
-        toggleComponent.isOn = false;
-        toggleComponent.toggleTransition = Toggle.ToggleTransition.Fade;
-        toggleComponent.graphic = chmkImage;
-        toggleComponent.transform.localScale = new Vector3(1, 1, 1);
-        toggle.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(0, 0, 0);
     }
     #endregion
 }
