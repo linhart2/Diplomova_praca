@@ -181,6 +181,7 @@ public class FirebaseCommunicationLibrary
         {
             Debug.Log("class " + hesloTriedy + " exists!!!");
             addStudentToClass(studentID, hesloTriedy, classID);
+            GlobalData.playerData.Classes.Add(hesloTriedy);
             GlobalData.playerData.SelectedClass = hesloTriedy;
             SceneManager.LoadScene(20);
 
