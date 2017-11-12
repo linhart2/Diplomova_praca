@@ -124,6 +124,18 @@ public class FirebaseCommunicationLibrary
     {
         mDatabaseRef.Child("USERS").Child(userId).Child("MY_CLASS").Child(classID).SetValueAsync(hesloTriedy);
     }
+    public void addSharedScreen(string screenId, SharedScreen screen)
+    {
+        mDatabaseRef.Child("SHARED_SCREEN").Child(screenId).SetRawJsonValueAsync(JsonUtility.ToJson(screen));
+    }
+    public void inserMyIdToSharedScreen(string userId, string userName, string screenId)
+    {
+        mDatabaseRef.Child("SHARED_SCREEN").Child(screenId).Child("users_id").Child(userId).SetValueAsync(userName);
+    }
+    public void SendRequestWithShareScreen(string userId, string key, SharedScreenRequest value)
+    {
+        mDatabaseRef.Child("USERS").Child(userId).Child("waitForShare").Child(key).SetRawJsonValueAsync(JsonUtility.ToJson(value));
+    }
 
     /*private void addClass(string heslo, string teacherID, string className)
     {
@@ -247,3 +259,40 @@ public class ClassRoom
         this.className = className;
     }
 }
+
+public class SharedScreen
+{
+    public Dictionary<string, object> data = new Dictionary<string, object>();
+    public bool screeen_locker;
+    public string screen_name;
+    public string admin_name;
+    public List<string> users_id = new List<string>();
+
+    public SharedScreen() { }
+    public SharedScreen(Dictionary<string, object> data, bool screeen_locker, string screen_name, string admin_name, List<string> users_id)
+    {
+        this.data = data;
+        this.screeen_locker = screeen_locker;
+        this.screen_name = screen_name;
+        this.admin_name = admin_name;
+        this.users_id = users_id;
+    }
+}
+
+public class SharedScreenRequest
+{
+
+
+    public string share_object;
+    public string admin_name;
+
+
+    public SharedScreenRequest() { }
+    public SharedScreenRequest(string share_object, string admin_name)
+    {
+        this.share_object = share_object;
+        this.admin_name = admin_name;
+
+    }
+}
+

@@ -18,7 +18,7 @@ public class FirebaseConnect
 
     public void UpdateResult(Dictionary<string, string> ex)
     {
-        //string key = mDatabaseRef.Child("scores").Push().Key;
+        //string key = mDatabaseRef.Child("scores").Push().Key;z
         LeaderBoardEntry entry = new LeaderBoardEntry(ex);
         Dictionary<string, object> entryValues = entry.ToDictionary();
 

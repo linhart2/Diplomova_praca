@@ -14,6 +14,7 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
     public Canvas nespravne;        //- object nespravne
     public Canvas unlock_level;     //- object otvoreny novy level
     public Canvas showSharedWith;      //- object zdielat s....
+    public Canvas infoAboutShare;
     public CustomProgressBar progressBar; //- object progress bar
     public GameObject[] itemPrefab;
     public GameObject togglePrefab;
@@ -22,6 +23,7 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
     string x = "Panel1_";
     public int lvl;
     public static List<int> table;
+    [SerializeField]
     public Dictionary<string, string> ExamArray;
     Generator_uloh priklad;
     Kontrola skontroluj;
@@ -29,21 +31,33 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
     FirebaseConnect firebase;
     public Dictionary<string, GameObject> ListStudent = new Dictionary<string, GameObject>();
     private PlayerData playerData = new PlayerData();
+    FirebaseCommunicationLibrary fbc;
+
+    DatabaseReference controlChangeData;
 
     void Start()
     {
         playerData = GlobalData.playerData;
+
+        #region testData
+        //playerData.Name = "TestLingo";
+        //playerData.UserId = "ZAT4DktlgdYBVGwXYRpOfA3temm1";
+        #endregion
+
         //saveloadprogress = new SaveLoadProgress();
         firebase = new FirebaseConnect();
-        var controlChangeData = FirebaseDatabase.DefaultInstance
-                                                .GetReference("/Class_ID/member/email/example/result/");
-        controlChangeData.ChildChanged += HandleChildChanged;
+        fbc = new FirebaseCommunicationLibrary();
+
         var controlAllStudentInClass = FirebaseDatabase.DefaultInstance
                                                        .GetReference("/USERS");
 
-        controlAllStudentInClass.ChildChanged += HandleShowAllUserInClassChange;
         controlAllStudentInClass.ChildAdded += HandleShowAllUserInClassAdd;
         controlAllStudentInClass.ChildRemoved += HandleShowAllUserInClassRemove;
+
+        var controlSharedScreenWithMe = FirebaseDatabase.DefaultInstance
+                                                        .GetReference("/USERS/" + playerData.UserId + "/waitForShare/");
+        controlSharedScreenWithMe.ChildAdded += HandleControlRequestSharedScreen;
+
 
         gratulation = gratulation.GetComponent<Canvas>();
         showSharedWith = showSharedWith.GetComponent<Canvas>();
@@ -61,6 +75,7 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
         showSharedWith.enabled = false;
         nespravne.enabled = false;
         unlock_level.enabled = false;
+        infoAboutShare.enabled = false;
         progressBar.slider.maxValue = 10f;
         progressBar.slider.minValue = 0f;
         progressBar.slider.value = 0f;
@@ -75,29 +90,78 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
                     {
                         showSharedWith.enabled = false;
                         GameObject.Find("tbOznacVsetkych").GetComponent<Toggle>().isOn = false;
-                        foreach (var student in ListStudent)
-                        {
-                            student.Value.transform.GetChild(0).GetComponent<Toggle>().isOn = false;
-                        }
+                        DeselectAllUser();
+
                     });
         Button btnShare = GameObject.Find("Share").GetComponent<Button>();
         btnShare.onClick.AddListener(delegate
                         {
                             showSharedWith.enabled = true;
                         });
+        Button btnZdielaj = GameObject.Find("btnZdielaj").GetComponent<Button>();
+        btnZdielaj.onClick.AddListener(delegate
+                        {
+                            ShareScreenWith();
+                        });
         Toggle tbOznacVsetkych = GameObject.Find("tbOznacVsetkych").GetComponent<Toggle>();
         tbOznacVsetkych.onValueChanged.AddListener(delegate
                         {
-                            SelectAll();
+                            SelectAllUser();
                         });
     }
 
     public void ShareScreenWith()
     {
+        SharedScreen screen = new SharedScreen()
+        {
+            screeen_locker = false,
+            admin_name = playerData.Name,
+            screen_name = "screen1a",
+        };
+        String key = FirebaseDatabase.DefaultInstance.GetReference("/SHARED_SCREEN").Push().Key;
+        LeaderBoardEntry entry = new LeaderBoardEntry(ExamArray);
+        Dictionary<string, object> entryValues = entry.ToDictionary();
+        Dictionary<string, object> childUpdates = new Dictionary<string, object>();
+        childUpdates["/SHARED_SCREEN/" + key + "/data/"] = entryValues;
+        fbc.addSharedScreen(key, screen);
+        fbc.inserMyIdToSharedScreen(playerData.UserId, playerData.Name, key);
+        FirebaseDatabase.DefaultInstance.RootReference.UpdateChildrenAsync(childUpdates);
 
+        List<string> selectedStudent = new List<string>();
+        foreach (var student in ListStudent)
+        {
+            if (student.Value.transform.GetChild(0).GetComponent<Toggle>().isOn)
+            {
+                selectedStudent.Add(student.Key);
+            }
+        }
+        sendRequest(key, selectedStudent);
+
+        controlChangeData = FirebaseDatabase.DefaultInstance
+                                            .GetReference("/SHARED_SCREEN/" + key + "/data/");
+        controlChangeData.ChildChanged += HandleChildChanged;
+        showSharedWith.enabled = false;
+        DeselectAllUser();
     }
 
-    public void SelectAll()
+    public void sendRequest(string Screeen_key, List<string> zoznamLudi)
+    {
+        // userName
+        // ScreenID
+
+        foreach (var user in zoznamLudi)
+        {
+            SharedScreenRequest request = new SharedScreenRequest()
+            {
+                admin_name = playerData.Name,
+                share_object = Screeen_key
+            };
+            String key = FirebaseDatabase.DefaultInstance.GetReference("/USERS/" + user + "/waitForShare/").Push().Key;
+            fbc.SendRequestWithShareScreen(user, key, request);
+        }
+    }
+
+    public void SelectAllUser()
     {
         bool selectAll = GameObject.Find("tbOznacVsetkych").GetComponent<Toggle>().isOn;
         if (selectAll)
@@ -109,11 +173,29 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
         }
         else
         {
-            foreach (var student in ListStudent)
-            {
-                student.Value.transform.GetChild(0).GetComponent<Toggle>().isOn = false;
-            }
+            DeselectAllUser();
         }
+    }
+    public void DeselectAllUser()
+    {
+        foreach (var student in ListStudent)
+        {
+            student.Value.transform.GetChild(0).GetComponent<Toggle>().isOn = false;
+        }
+    }
+
+    public void AcceptShareScreen(string screenKey, string requestKey)
+    {
+        infoAboutShare.enabled = false;
+        controlChangeData = FirebaseDatabase.DefaultInstance
+                                            .GetReference("/SHARED_SCREEN/" + screenKey + "/data/");
+        controlChangeData.ChildChanged += HandleChildChanged;
+        FirebaseDatabase.DefaultInstance.GetReference("/USERS/" + playerData.UserId + "/waitForShare/").Child(requestKey).RemoveValueAsync();
+    }
+    public void MissedShareScreen(string requestKey)
+    {
+        infoAboutShare.enabled = false;
+        FirebaseDatabase.DefaultInstance.GetReference("/USERS/" + playerData.UserId + "/waitForShare/").Child(requestKey).RemoveValueAsync();
     }
 
     #region HandleUsers
@@ -128,22 +210,10 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
         string value = args.Snapshot.GetRawJsonValue();
         Student data = JsonUtility.FromJson<Student>(value);
 
-        generateStudentToogleList("row" + key, new Vector3(-1.5f, 0, 0), string.Format("{0} {1}", data.firstName, data.lastName));
+        generateStudentToogleList(key, new Vector3(-1.5f, 0, 0), string.Format("{0} {1}", data.firstName, data.lastName));
 
     }
-    public void HandleShowAllUserInClassChange(object sender, ChildChangedEventArgs args)
-    {
-        if (args.DatabaseError != null)
-        {
-            Debug.LogError(args.DatabaseError.Message);
-            return;
-        }
-        string key = args.Snapshot.Key;
-        string value = args.Snapshot.GetRawJsonValue();
-        Student data = JsonUtility.FromJson<Student>(value);
-        Text text = ListStudent["row" + key].transform.GetChild(0).transform.GetChild(1).GetComponent<Text>();
-        text.text = string.Format("{0} {1}", data.firstName, data.lastName);
-    }
+
     public void HandleShowAllUserInClassRemove(object sender, ChildChangedEventArgs args)
     {
         if (args.DatabaseError != null)
@@ -152,9 +222,34 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
             return;
         }
         string key = args.Snapshot.Key;
-        Destroy(ListStudent["row" + key]);
-        ListStudent.Remove("row" + key);
+        Destroy(ListStudent[key]);
+        ListStudent.Remove(key);
 
+    }
+
+    public void HandleControlRequestSharedScreen(object sender, ChildChangedEventArgs args)
+    {
+        if (args.DatabaseError != null)
+        {
+            Debug.LogError(args.DatabaseError.Message);
+            return;
+        }
+        string key = args.Snapshot.Key;
+        string adminName = args.Snapshot.Child("admin_name").Value.ToString();
+        string screenKey = args.Snapshot.Child("share_object").Value.ToString();
+        infoAboutShare.enabled = true;
+        Text text = GameObject.Find("txtRequestFrom").GetComponent<Text>();
+        text.text = adminName + " stebou zdieľa úlohu.";
+        Button btnSuhlas = GameObject.Find("btnSuhlas").GetComponent<Button>();
+        btnSuhlas.onClick.AddListener(delegate
+        {
+            AcceptShareScreen(screenKey.ToString(), key);
+        });
+        Button btnNesuhlas = GameObject.Find("btnNesuhlas").GetComponent<Button>();
+        btnNesuhlas.onClick.AddListener(delegate
+        {
+            MissedShareScreen(key);
+        });
     }
 
     void HandleChildChanged(object sender, ChildChangedEventArgs args)
@@ -169,8 +264,6 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
         ExamArray[key] = value.ToString();
         Destroy();
         draw();
-
-        Debug.Log(key + "|" + value);
         // Do something with the data in args.Snapshot
     }
     #endregion
@@ -351,14 +444,14 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
     #endregion
 
     #region ToogleList
-    public void generateStudentToogleList(string ObjName, Vector3 vector, string txtName)
+    private void generateStudentToogleList(string ObjName, Vector3 vector, string txtName)
     {
 
         makeRow(GameObject.Find("Content"), ObjName, vector);
         makeTogglePrefabs(GameObject.Find(ObjName), txtName);
 
     }
-    void makeRow(GameObject cnvs, string objName, Vector3 vector)
+    private void makeRow(GameObject cnvs, string objName, Vector3 vector)
     {
         GameObject rowObj = createRowObj(cnvs, objName);
         CanvasRenderer renderer = rowObj.AddComponent<CanvasRenderer>();
@@ -386,7 +479,7 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
         panelM.layer = LayerMask.NameToLayer("UI");
         return panelM;
     }
-    public void makeTogglePrefabs(GameObject ObjName, string txtName)
+    private void makeTogglePrefabs(GameObject ObjName, string txtName)
     {
         GameObject newItem = Instantiate(togglePrefab) as GameObject;
         newItem.transform.SetParent(ObjName.transform);
