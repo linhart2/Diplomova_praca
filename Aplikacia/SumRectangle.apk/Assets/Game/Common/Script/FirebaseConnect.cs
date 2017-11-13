@@ -16,14 +16,14 @@ public class FirebaseConnect
         mDatabaseRef = FirebaseDatabase.DefaultInstance.RootReference;
     }
 
-    public void UpdateResult(Dictionary<string, string> ex)
+    public void UpdateResult(Dictionary<string, string> ex, string pathToSharedData)
     {
         //string key = mDatabaseRef.Child("scores").Push().Key;
         LeaderBoardEntry entry = new LeaderBoardEntry(ex);
         Dictionary<string, object> entryValues = entry.ToDictionary();
-
         Dictionary<string, object> childUpdates = new Dictionary<string, object>();
-        childUpdates["/Class_ID/member/email/example/result/"] = entryValues;
+        //childUpdates["/Class_ID/member/email/example/result/"] = entryValues;
+        childUpdates[pathToSharedData] = entryValues;
 
         mDatabaseRef.UpdateChildrenAsync(childUpdates);
     }
