@@ -33,6 +33,8 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
     private PlayerData playerData = new PlayerData();
     FirebaseCommunicationLibrary fbc;
 
+    private string pathToSharedData;
+    private bool useButtonShareSchreenWith = false;
     DatabaseReference controlChangeData;
 
     void Start()
@@ -122,7 +124,8 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
         LeaderBoardEntry entry = new LeaderBoardEntry(ExamArray);
         Dictionary<string, object> entryValues = entry.ToDictionary();
         Dictionary<string, object> childUpdates = new Dictionary<string, object>();
-        childUpdates["/SHARED_SCREEN/" + key + "/data/"] = entryValues;
+        pathToSharedData = "/SHARED_SCREEN/" + key + "/data/";
+        childUpdates[pathToSharedData] = entryValues;
         fbc.addSharedScreen(key, screen);
         fbc.inserMyIdToSharedScreen(playerData.UserId, playerData.Name, key);
         FirebaseDatabase.DefaultInstance.RootReference.UpdateChildrenAsync(childUpdates);
@@ -142,13 +145,12 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
         controlChangeData.ChildChanged += HandleChildChanged;
         showSharedWith.enabled = false;
         DeselectAllUser();
+
+        useButtonShareSchreenWith = true;
     }
 
     public void sendRequest(string Screeen_key, List<string> zoznamLudi)
     {
-        // userName
-        // ScreenID
-
         foreach (var user in zoznamLudi)
         {
             SharedScreenRequest request = new SharedScreenRequest()
@@ -186,11 +188,21 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
 
     public void AcceptShareScreen(string screenKey, string requestKey)
     {
+        pathToSharedData = "/SHARED_SCREEN/" + screenKey + "/data/";
         infoAboutShare.enabled = false;
+        useButtonShareSchreenWith = true;
+        Console.WriteLine("AcceptShareScren id={0} name={1} screenKey={2}", playerData.UserId, playerData.Name, screenKey);
+        fbc.inserMyIdToSharedScreen(playerData.UserId, playerData.Name, screenKey);
         controlChangeData = FirebaseDatabase.DefaultInstance
-                                            .GetReference("/SHARED_SCREEN/" + screenKey + "/data/");
+                                            .GetReference(pathToSharedData);
         controlChangeData.ChildChanged += HandleChildChanged;
+        controlChangeData.ChildAdded += HandleChildChanged;
         FirebaseDatabase.DefaultInstance.GetReference("/USERS/" + playerData.UserId + "/waitForShare/").Child(requestKey).RemoveValueAsync();
+
+        //ExamArray = fbc.getShareData("/SHARED_SCREEN/" + screenKey + "/data/");
+        //Destroy();
+        //draw();
+
     }
     public void MissedShareScreen(string requestKey)
     {
@@ -243,7 +255,7 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
         Button btnSuhlas = GameObject.Find("btnSuhlas").GetComponent<Button>();
         btnSuhlas.onClick.AddListener(delegate
         {
-            AcceptShareScreen(screenKey.ToString(), key);
+            AcceptShareScreen(screenKey, key);
         });
         Button btnNesuhlas = GameObject.Find("btnNesuhlas").GetComponent<Button>();
         btnNesuhlas.onClick.AddListener(delegate
@@ -366,7 +378,10 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
                 }
             }
         }
-        firebase.UpdateResult(ExamArray);
+        if (useButtonShareSchreenWith)
+        {
+            firebase.UpdateResult(ExamArray, pathToSharedData);
+        }
         solution_control(kontrola);
 
     }

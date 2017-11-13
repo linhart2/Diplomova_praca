@@ -169,6 +169,26 @@ public class FirebaseCommunicationLibrary
                     });
     }
 
+    public Dictionary<string, string> getShareData(string path)
+    {
+        Dictionary<string, string> _data = new Dictionary<string, string>();
+        FirebaseDatabase.DefaultInstance.GetReference(path)
+                    .GetValueAsync().ContinueWith(task =>
+                    {
+                        if (task.IsFaulted) { }
+                        else if (task.IsCompleted)
+                        {
+                            DataSnapshot snapshot = task.Result;
+                            foreach (var x in snapshot.Children)
+                            {
+                                _data[x.Key] = x.Value.ToString();
+                            }
+                        }
+                    });
+
+        return _data;
+    }
+
     public void FindClass(string hesloTriedy, string studentID)
     {
         FirebaseDatabase.DefaultInstance.GetReference("/CLASSES").OrderByChild("heslo").EqualTo(hesloTriedy)
