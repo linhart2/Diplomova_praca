@@ -17,16 +17,19 @@ public class Slot : MonoBehaviour, IDropHandler
     }
 
     #region IDropHandler implementation
-    public void OnDrop(PointerEventData eventData)
+    void IDropHandler.OnDrop(PointerEventData eventData)
     {
-		if (!item) {
-			DragHandeler.itemBeingDragged.transform.SetParent (transform);
-			ExecuteEvents.ExecuteHierarchy<IHasChanged>(gameObject, null, (x, y) => x.HasChanged());
-		} else if (item && transform.GetChildCount () == 1 && transform.GetChild(0).GetComponent<DragHandeler>().enabled == true) {
-			transform.GetChild (0).transform.SetParent (DragHandeler.startParent);
-			DragHandeler.itemBeingDragged.transform.SetParent (transform);
-			ExecuteEvents.ExecuteHierarchy<IHasChanged>(gameObject, null, (x, y) => x.HasChanged());
-		}
+        if (!item)
+        {
+            DragHandeler.itemBeingDragged.transform.SetParent(transform);
+            ExecuteEvents.ExecuteHierarchy<IHasChanged>(gameObject, null, (x, y) => x.HasChanged());
+        }
+        else if (item && transform.GetChildCount() == 1 && transform.GetChild(0).GetComponent<DragHandeler>().enabled == true)
+        {
+            transform.GetChild(0).transform.SetParent(DragHandeler.startParent);
+            DragHandeler.itemBeingDragged.transform.SetParent(transform);
+            ExecuteEvents.ExecuteHierarchy<IHasChanged>(gameObject, null, (x, y) => x.HasChanged());
+        }
     }
     #endregion
 }

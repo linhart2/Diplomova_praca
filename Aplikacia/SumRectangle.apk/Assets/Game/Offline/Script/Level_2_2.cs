@@ -22,23 +22,23 @@ public class Level_2_2 : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
     public CustomProgressBar progressBar; //- object progress bar
     bool isFillingProgressBar;            //- I dont know                  
     public int lvl;                       //- Level
-	bool zobraz = true;                   //- I dont know  
+    bool zobraz = true;                   //- I dont know  
     public Transform[] slots_control;     //- panel slotov ktore sa kontroluju ci nenastali zmeny
     Generator_uloh priklad;
     Kontrola skontroluj;
-	SaveLoadProgress slp;
+    SaveLoadProgress slp;
 
     // Use this for initialization
     void Start()
     {
-		slp = new SaveLoadProgress ();
+        slp = new SaveLoadProgress();
         reset = reset.GetComponent<Button>();
         skontroluj = new Kontrola(3);
         generator_uloh();
         draw();
-		slp.Load (lvl);
-		progressBar.slider.value = slp.progress;
-		zobraz = slp.zobraz;
+        slp.Load(lvl);
+        progressBar.slider.value = slp.progress;
+        zobraz = slp.zobraz;
         gratulation = gratulation.GetComponent<Canvas>();
         gratulation.enabled = false;
         nespravne = nespravne.GetComponent<Canvas>();
@@ -48,9 +48,9 @@ public class Level_2_2 : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
         progressBar.slider.maxValue = 10f;
         progressBar.slider.minValue = 0f;
         progressBar.slider.value = 0f;
-		slp.Load (lvl);
-		progressBar.slider.value = slp.progress;
-		zobraz = slp.zobraz;
+        slp.Load(lvl);
+        progressBar.slider.value = slp.progress;
+        zobraz = slp.zobraz;
         StartFillingUpProgressBar();
         HasChanged();
 
@@ -62,7 +62,7 @@ public class Level_2_2 : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
         table = priklad.reverse(priklad.get_array(6));
         table_M = new List<int> { };
         typ = new List<int> { };
-        List<int> pozicia = new List<int> { };        
+        List<int> pozicia = new List<int> { };
 
         for (int i = 0; i < table.Count; i++)
         {
@@ -139,7 +139,7 @@ public class Level_2_2 : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
                     if (poc < 6)
                     {   // nastavy aby sa hodnoty ktore su nazaciatku umiestnene nedali presuvat
                         newItem.GetComponent<DragHandeler>().enabled = false;
-                    }                    
+                    }
                 }
                 poc++;
             }
@@ -147,7 +147,7 @@ public class Level_2_2 : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
         }
     }
 
-    public void HasChanged()
+    public void HasChanged(bool zaznamenajDoDB = true)
     {
         // metoda kontroluje ci nenastali zmeny v slotoch
         List<int> kontrola = new List<int> { };
@@ -178,7 +178,7 @@ public class Level_2_2 : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
         }
 
         if (kontrola.Count == 6)
-        {            
+        {
             bool pom = skontroluj.Vyhodnot(kontrola);
             if (pom)
             {
@@ -187,13 +187,13 @@ public class Level_2_2 : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
                 {
                     zobraz = false;
                     show_unlock();
-					slp.SaveLock(lvl);
-					slp.Save(lvl, zobraz, progressBar.slider.value);
+                    slp.SaveLock(lvl);
+                    slp.Save(lvl, zobraz, progressBar.slider.value);
                 }
                 else
                 {
                     congrats_show();
-					slp.Save(lvl, zobraz, progressBar.slider.value);
+                    slp.Save(lvl, zobraz, progressBar.slider.value);
                 }
             }
             else { nespravne_show(); }
@@ -260,6 +260,6 @@ public class Level_2_2 : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
         nespravne.enabled = false;
         generator_uloh();
         Restart();
-        
+
     }
 }

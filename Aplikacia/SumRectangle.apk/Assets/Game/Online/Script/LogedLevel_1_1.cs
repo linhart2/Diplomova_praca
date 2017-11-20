@@ -276,6 +276,7 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
         ExamArray[key] = value.ToString();
         Destroy();
         draw();
+        HasChanged(false);
         // Do something with the data in args.Snapshot
     }
     #endregion
@@ -351,7 +352,7 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
         }
         //isFillingProgressBar = true;
     }
-    public void HasChanged()
+    public void HasChanged(bool zaznamenajDoDB = true)
     {
         // metoda kontroluje ci nenastali zmeny v slotoch
         List<int> kontrola = new List<int> { };
@@ -378,7 +379,7 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
                 }
             }
         }
-        if (useButtonShareSchreenWith)
+        if (useButtonShareSchreenWith && zaznamenajDoDB)
         {
             firebase.UpdateResult(ExamArray, pathToSharedData);
         }
@@ -454,7 +455,7 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
         yield return new WaitForSeconds(2.0f);
 
         nespravne.enabled = false;
-        Restart();
+        SceneManager.LoadScene(21);
     }
     #endregion
 

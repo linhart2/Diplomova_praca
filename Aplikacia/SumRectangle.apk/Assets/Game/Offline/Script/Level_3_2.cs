@@ -25,25 +25,25 @@ public class Level_3_2 : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
     public CustomProgressBar progressBar; //- object progress bar
     bool isFillingProgressBar;            //- I dont know                  
     public int lvl;                       //- Level
-	bool zobraz = true;
+    bool zobraz = true;
     public Transform[] slots_control;     //- panel slotov ktore sa kontroluju ci nenastali zmeny
     public int pom_suc0;
     public int pom_suc1;               //- kontrolny string 
     Generator_uloh priklad;
     Kontrola skontroluj;
-	SaveLoadProgress slp;
+    SaveLoadProgress slp;
 
     // Use this for initialization
     void Start()
     {
-		slp = new SaveLoadProgress ();
+        slp = new SaveLoadProgress();
         skontroluj = new Kontrola(3);
         reset = reset.GetComponent<Button>();
-        generator_uloh();        
+        generator_uloh();
         draw();
-		slp.Load (lvl);
-		progressBar.slider.value = slp.progress;
-		zobraz = slp.zobraz;
+        slp.Load(lvl);
+        progressBar.slider.value = slp.progress;
+        zobraz = slp.zobraz;
         gratulation = gratulation.GetComponent<Canvas>();
         gratulation.enabled = false;
         nespravne = nespravne.GetComponent<Canvas>();
@@ -53,9 +53,9 @@ public class Level_3_2 : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
         progressBar.slider.maxValue = 10f;
         progressBar.slider.minValue = 0f;
         progressBar.slider.value = 0f;
-		slp.Load (lvl);
-		progressBar.slider.value = slp.progress;
-		zobraz = slp.zobraz;
+        slp.Load(lvl);
+        progressBar.slider.value = slp.progress;
+        zobraz = slp.zobraz;
         StartFillingUpProgressBar();
         HasChanged();
     }
@@ -63,11 +63,11 @@ public class Level_3_2 : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
     void generator_uloh()
     {
         priklad = new Generator_uloh(lvl);
-        table = priklad.reverse(priklad.get_array(6));        
+        table = priklad.reverse(priklad.get_array(6));
         table_M = new List<int> { };
         typ = new List<int> { };
         List<int> pozicia = new List<int> { };
-        
+
         pom_suc0 = priklad.reverse(table)[priklad.pom_suc0];
         pom_suc1 = priklad.reverse(table)[priklad.pom_suc1];
         pom_suc0 = table.FindIndex(x => x == pom_suc0);
@@ -106,7 +106,7 @@ public class Level_3_2 : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
         }
         table_M[pozicia[0]] = table_M[typ[0]];
         table_M[pozicia[1]] = table_M[typ[1]];
-        table_M[pozicia[2]] = table_M[typ[2]];      
+        table_M[pozicia[2]] = table_M[typ[2]];
     }
 
     public void Destroy()
@@ -138,7 +138,8 @@ public class Level_3_2 : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
             Image change = GameObject.Find(slot + col).GetComponent<Image>();
             change.color = new Color(0, 0, 255, 0.61f);
         }
-        else {
+        else
+        {
             Image change = GameObject.Find(slot + col).GetComponent<Image>();
             change.color = new Color(255, 255, 255, 0.61f);
         }
@@ -174,7 +175,7 @@ public class Level_3_2 : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
         }
     }
 
-    public void HasChanged()
+    public void HasChanged(bool zaznamenajDoDB = true)
     {
         // metoda kontroluje ci nenastali zmeny v slotoch
         List<int> kontrola = new List<int> { };
@@ -220,13 +221,13 @@ public class Level_3_2 : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
                 {
                     zobraz = false;
                     show_unlock();
-					slp.SaveLock(lvl);
-					slp.Save(lvl, zobraz, progressBar.slider.value);
+                    slp.SaveLock(lvl);
+                    slp.Save(lvl, zobraz, progressBar.slider.value);
                 }
                 else
                 {
                     congrats_show();
-					slp.Save(lvl, zobraz, progressBar.slider.value);
+                    slp.Save(lvl, zobraz, progressBar.slider.value);
                 }
             }
             else { nespravne_show(); }
