@@ -20,7 +20,6 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
     public GameObject togglePrefab;
     GameObject[] slots;
     bool zobrazSlider = true;
-    string x = "Panel1_";
     public int lvl;
     public static List<int> table;
     [SerializeField]
@@ -42,8 +41,10 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
         playerData = GlobalData.playerData;
 
         #region testData
-        //playerData.Name = "TestLingo";
-        //playerData.UserId = "ZAT4DktlgdYBVGwXYRpOfA3temm1";
+#if DEBUG
+        playerData.Name = "TestLingo";
+        playerData.UserId = "ZAT4DktlgdYBVGwXYRpOfA3temm1";
+#endif
         #endregion
 
         //saveloadprogress = new SaveLoadProgress();
@@ -138,7 +139,7 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
                 selectedStudent.Add(student.Key);
             }
         }
-        sendRequest(key, selectedStudent);
+        SendRequest(key, selectedStudent);
 
         controlChangeData = FirebaseDatabase.DefaultInstance
                                             .GetReference("/SHARED_SCREEN/" + key + "/data/");
@@ -149,7 +150,7 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
         useButtonShareSchreenWith = true;
     }
 
-    public void sendRequest(string Screeen_key, List<string> zoznamLudi)
+    public void SendRequest(string Screeen_key, List<string> zoznamLudi)
     {
         foreach (var user in zoznamLudi)
         {
@@ -198,11 +199,6 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
         controlChangeData.ChildChanged += HandleChildChanged;
         controlChangeData.ChildAdded += HandleChildChanged;
         FirebaseDatabase.DefaultInstance.GetReference("/USERS/" + playerData.UserId + "/waitForShare/").Child(requestKey).RemoveValueAsync();
-
-        //ExamArray = fbc.getShareData("/SHARED_SCREEN/" + screenKey + "/data/");
-        //Destroy();
-        //draw();
-
     }
     public void MissedShareScreen(string requestKey)
     {
