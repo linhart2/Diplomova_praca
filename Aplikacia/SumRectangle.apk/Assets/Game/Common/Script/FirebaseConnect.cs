@@ -8,7 +8,6 @@ using Firebase.Unity.Editor;
 public class FirebaseConnect
 {
     DatabaseReference mDatabaseRef;
-    public string JsonData;
 
     public FirebaseConnect()
     {

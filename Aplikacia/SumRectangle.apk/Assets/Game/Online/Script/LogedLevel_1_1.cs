@@ -39,14 +39,6 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
     void Start()
     {
         playerData = GlobalData.playerData;
-
-        #region testData
-#if DEBUG
-        playerData.Name = "TestLingo";
-        playerData.UserId = "ZAT4DktlgdYBVGwXYRpOfA3temm1";
-#endif
-        #endregion
-
         //saveloadprogress = new SaveLoadProgress();
         firebase = new FirebaseConnect();
         fbc = new FirebaseCommunicationLibrary();
@@ -111,6 +103,13 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
                         {
                             SelectAllUser();
                         });
+
+        #region testData
+#if DEBUG
+        playerData.Name = "TestLingo";
+        playerData.UserId = "ZAT4DktlgdYBVGwXYRpOfA3temm1";
+#endif
+        #endregion
     }
 
     public void ShareScreenWith()

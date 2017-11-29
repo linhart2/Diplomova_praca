@@ -7,6 +7,7 @@ using Firebase.Unity.Editor;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using System.Linq;
+using System.Threading.Tasks;
 
 public class FirebaseCommunicationLibrary
 {
@@ -25,9 +26,31 @@ public class FirebaseCommunicationLibrary
         auth = Firebase.Auth.FirebaseAuth.DefaultInstance;
         auth.StateChanged += AuthStateChanged;
         AuthStateChanged(this, null);
-
-        GlobalData.playerData = playerData;
     }
+
+    public void SaveGlobalDataAll(string name, string userId, List<string> classses, bool loggedUser)
+    {
+        GlobalData.playerData.Name = name;
+        GlobalData.playerData.UserId = userId;
+        GlobalData.playerData.Classes = classses;
+        GlobalData.playerData.LoggedUser = loggedUser;
+    }
+
+    public void SaveGlobalDataUserId(string userId)
+    {
+        GlobalData.playerData.UserId = userId;
+    }
+    public void SaveGlobalDataLoggedUser(bool loggedUser)
+    {
+        GlobalData.playerData.LoggedUser = loggedUser;
+    }
+
+    public void SaveGlobalSelectedClass(string @class)
+    {
+        GlobalData.playerData.SelectedClass = @class;
+    }
+
+
     #region Auth
     void AuthStateChanged(object sender, System.EventArgs eventArgs)
     {
@@ -43,11 +66,12 @@ public class FirebaseCommunicationLibrary
             if (signedIn)
             {
                 Debug.Log("Signed in " + user.UserId);
-                this.GetUserData(auth.CurrentUser.UserId);
                 playerData.LoggedUser = true;
                 playerData.UserId = auth.CurrentUser.UserId;
             }
         }
+        SaveGlobalDataUserId(playerData.UserId);
+        SaveGlobalDataLoggedUser(playerData.LoggedUser);
     }
 
     public void OnDestroy(ILoadScene scena)
@@ -56,6 +80,8 @@ public class FirebaseCommunicationLibrary
         auth.StateChanged -= AuthStateChanged;
         auth.SignOut();
         auth = null;
+        SaveGlobalDataAll(null, null, null, false);
+        SaveGlobalSelectedClass(null);
         this.scena.LoadScene();
     }
 
@@ -107,9 +133,8 @@ public class FirebaseCommunicationLibrary
             Firebase.Auth.FirebaseUser newUser = task.Result;
             Debug.LogFormat("User signed in successfully: {0} ({1})",
                 newUser.DisplayName, newUser.UserId);
-            this.GetUserData(auth.CurrentUser.UserId);
-            playerData.LoggedUser = true;
-            this.scena.LoadScene();
+
+            SceneManager.LoadScene(29);
         });
     }
 
@@ -147,26 +172,47 @@ public class FirebaseCommunicationLibrary
     #endregion
 
     #region LoadDataFromDB
-    public void GetUserData(string userId)
+    public void GetUserData(string userId, bool changeScene = false, int scene = 19)
     {
-        FirebaseDatabase.DefaultInstance.GetReference("/USERS/" + userId + "/")
-                    .GetValueAsync().ContinueWith(task =>
-                    {
-                        if (task.IsFaulted) { }
-                        else if (task.IsCompleted)
+
+        if (playerData.LoggedUser)
+        {
+            FirebaseDatabase.DefaultInstance.GetReference("/USERS/" + userId + "/")
+                        .GetValueAsync().ContinueWith(task =>
                         {
-                            DataSnapshot snapshot = task.Result;
-                            playerData.Name = UserName(snapshot.Child("firstName").Value.ToString(), snapshot.Child("lastName").Value.ToString());
-                            List<string> _classData = new List<string>();
-                            foreach (var classData in snapshot.Child("MY_CLASS").Children.ToList())
+                            if (task.IsFaulted)
                             {
-                                _classData.Add(classData.Value.ToString());
+                                Debug.Log("skontroluj pripojenie");
+                                SceneManager.LoadScene(0);
                             }
-                            playerData.Classes = _classData;
+                            else if (task.IsCompleted)
+                            {
+                                DataSnapshot snapshot = task.Result;
+                                playerData.Name = UserName(snapshot.Child("firstName").Value.ToString(), snapshot.Child("lastName").Value.ToString());
+                                List<string> _classData = new List<string>();
+                                foreach (var classData in snapshot.Child("MY_CLASS").Children.ToList())
+                                {
+                                    _classData.Add(classData.Value.ToString());
+                                }
+                                playerData.Classes = _classData;
+                                playerData.UserId = userId;
 
+                                if (changeScene)
+                                {
+                                    GlobalData.playerData = playerData;
+                                    SaveGlobalDataAll(playerData.Name, userId, playerData.Classes, playerData.LoggedUser);
+                                    SceneManager.LoadScene(scene);
+                                }
 
-                        }
-                    });
+                            }
+                        });
+        }
+        else
+        {
+            SaveGlobalDataAll(null, null, null, false);
+            SaveGlobalSelectedClass(null);
+            SceneManager.LoadScene(17);
+        }
     }
 
     public Dictionary<string, string> getShareData(string path)
@@ -214,7 +260,7 @@ public class FirebaseCommunicationLibrary
             Debug.Log("class " + hesloTriedy + " exists!!!");
             addStudentToClass(studentID, hesloTriedy, classID);
             GlobalData.playerData.Classes.Add(hesloTriedy);
-            GlobalData.playerData.SelectedClass = hesloTriedy;
+            SaveGlobalSelectedClass(hesloTriedy);
             SceneManager.LoadScene(20);
 
         }
