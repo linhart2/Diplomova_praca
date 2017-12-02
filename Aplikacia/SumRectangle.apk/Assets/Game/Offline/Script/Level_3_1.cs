@@ -16,7 +16,7 @@ public class Level_3_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
     public static List<int> table;
     string x = "Panel1_";
     string slot = "Slot_";
-    GameObject[] slots;    
+    GameObject[] slots;
     public int pom_suc0;
     public int pom_suc1;
     [SerializeField]
@@ -26,25 +26,25 @@ public class Level_3_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
     public CustomProgressBar progressBar; //- object progress bar
     bool isFillingProgressBar;            //- I dont know                  
     public int lvl;                       //- Level
-	bool zobraz = true;                   //- I dont know  
+    bool zobraz = true;                   //- I dont know  
     public Transform[] slots_control;     //- panel slotov ktore sa kontroluju ci nenastali zmeny
     Generator_uloh priklad;
     Kontrola skontroluj;
-	SaveLoadProgress slp;
+    SaveLoadProgress slp;
 
     void Start()
     {
-		slp = new SaveLoadProgress ();
+        slp = new SaveLoadProgress();
         reset = reset.GetComponent<Button>();
         skontroluj = new Kontrola(3);
         priklad = new Generator_uloh(lvl);
-        table = priklad.get_array(6);       
+        table = priklad.get_array(6);
         pom_suc0 = priklad.pom_suc0;
         pom_suc1 = priklad.pom_suc1;
-        draw();       
-		slp.Load (lvl);
-		progressBar.slider.value = slp.progress;
-		zobraz = slp.zobraz;
+        draw();
+        slp.Load(lvl);
+        progressBar.slider.value = slp.progress;
+        zobraz = slp.zobraz;
         gratulation = gratulation.GetComponent<Canvas>();
         gratulation.enabled = false;
         nespravne = nespravne.GetComponent<Canvas>();
@@ -54,13 +54,13 @@ public class Level_3_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
         progressBar.slider.maxValue = 10f;
         progressBar.slider.minValue = 0f;
         progressBar.slider.value = 0f;
-		slp.Load (lvl);
-		progressBar.slider.value = slp.progress;
-		zobraz = slp.zobraz;
+        slp.Load(lvl);
+        progressBar.slider.value = slp.progress;
+        zobraz = slp.zobraz;
         StartFillingUpProgressBar();
         HasChanged();
     }
-    
+
     public void Destroy()
     {
         int y = 1;
@@ -70,13 +70,13 @@ public class Level_3_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
             {
 
                 var pom = GameObject.Find(x + y).gameObject.transform.GetChild(j);
-                if (pom.gameObject.transform.childCount > 0)                    
+                if (pom.gameObject.transform.childCount > 0)
                     DestroyImmediate(pom.gameObject.transform.GetChild(0).gameObject);
             }
             y++;
         }
     }
-    
+
 
 
     public void Restart()
@@ -89,19 +89,19 @@ public class Level_3_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
 
     public void ChangeCol(int col)
     {
-        Image change = GameObject.Find(slot+col).GetComponent<Image>();
+        Image change = GameObject.Find(slot + col).GetComponent<Image>();
         change.color = new Color(0, 0, 255, 0.61f);
     }
 
     public void draw()
-    {        
+    {
         //create a new item, name it, and set the parent
         slots = new GameObject[6];
         for (int i = 0; i < GameObject.Find(x + 4).gameObject.transform.childCount; i++)
         {
-            slots[i] = GameObject.Find(x + 4).gameObject.transform.GetChild(i).gameObject;         
+            slots[i] = GameObject.Find(x + 4).gameObject.transform.GetChild(i).gameObject;
             GameObject newItem = Instantiate(itemPrefab[table[i]]) as GameObject;
-            newItem.transform.parent = slots[i].transform;            
+            newItem.transform.parent = slots[i].transform;
             newItem.transform.localScale = new Vector3(1, 1, 1);
         }
 
@@ -124,8 +124,8 @@ public class Level_3_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
         isFillingProgressBar = true;
     }
 
-    public void HasChanged()
-    {        
+    public void HasChanged(bool zaznamenajDoDB = true)
+    {
         List<int> kontrola = new List<int> { };
 
         foreach (Transform slotTransform in slots_control[0])
@@ -133,9 +133,9 @@ public class Level_3_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
             GameObject item = slotTransform.GetComponent<Slot>().item;
             if (item)
             {
-                
-                
-                kontrola.Add(int.Parse(item.name.Substring(0, item.name.IndexOf("("))));                
+
+
+                kontrola.Add(int.Parse(item.name.Substring(0, item.name.IndexOf("("))));
             }
         }
         foreach (Transform slotTransform in slots_control[1])
@@ -143,7 +143,7 @@ public class Level_3_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
             GameObject item = slotTransform.GetComponent<Slot>().item;
             if (item)
             {
-                kontrola.Add(int.Parse(item.name.Substring(0, item.name.IndexOf("("))));              
+                kontrola.Add(int.Parse(item.name.Substring(0, item.name.IndexOf("("))));
             }
         }
         foreach (Transform slotTransform in slots_control[2])
@@ -151,7 +151,7 @@ public class Level_3_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
             GameObject item = slotTransform.GetComponent<Slot>().item;
             if (item)
             {
-                kontrola.Add(int.Parse(item.name.Substring(0, item.name.IndexOf("("))));               
+                kontrola.Add(int.Parse(item.name.Substring(0, item.name.IndexOf("("))));
             }
         }
 
@@ -171,13 +171,13 @@ public class Level_3_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
                 {
                     zobraz = false;
                     show_unlock();
-					slp.SaveLock(lvl);
-					slp.Save(lvl, zobraz, progressBar.slider.value);
+                    slp.SaveLock(lvl);
+                    slp.Save(lvl, zobraz, progressBar.slider.value);
                 }
                 else
                 {
                     congrats_show();
-					slp.Save(lvl, zobraz, progressBar.slider.value);
+                    slp.Save(lvl, zobraz, progressBar.slider.value);
                 }
             }
             else { nespravne_show(); }

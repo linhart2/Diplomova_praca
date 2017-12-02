@@ -14,7 +14,7 @@ public class Level_2_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
     public GameObject[] itemPrefab;
     public static List<int> table;
     string x = "Panel1_";
-    GameObject[] slots;    
+    GameObject[] slots;
     [SerializeField]
     public Canvas gratulation;      //- object gratulacia
     public Canvas nespravne;        //- object nespravne
@@ -22,23 +22,23 @@ public class Level_2_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
     public CustomProgressBar progressBar; //- object progress bar
     bool isFillingProgressBar;            //- I dont know                  
     public int lvl;                       //- Level
-	bool zobraz = true;                   //- I dont know  
+    bool zobraz = true;                   //- I dont know  
     public Transform[] slots_control;     //- panel slotov ktore sa kontroluju ci nenastali zmeny
     Generator_uloh priklad;
     Kontrola skontroluj;
-	SaveLoadProgress slp;
+    SaveLoadProgress slp;
 
     void Start()
     {
-		slp = new SaveLoadProgress ();
+        slp = new SaveLoadProgress();
         reset = reset.GetComponent<Button>();
         skontroluj = new Kontrola(3);
         priklad = new Generator_uloh(lvl);
-        table = priklad.get_array(6);                
+        table = priklad.get_array(6);
         draw();
-		slp.Load (lvl);
-		progressBar.slider.value = slp.progress;
-		zobraz = slp.zobraz;
+        slp.Load(lvl);
+        progressBar.slider.value = slp.progress;
+        zobraz = slp.zobraz;
         gratulation = gratulation.GetComponent<Canvas>();
         gratulation.enabled = false;
         nespravne = nespravne.GetComponent<Canvas>();
@@ -48,12 +48,12 @@ public class Level_2_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
         progressBar.slider.maxValue = 10f;
         progressBar.slider.minValue = 0f;
         progressBar.slider.value = 0f;
-		slp.Load (lvl);
-		progressBar.slider.value = slp.progress;
-		zobraz = slp.zobraz;
+        slp.Load(lvl);
+        progressBar.slider.value = slp.progress;
+        zobraz = slp.zobraz;
         StartFillingUpProgressBar();
         HasChanged();
-    }    
+    }
 
     public void Destroy()
     {
@@ -84,7 +84,7 @@ public class Level_2_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
         //create a new item, name it, and set the parent
         slots = new GameObject[6];
         for (int i = 0; i < GameObject.Find(x + 4).gameObject.transform.childCount; i++)
-        {            
+        {
             slots[i] = GameObject.Find(x + 4).gameObject.transform.GetChild(i).gameObject;
             GameObject newItem = Instantiate(itemPrefab[table[i]]) as GameObject;
             newItem.transform.parent = slots[i].transform;
@@ -108,7 +108,7 @@ public class Level_2_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
         isFillingProgressBar = true;
     }
 
-    public void HasChanged()
+    public void HasChanged(bool zaznamenajDoDB = true)
     {
         List<int> kontrola = new List<int> { };
 
@@ -138,9 +138,9 @@ public class Level_2_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
                 kontrola.Add(int.Parse(item.name.Substring(0, item.name.IndexOf("("))));
             }
         }
-			
+
         if (kontrola.Count == 6)
-        {            
+        {
             bool pom = skontroluj.Vyhodnot(kontrola);
             if (pom)
             {
@@ -149,13 +149,13 @@ public class Level_2_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
                 {
                     zobraz = false;
                     show_unlock();
-					slp.SaveLock(lvl);
-					slp.Save(lvl, zobraz, progressBar.slider.value);
+                    slp.SaveLock(lvl);
+                    slp.Save(lvl, zobraz, progressBar.slider.value);
                 }
                 else
                 {
                     congrats_show();
-					slp.Save(lvl, zobraz, progressBar.slider.value);
+                    slp.Save(lvl, zobraz, progressBar.slider.value);
                 }
             }
             else { nespravne_show(); }
@@ -192,7 +192,7 @@ public class Level_2_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
     {
         yield return new WaitForSeconds(2.0f);
 
-        gratulation.enabled = false;        
+        gratulation.enabled = false;
         Application.LoadLevel(UnityEngine.Random.RandomRange(4, 6));
     }
 

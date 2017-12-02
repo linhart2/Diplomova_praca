@@ -21,23 +21,24 @@ public class Level_1_2 : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
     public Canvas nespravne;        //- object nespravne
     public Canvas unlock_level;     //- object otvoreny novy level
     public CustomProgressBar progressBar; //- object progress bar
-    bool isFillingProgressBar;            
-    public int lvl;                       
-	bool zobraz = true;                   
+    bool isFillingProgressBar;
+    public int lvl;
+    bool zobraz = true;
     public Transform[] slots_control;     //- panel slotov ktore sa kontroluju ci nenastali zmeny
     Generator_uloh priklad;
     Kontrola skontroluj;
-	SaveLoadProgress slp;
+    SaveLoadProgress slp;
 
-    void Start () {
-		slp = new SaveLoadProgress ();
+    void Start()
+    {
+        slp = new SaveLoadProgress();
         reset = reset.GetComponent<Button>();
         skontroluj = new Kontrola(2);
         generator_uloh();
         draw();
         slp.Load(lvl);
-		progressBar.slider.value = slp.progress;
-		zobraz = slp.zobraz;
+        progressBar.slider.value = slp.progress;
+        zobraz = slp.zobraz;
         gratulation = gratulation.GetComponent<Canvas>();
         gratulation.enabled = false;
         nespravne = nespravne.GetComponent<Canvas>();
@@ -48,8 +49,8 @@ public class Level_1_2 : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
         progressBar.slider.minValue = 0f;
         progressBar.slider.value = 0f;
         slp.Load(lvl);
-		progressBar.slider.value = slp.progress;
-		zobraz = slp.zobraz;
+        progressBar.slider.value = slp.progress;
+        zobraz = slp.zobraz;
         StartFillingUpProgressBar();
         HasChanged();
     }
@@ -91,7 +92,7 @@ public class Level_1_2 : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
         {
             table_M.Add(moznosti[i]);
         }
-        table_M[pozicia[0]] = table_M[typ[0]];        
+        table_M[pozicia[0]] = table_M[typ[0]];
     }
 
     public void Destroy()
@@ -144,7 +145,7 @@ public class Level_1_2 : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
         }
     }
 
-    public void HasChanged()
+    public void HasChanged(bool zaznamenajDoDB = true)
     {
         // metoda kontroluje ci nenastali zmeny v slotoch
         List<int> kontrola = new List<int> { };
@@ -175,13 +176,13 @@ public class Level_1_2 : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
                 {
                     zobraz = false;
                     show_unlock();
-                    slp.SaveLock(lvl);				
-					slp.Save(lvl,zobraz,progressBar.slider.value);
+                    slp.SaveLock(lvl);
+                    slp.Save(lvl, zobraz, progressBar.slider.value);
                 }
                 else
                 {
                     congrats_show();
-					slp.Save(lvl,zobraz,progressBar.slider.value);
+                    slp.Save(lvl, zobraz, progressBar.slider.value);
                 }
             }
             else { nespravne_show(); }
@@ -248,6 +249,6 @@ public class Level_1_2 : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
         nespravne.enabled = false;
         generator_uloh();
         Restart();
-        
+
     }
 }

@@ -20,7 +20,6 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
     public GameObject togglePrefab;
     GameObject[] slots;
     bool zobrazSlider = true;
-    string x = "Panel1_";
     public int lvl;
     public static List<int> table;
     [SerializeField]
@@ -40,12 +39,6 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
     void Start()
     {
         playerData = GlobalData.playerData;
-
-        #region testData
-        //playerData.Name = "TestLingo";
-        //playerData.UserId = "ZAT4DktlgdYBVGwXYRpOfA3temm1";
-        #endregion
-
         //saveloadprogress = new SaveLoadProgress();
         firebase = new FirebaseConnect();
         fbc = new FirebaseCommunicationLibrary();
@@ -110,6 +103,13 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
                         {
                             SelectAllUser();
                         });
+
+        #region testData
+#if DEBUG
+        playerData.Name = "TestLingo";
+        playerData.UserId = "ZAT4DktlgdYBVGwXYRpOfA3temm1";
+#endif
+        #endregion
     }
 
     public void ShareScreenWith()
@@ -138,7 +138,7 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
                 selectedStudent.Add(student.Key);
             }
         }
-        sendRequest(key, selectedStudent);
+        SendRequest(key, selectedStudent);
 
         controlChangeData = FirebaseDatabase.DefaultInstance
                                             .GetReference("/SHARED_SCREEN/" + key + "/data/");
@@ -149,7 +149,7 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
         useButtonShareSchreenWith = true;
     }
 
-    public void sendRequest(string Screeen_key, List<string> zoznamLudi)
+    public void SendRequest(string Screeen_key, List<string> zoznamLudi)
     {
         foreach (var user in zoznamLudi)
         {
@@ -198,11 +198,6 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
         controlChangeData.ChildChanged += HandleChildChanged;
         controlChangeData.ChildAdded += HandleChildChanged;
         FirebaseDatabase.DefaultInstance.GetReference("/USERS/" + playerData.UserId + "/waitForShare/").Child(requestKey).RemoveValueAsync();
-
-        //ExamArray = fbc.getShareData("/SHARED_SCREEN/" + screenKey + "/data/");
-        //Destroy();
-        //draw();
-
     }
     public void MissedShareScreen(string requestKey)
     {
@@ -276,6 +271,7 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
         ExamArray[key] = value.ToString();
         Destroy();
         draw();
+        HasChanged(false);
         // Do something with the data in args.Snapshot
     }
     #endregion
@@ -351,7 +347,7 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
         }
         //isFillingProgressBar = true;
     }
-    public void HasChanged()
+    public void HasChanged(bool zaznamenajDoDB = true)
     {
         // metoda kontroluje ci nenastali zmeny v slotoch
         List<int> kontrola = new List<int> { };
@@ -378,7 +374,7 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
                 }
             }
         }
-        if (useButtonShareSchreenWith)
+        if (useButtonShareSchreenWith && zaznamenajDoDB)
         {
             firebase.UpdateResult(ExamArray, pathToSharedData);
         }
@@ -454,7 +450,7 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
         yield return new WaitForSeconds(2.0f);
 
         nespravne.enabled = false;
-        Restart();
+        SceneManager.LoadScene(21);
     }
     #endregion
 

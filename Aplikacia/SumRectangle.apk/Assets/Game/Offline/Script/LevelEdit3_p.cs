@@ -32,13 +32,13 @@ public class LevelEdit3_p : MonoBehaviour, IHasChanged
     {
         skontroluj = new Kontrola(velkost);
         table = Level_Edit_3.pole_cisel;
-        ries = Level_Edit_3.ries;       
-        reset = reset.GetComponent<Button>();                        
+        ries = Level_Edit_3.ries;
+        reset = reset.GetComponent<Button>();
         draw();
         gratulation = gratulation.GetComponent<Canvas>();
         gratulation.enabled = false;
         nespravne = nespravne.GetComponent<Canvas>();
-        nespravne.enabled = false;                
+        nespravne.enabled = false;
         HasChanged();
     }
 
@@ -60,10 +60,10 @@ public class LevelEdit3_p : MonoBehaviour, IHasChanged
 
     public void Restart()
     {
-        ries = Level_Edit_3.ries;       
+        ries = Level_Edit_3.ries;
         Destroy();
         draw();
-    }    
+    }
 
     public void draw()
     {
@@ -75,10 +75,10 @@ public class LevelEdit3_p : MonoBehaviour, IHasChanged
             GameObject newItem = Instantiate(itemPrefab[table[i]]) as GameObject;
             newItem.transform.parent = slots[i].transform;
             newItem.transform.localScale = new Vector3(1, 1, 1);
-        }        
-    }        
+        }
+    }
 
-    public void HasChanged()
+    public void HasChanged(bool zaznamenajDoDB = true)
     {
         List<int> kontrola = new List<int> { };
 
@@ -122,10 +122,10 @@ public class LevelEdit3_p : MonoBehaviour, IHasChanged
         }
         if (kontrola.Count == slots_count)
         {
-            bool pom = skontroluj.Vyhodnot(kontrola);            
+            bool pom = skontroluj.Vyhodnot(kontrola);
             if (pom) { congrats_show(); }
             else { nespravne_show(); }
-        }                    
+        }
     }
 
     public void nema_ries()
@@ -144,7 +144,7 @@ public class LevelEdit3_p : MonoBehaviour, IHasChanged
     {
         nespravne.enabled = true;
         StartCoroutine(nespravne_hide());
-    }    
+    }
 
     IEnumerator congrats_hide()
     {
@@ -160,5 +160,5 @@ public class LevelEdit3_p : MonoBehaviour, IHasChanged
 
         nespravne.enabled = false;
         Restart();
-    }    
+    }
 }
