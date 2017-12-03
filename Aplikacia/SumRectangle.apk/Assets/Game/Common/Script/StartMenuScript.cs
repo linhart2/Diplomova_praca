@@ -15,7 +15,7 @@ public class StartMenuScript : MonoBehaviour
         btnOfflineVersion = btnOfflineVersion.GetComponent<Button>();
         btnOnlineVersion.onClick.AddListener(delegate
         {
-            SceneManager.LoadScene(29);
+            SceneManager.LoadScene("Loading");
         });
     }
 }
