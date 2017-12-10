@@ -15,26 +15,29 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
     public Canvas unlock_level;     //- object otvoreny novy level
     public Canvas showSharedWith;      //- object zdielat s....
     public Canvas infoAboutShare;
+
     public CustomProgressBar progressBar; //- object progress bar
     public GameObject[] itemPrefab;
     public GameObject togglePrefab;
-    GameObject[] slots;
-    bool zobrazSlider = true;
+    private GameObject[] slots;
+    private bool zobrazSlider = true;
     public int lvl;
-    public static List<int> table;
+    public static List<int> table = null;
     [SerializeField]
     public Dictionary<string, string> ExamArray;
     Generator_uloh priklad;
     Kontrola skontroluj;
     //SaveLoadProgress saveloadprogress;
-    FirebaseConnect firebase;
+    private FirebaseConnect firebase;
     public Dictionary<string, GameObject> ListStudent = new Dictionary<string, GameObject>();
     private PlayerData playerData = new PlayerData();
-    FirebaseCommunicationLibrary fbc;
+    private FirebaseCommunicationLibrary fbc;
 
     private string pathToSharedData;
     private bool useButtonShareSchreenWith = false;
     DatabaseReference controlChangeData;
+    DatabaseReference controlSharedScreenWithMe;
+    DatabaseReference controlAllStudentInClass;
 
     void Start()
     {
@@ -43,18 +46,22 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
         firebase = new FirebaseConnect();
         fbc = new FirebaseCommunicationLibrary();
 
-        var controlAllStudentInClass = FirebaseDatabase.DefaultInstance
+#if DEBUG
+        playerData.Name = "TestLingo";
+        playerData.UserId = "ZAT4DktlgdYBVGwXYRpOfA3temm1";
+        playerData.LoggedUser = true;
+#endif
+        controlAllStudentInClass = FirebaseDatabase.DefaultInstance
                                                        .GetReference("/USERS");
-
         controlAllStudentInClass.ChildAdded += HandleShowAllUserInClassAdd;
         controlAllStudentInClass.ChildRemoved += HandleShowAllUserInClassRemove;
 
-        var controlSharedScreenWithMe = FirebaseDatabase.DefaultInstance
-                                                        .GetReference("/USERS/" + playerData.UserId + "/waitForShare/");
+        controlSharedScreenWithMe = FirebaseDatabase.DefaultInstance
+                                                        .GetReference("/USERS/" + playerData.UserId + "/waitForShare");
         controlSharedScreenWithMe.ChildAdded += HandleControlRequestSharedScreen;
 
-
         gratulation = gratulation.GetComponent<Canvas>();
+        infoAboutShare = infoAboutShare.GetComponent<Canvas>();
         showSharedWith = showSharedWith.GetComponent<Canvas>();
         nespravne = nespravne.GetComponent<Canvas>();
         unlock_level = unlock_level.GetComponent<Canvas>();
@@ -79,7 +86,13 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
         //zobrazSlider = saveloadprogress.zobraz;
         StartFillingUpProgressBar();
         HasChanged();
+        Button btnBack = GameObject.Find("Back").GetComponent<Button>();
+        btnBack.onClick.AddListener(delegate
+        {
+            UnbindAllHandler();
+            SceneManager.LoadScene("LogedSelectLevel");
 
+        });
         Button btnZrus = GameObject.Find("btnZrus").GetComponent<Button>();
         btnZrus.onClick.AddListener(delegate
                     {
@@ -103,13 +116,6 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
                         {
                             SelectAllUser();
                         });
-
-        #region testData
-#if DEBUG
-        playerData.Name = "TestLingo";
-        playerData.UserId = "ZAT4DktlgdYBVGwXYRpOfA3temm1";
-#endif
-        #endregion
     }
 
     public void ShareScreenWith()
@@ -259,7 +265,7 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
         });
     }
 
-    void HandleChildChanged(object sender, ChildChangedEventArgs args)
+    public void HandleChildChanged(object sender, ChildChangedEventArgs args)
     {
         if (args.DatabaseError != null)
         {
@@ -272,7 +278,15 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
         Destroy();
         draw();
         HasChanged(false);
-        // Do something with the data in args.Snapshot
+    }
+
+    public void UnbindAllHandler()
+    {
+        controlSharedScreenWithMe.ChildAdded -= HandleControlRequestSharedScreen;
+        controlAllStudentInClass.ChildAdded -= HandleShowAllUserInClassAdd;
+        controlAllStudentInClass.ChildRemoved -= HandleShowAllUserInClassRemove;
+        if (useButtonShareSchreenWith)
+            controlChangeData.ChildChanged -= HandleChildChanged;
     }
     #endregion
 
@@ -355,7 +369,6 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
         {
             foreach (Transform slot in objekt)
             {
-                //Debug.Log (slot);
                 if (slot.GetComponent<Slot>().item == null)
                 {
                     ExamArray[slot.name] = "null";
@@ -433,6 +446,7 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
         yield return new WaitForSeconds(2.0f);
 
         unlock_level.enabled = false;
+        UnbindAllHandler();
         SceneManager.LoadScene(18);
     }
 
@@ -441,6 +455,7 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
         yield return new WaitForSeconds(2.0f);
 
         gratulation.enabled = false;
+        UnbindAllHandler();
         //SceneManager.LoadScene(UnityEngine.Random.Range(19, 20));
         SceneManager.LoadScene(21);
     }
@@ -448,8 +463,8 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
     IEnumerator nespravne_hide()
     {
         yield return new WaitForSeconds(2.0f);
-
         nespravne.enabled = false;
+        UnbindAllHandler();
         SceneManager.LoadScene(21);
     }
     #endregion

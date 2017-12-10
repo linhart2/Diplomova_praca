@@ -13,6 +13,7 @@ public class ShowClassScript : MonoBehaviour
     public Button btnGotoClass;
     public InputField inputInsertClassKey;
     private PlayerData playerData = new PlayerData();
+    GlobalData globalData;
 
     void Start()
     {
@@ -61,6 +62,6 @@ public class ShowClassScript : MonoBehaviour
     private void SelectClass(string className)
     {
         GlobalData.playerData.SelectedClass = className;
-        SceneManager.LoadScene(20);
+        SceneManager.LoadScene("LogedSelectLevel");
     }
 }

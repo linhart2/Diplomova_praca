@@ -18,7 +18,6 @@ public class FirebaseCommunicationLibrary
     private ILoadScene scena;
     private PlayerData playerData = new PlayerData();
 
-
     public FirebaseCommunicationLibrary()
     {
         FirebaseApp.DefaultInstance.SetEditorDatabaseUrl("https://sumrectangle.firebaseio.com/");
@@ -49,7 +48,6 @@ public class FirebaseCommunicationLibrary
     {
         GlobalData.playerData.SelectedClass = @class;
     }
-
 
     #region Auth
     void AuthStateChanged(object sender, System.EventArgs eventArgs)
@@ -134,10 +132,9 @@ public class FirebaseCommunicationLibrary
             Debug.LogFormat("User signed in successfully: {0} ({1})",
                 newUser.DisplayName, newUser.UserId);
 
-            SceneManager.LoadScene(29);
+            SceneManager.LoadScene("Loading");
         });
     }
-
     #endregion
 
     #region InsertDatabase
@@ -183,7 +180,7 @@ public class FirebaseCommunicationLibrary
                             if (task.IsFaulted)
                             {
                                 Debug.Log("skontroluj pripojenie");
-                                SceneManager.LoadScene(0);
+                                SceneManager.LoadScene("CheckConnection");
                             }
                             else if (task.IsCompleted)
                             {
@@ -211,7 +208,7 @@ public class FirebaseCommunicationLibrary
         {
             SaveGlobalDataAll(null, null, null, false);
             SaveGlobalSelectedClass(null);
-            SceneManager.LoadScene(17);
+            SceneManager.LoadScene("Login");
         }
     }
 
@@ -261,7 +258,7 @@ public class FirebaseCommunicationLibrary
             addStudentToClass(studentID, hesloTriedy, classID);
             GlobalData.playerData.Classes.Add(hesloTriedy);
             SaveGlobalSelectedClass(hesloTriedy);
-            SceneManager.LoadScene(20);
+            SceneManager.LoadScene("LogedSelectLevel");
 
         }
         else

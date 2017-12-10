@@ -11,13 +11,12 @@ public class SceneLoader : MonoBehaviour
     private PlayerData playerData = new PlayerData();
     private FirebaseCommunicationLibrary fbC;
 
-
-
     private void Start()
     {
         fbC = new FirebaseCommunicationLibrary();
         fbC.GetUserData(GlobalData.playerData.UserId, true);
         StartCoroutine(EndLoading());
+
     }
 
     void Update()
@@ -28,6 +27,12 @@ public class SceneLoader : MonoBehaviour
         {
             loadingText.color = new Color(loadingText.color.r, loadingText.color.g, loadingText.color.b, Mathf.PingPong(Time.time, 1));
         }
+
+        if (Application.internetReachability == NetworkReachability.NotReachable)
+        {
+            Debug.Log("Check internet connection !!!");
+            SceneManager.LoadScene("CheckConnection");
+        }
     }
 
 
@@ -36,6 +41,6 @@ public class SceneLoader : MonoBehaviour
     {
         yield return new WaitForSeconds(30.0f);
 
-        SceneManager.LoadScene(0);
+        SceneManager.LoadScene("CheckConnection");
     }
 }
