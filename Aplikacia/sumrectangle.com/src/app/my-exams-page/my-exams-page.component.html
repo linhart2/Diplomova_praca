@@ -1,0 +1,22 @@
+<div [className]="errorMessage.type">
+  {{errorMessage.msg}}
+</div>
+<section class="application footer_p" *ngIf="isLoadedPage">
+  <div class="container show-exam">
+    <div class="row">
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <h1>Moje úlohy</h1>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <ul class="GroupList">
+          <li *ngFor="let d of zoznamUloh" id="{{d.$key}}">
+            <a class="open {{d.$key}}" [routerLink]="['/openexam', d.$key]">{{d.nazovUlohy}}</a>
+            <a class="close" (click)="deleteExam(d.$key)"><i class="fa fa-window-close-o" aria-hidden="true"></i></a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>

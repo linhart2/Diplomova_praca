@@ -1,0 +1,125 @@
+<div [className]="errorMessage.type">
+  {{errorMessage.msg}}
+</div>
+<section class="PridajCvicenie bodyHeight" *ngIf="isLoadedPage">
+  <div class="container CreateExam">
+    <div class="row">
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <h1>Vytvoriť úlohu</h1>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <div class="BasicParameters">
+          <label>Name</label>
+          <input #examName type="text" name="name" id="ExamsName" class="form-control longText" style="display: inline-block; margin: 0px 0px 5px 0px;" placeholder="Názov úlohy">
+          <div class="exams_array">
+            <ul class="GroupList">
+              <li *ngFor="let pr of prikladyArrayVykresli;let pid=index" id="priklad{{pr.key.toString()}}"><a onclick=''>{{pr.value}}</a><a class='close' (click)="deleteTask(pr.key)"><i class='fa fa-window-close-o' aria-hidden=true></i></a></li>
+            </ul>
+          </div>
+          <input *ngIf="!isRectVisible" class="sendButton btn btn-default" type="submit" data-toggle="modal" data-target="#vyberSablonu" name="addExam-submit" id="addExam-submit" value="Pridaj príklad">
+          <input *ngIf="!isRectVisible" class="sendButton btn btn-default" type="submit" (click)="saveExam(examName.value)"  name="saveExams-submit" id="saveExams-submit" value="Ulož úlohu">
+        </div>
+        <div class="SecondParameters" id="2_param" [ngSwitch]="createTaskSablona">
+          <div *ngSwitchCase="2" class="CreateTask">
+            <div class="board" id="priklad">
+              <div class="boxy">
+                <div style="display: flex;justify-content: center;" class="boxPanel0" id="panel0">
+                  <a class="box" id="Slot_3" btn-info="" btn-lg="" data-toggle="modal" data-target="#vyberCislo" (click)="getBoxId('Slot_3')"></a>
+                  <a class="box" id="Slot_2" btn-info="" btn-lg="" data-toggle="modal" data-target="#vyberCislo" (click)="getBoxId('Slot_2')"></a>
+                </div>
+                <div style="display: flex;justify-content: center;" class="boxPanel1" id="panel1">
+                  <a class="box" id="Slot_1" btn-info="" btn-lg="" data-toggle="modal" data-target="#vyberCislo" (click)="getBoxId('Slot_1')"></a>
+                </div>
+              </div>
+            </div>
+            <button type="button" class="sendButton btn btn-default" (click)="submitTask()">Potvrd priklad</button>
+            <button type="button" class="sendButton btn btn-default" (click)="removeTask()">Zrus priklad</button>
+          </div>
+          <div *ngSwitchCase="3" class="CreateTask">
+            <div class="board" id="priklad">
+              <div class="boxy">
+                <div style="display: flex;justify-content: center;" class="boxPanel0" id="panel0">
+                  <a class="box" id="Slot_6" btn-info="" btn-lg="" data-toggle="modal" data-target="#vyberCislo" (click)="getBoxId('Slot_6')"></a>
+                  <a class="box" id="Slot_5" btn-info="" btn-lg="" data-toggle="modal" data-target="#vyberCislo" (click)="getBoxId('Slot_5')"></a>
+                  <a class="box" id="Slot_4" btn-info="" btn-lg="" data-toggle="modal" data-target="#vyberCislo" (click)="getBoxId('Slot_4')"></a>
+                </div>
+                <div style="display: flex;justify-content: center;" class="boxPanel1" id="panel1">
+                  <a class="box" id="Slot_3" btn-info="" btn-lg="" data-toggle="modal" data-target="#vyberCislo" (click)="getBoxId('Slot_3')"></a>
+                  <a class="box" id="Slot_2" btn-info="" btn-lg="" data-toggle="modal" data-target="#vyberCislo" (click)="getBoxId('Slot_2')"></a>
+                </div>
+                <div style="display: flex;justify-content: center;" class="boxPanel2" id="panel2">
+                  <a class="box" id="Slot_1" btn-info="" btn-lg="" data-toggle="modal" data-target="#vyberCislo" (click)="getBoxId('Slot_1')"></a>
+                </div>
+              </div>
+            </div>
+            <button type="button" class="sendButton btn btn-default" (click)="submitTask()">Potvrd priklad</button>
+            <button type="button" class="sendButton btn btn-default" (click)="removeTask()">Zrus priklad</button>
+          </div>
+          <div *ngSwitchCase="4" class="CreateTask">
+            <div class="board" id="priklad">
+              <div class="boxy">
+                <div style="display: flex;justify-content: center;" class="boxPanel0" id="panel0">
+                  <a class="box" id="Slot_10" btn-info="" btn-lg="" data-toggle="modal" data-target="#vyberCislo" (click)="getBoxId('Slot_10')"></a>
+                  <a class="box" id="Slot_9" btn-info="" btn-lg="" data-toggle="modal" data-target="#vyberCislo" (click)="getBoxId('Slot_9')"></a>
+                  <a class="box" id="Slot_8" btn-info="" btn-lg="" data-toggle="modal" data-target="#vyberCislo" (click)="getBoxId('Slot_8')"></a>
+                  <a class="box" id="Slot_7" btn-info="" btn-lg="" data-toggle="modal" data-target="#vyberCislo" (click)="getBoxId('Slot_7')"></a>
+                </div>
+                <div style="display: flex;justify-content: center;" class="boxPanel1" id="panel1">
+                  <a class="box" id="Slot_6" btn-info="" btn-lg="" data-toggle="modal" data-target="#vyberCislo" (click)="getBoxId('Slot_6')"></a>
+                  <a class="box" id="Slot_5" btn-info="" btn-lg="" data-toggle="modal" data-target="#vyberCislo" (click)="getBoxId('Slot_5')"></a>
+                  <a class="box" id="Slot_4" btn-info="" btn-lg="" data-toggle="modal" data-target="#vyberCislo" (click)="getBoxId('Slot_4')"></a>
+                </div>
+                <div style="display: flex;justify-content: center;" class="boxPanel2" id="panel2">
+                  <a class="box" id="Slot_3" btn-info="" btn-lg="" data-toggle="modal" data-target="#vyberCislo" (click)="getBoxId('Slot_3')"></a>
+                  <a class="box" id="Slot_2" btn-info="" btn-lg="" data-toggle="modal" data-target="#vyberCislo" (click)="getBoxId('Slot_2')"></a>
+                </div>
+                <div style="display: flex;justify-content: center;" class="boxPanel3" id="panel3">
+                  <a class="box" id="Slot_1" btn-info="" btn-lg="" data-toggle="modal" data-target="#vyberCislo" (click)="getBoxId('Slot_1')"></a>
+                </div>
+              </div>
+            </div>
+            <button type="button" class="sendButton btn btn-default" (click)="submitTask()">Potvrd priklad</button>
+            <button type="button" class="sendButton btn btn-default" (click)="removeTask()">Zrus priklad</button>
+          </div>
+          <div *ngSwitchDefault></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div id="vyberCislo" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Pridaj cislo do policka</h4>
+      </div>
+      <div class="modal-body">
+        <div *ngFor="let zoznam of zoznamCisel; let i = index" class="row{{i}}" >
+          <a *ngFor="let cislo of zoznam" class=numbers id="{{cislo}}" data-dismiss=modal>
+            <img style="width: 60px;height: 60px; left: 0px;top: 0px;" src="../../assets/img/Number/{{cislo}}.jpg" (click)="appendNumberIntoBox(cislo)" alt="Cislo_{{cislo}}">
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="vyberSablonu" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Zvoľ si šablonu</h4>
+      </div>
+      <div class="modal-body">
+        <a (click)="setTab(2)" class="" name="sablona_2" id="sablona_2" data-dismiss="modal"><img src="../../assets/img/Edit2.jpg" alt="sablona_2"></a>
+        <a (click)="setTab(3)" class="" name="sablona_3" id="sablona_3" data-dismiss="modal"><img src="../../assets/img/Edit3.jpg" alt="sablona_3"></a>
+        <a (click)="setTab(4)" class="" name="sablona_4" id="sablona_4" data-dismiss="modal"><img src="../../assets/img/Edit4.jpg" alt="sablona_4"></a>
+      </div>
+    </div>
+  </div>
+</div>

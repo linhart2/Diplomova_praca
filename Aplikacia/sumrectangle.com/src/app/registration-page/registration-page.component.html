@@ -1,0 +1,49 @@
+<div [className]="errorMessage.type">
+  {{errorMessage.msg}}
+</div>
+<div>
+  <section class="registration bodyHeight">
+    <div id="register">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12" style="text-align: center">
+            <h1>Registrovať</h1>
+            <form>
+              <table class="registration">
+                <tbody>
+                <tr>
+                  <td class="floatLeft">
+                    <input #registrationFirstName class="longText form-control" type="text" placeholder="meno" >
+                  </td>
+                </tr>
+                <tr>
+                  <td class="floatLeft">
+                    <input #registrationLastName class="longText form-control" type="text" placeholder="priezvisko" >
+                  </td>
+                </tr>
+                <tr>
+                  <td class="floatLeft">
+                    <input #registrationEmail class="longText form-control" type="email" placeholder="email" >
+                  </td>
+                </tr>
+                <tr>
+                  <td class="floatLeft">
+                    <input #registrationPassword1 class="password form-control" type="password" placeholder="heslo" >
+                    <input #registrationPassword2 class="password form-control" type="password" placeholder="heslo znovu" >
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <input class="sendButton btn btn-default" (click)="register(registrationEmail.value, registrationPassword1.value,registrationPassword2.value,registrationFirstName.value,registrationLastName.value)" type="submit" name="registration-submit" id="registration-submit" value="Odoslať">
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
