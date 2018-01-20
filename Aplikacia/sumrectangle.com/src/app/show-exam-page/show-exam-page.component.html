@@ -1,0 +1,74 @@
+<div [className]="errorMessage.type">
+  {{errorMessage.msg}}
+</div>
+<section class="PridajCvicenie bodyHeight" *ngIf="isLoadedPage">
+  <div class="container CreateExam">
+    <div class="row">
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <h1>Číslo úlohy: {{pid}}</h1>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <div class="SecondParameters" id="2_param" [ngSwitch]="createTaskSablona">
+          <div *ngSwitchCase="2" class="CreateTask">
+            <div class="board" id="priklad">
+              <div class="boxy">
+                <div style="display: flex;justify-content: center;" class="boxPanel0" id="panel0">
+                  <a class="box" id="Slot_3"></a>
+                  <a class="box" id="Slot_2"></a>
+                </div>
+                <div style="display: flex;justify-content: center;" class="boxPanel1" id="panel1">
+                  <a class="box" id="Slot_1"></a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div *ngSwitchCase="3" class="CreateTask">
+            <div class="board" id="priklad">
+              <div class="boxy">
+                <div style="display: flex;justify-content: center;" class="boxPanel0" id="panel0">
+                  <a class="box" id="Slot_6"></a>
+                  <a class="box" id="Slot_5"></a>
+                  <a class="box" id="Slot_4"></a>
+                </div>
+                <div style="display: flex;justify-content: center;" class="boxPanel1" id="panel1">
+                  <a class="box" id="Slot_3"></a>
+                  <a class="box" id="Slot_2"></a>
+                </div>
+                <div style="display: flex;justify-content: center;" class="boxPanel2" id="panel2">
+                  <a class="box" id="Slot_1"></a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div *ngSwitchCase="4" class="CreateTask">
+            <div class="board" id="priklad">
+              <div class="boxy">
+                <div style="display: flex;justify-content: center;" class="boxPanel0" id="panel0">
+                  <a class="box" id="Slot_10"></a>
+                  <a class="box" id="Slot_9"></a>
+                  <a class="box" id="Slot_8"></a>
+                  <a class="box" id="Slot_7"></a>
+                </div>
+                <div style="display: flex;justify-content: center;" class="boxPanel1" id="panel1">
+                  <a class="box" id="Slot_6"></a>
+                  <a class="box" id="Slot_5"></a>
+                  <a class="box" id="Slot_4"></a>
+                </div>
+                <div style="display: flex;justify-content: center;" class="boxPanel2" id="panel2">
+                  <a class="box" id="Slot_3"></a>
+                  <a class="box" id="Slot_2"></a>
+                </div>
+                <div style="display: flex;justify-content: center;" class="boxPanel3" id="panel3">
+                  <a class="box" id="Slot_1"></a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div *ngSwitchDefault></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

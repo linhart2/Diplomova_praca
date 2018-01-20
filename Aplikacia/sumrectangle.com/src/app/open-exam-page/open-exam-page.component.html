@@ -1,0 +1,23 @@
+<div [className]="errorMessage.type">
+  {{errorMessage.msg}}
+</div>
+<section *ngIf="isLoadedPage" class="application bodyHeight">
+  <div class="container show-exam">
+    <div class="row">
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <h1 class="examname">Úloha: {{examName}}</h1>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <ul class="GroupList">
+          <li *ngFor="let d of zoznamPrikladov" id="{{d.$key}}">
+            <a class="open" [routerLink]="['/showexam',this.examId, d.$key  ]">{{d.$key}}</a>
+            <a class="edit" [routerLink]="['/editexam',this.examId, d.$key  ]"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
+            <a class="close 1" (click)="deletePriklad(d.$key)"><i class="fa fa-window-close-o" aria-hidden="true"></i></a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>

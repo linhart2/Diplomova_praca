@@ -1,0 +1,39 @@
+<div [className]="errorMessage.type">
+  {{errorMessage.msg}}
+</div>
+<div>
+  <section class="login bodyHeight">
+    <div id="register">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12" style="text-align: center">
+            <h1 >Prihlásiť</h1>
+            <form>
+              <table class="login">
+                <tbody>
+                <tr>
+                  <td class="floatLeft">
+                    <input #loginEmail type="text" placeholder="email" class="longText form-control">
+                  </td>
+                </tr>
+                <tr>
+                  <td class="floatLeft">
+                    <input #loginPassword type="password" placeholder="heslo" class="longText form-control">
+                  </td>
+                </tr>
+                <tr>
+                  <td style="text-align: center;">
+                    <input class="sendButton btn btn-default" (click)="login(loginEmail.value, loginPassword.value)" type="submit" name="login-submit" id="login-submit" tabindex="4" value="Prihlásiť">
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+            </form>
+            <a routerLink="/registration">Registrovať</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+

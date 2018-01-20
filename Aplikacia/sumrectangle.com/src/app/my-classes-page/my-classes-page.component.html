@@ -1,0 +1,87 @@
+<div [className]="errorMessage.type">
+  {{errorMessage.msg}}
+</div>
+<div *ngIf="isLoadedPage">
+  <section class="application bodyHeight">
+    <div class="container show-classes footer_p">
+      <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+          <h1>Moje triedy</h1>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+          <div class="all_classes">
+            <div class="MainBox" *ngFor="let d of zoznamTried">
+              <a class="ImageBox" [routerLink]="['/openclass', d.$key]">
+                <div class="c_name">
+                  {{d.className}}
+                </div>
+              </a>
+              <div class="ButtonBox1">
+                <a class="pridaj_ulohu pajpa" id="pridaj{{d.$key}}" name="" data-toggle="modal" data-target="#pridajUlohu">Pridaj ulohu</a>
+                <a class="zobraz_ulohy pajpa" id="zobraz{{d.$key}}" name="" data-toggle="modal" data-target="#zobrazUlohy">Zobraz ulohy</a>
+                <a disabled="true">Zobraz statistiky</a>
+              </div>
+              <div class="ButtonBox2">
+                <a class='edit' [routerLink]="['/updateclass', d.$key]" ><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
+                <a class='close' (click)="deleteClass(d.$key)"><i class='fa fa-window-close-o' aria-hidden=true></i></a>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+          <div class="AddClass">
+            <a routerLink="/createclass">
+              <i class="fa fa-plus-circle" aria-hidden="true"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal fade" id="pridajUlohu" role="dialog">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 id="pridajU" class="modal-title">Pridaj ulohu</h4>
+            </div>
+            <div class="modal-body">
+              <ul class="priklady GroupList">
+                <li *ngFor="let uloha of zoznamUloh">
+                  <label for="ulohaNaPriradenie{{uloha.$key}}"><input type="checkbox" name="Priklad1" value="Priklad1" id="ulohaNaPriradenie{{uloha.$key}}">{{uloha.nazovUlohy}}</label>
+                </li>
+              </ul>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-default" onclick="ulozUlohy()" data-dismiss="modal">Uloz</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal fade" id="zobrazUlohy" role="dialog">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 id="zobrazU" class="modal-title">Zoznam uloh</h4>
+            </div>
+            <div class="modal-body">
+              <ul class="priklady GroupList">
+                <li *ngFor="let uloha of zoznamUloh" id="zobrazPriradenuUlohu{{uloha.$key}}">
+                  <a class="open">{{uloha.nazovUlohy}}</a>
+                  <a class="close" data-dismiss="modal"><i class="fa fa-window-close-o" aria-hidden="true"></i></a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
