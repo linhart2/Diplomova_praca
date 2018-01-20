@@ -19,8 +19,8 @@
                 </div>
               </a>
               <div class="ButtonBox1">
-                <a class="pridaj_ulohu pajpa" id="pridaj{{d.$key}}" name="" data-toggle="modal" data-target="#pridajUlohu">Pridaj ulohu</a>
-                <a class="zobraz_ulohy pajpa" id="zobraz{{d.$key}}" name="" data-toggle="modal" data-target="#zobrazUlohy">Zobraz ulohy</a>
+                <a class="pridaj_ulohu pajpa" id="pridaj{{d.$key}}" name="" data-toggle="modal" data-target="#pridajUlohu" (click)="zobrazZoznamUlohNaPridanie(d.$key)">Pridaj ulohu</a>
+                <a class="zobraz_ulohy pajpa" id="zobraz{{d.$key}}" name="" data-toggle="modal" data-target="#zobrazUlohy" (click)="zobrazZoznamPriradenychUloh(d.$key)">Zobraz ulohy</a>
                 <a disabled="true">Zobraz statistiky</a>
               </div>
               <div class="ButtonBox2">
@@ -51,6 +51,8 @@
             </div>
             <div class="modal-body">
               <ul class="priklady GroupList">
+                <li *ngIf="nacitajZoznamUlohnaPridanie">Zoznam úloh na priradenie nieje načítaný</li>
+                <li *ngIf="zoznamUloh.length == 0 ">Zoznam úloh na priradenie je prázdny</li>
                 <li *ngFor="let uloha of zoznamUloh">
                   <label for="ulohaNaPriradenie{{uloha.$key}}"><input type="checkbox" name="Priklad1" value="Priklad1" id="ulohaNaPriradenie{{uloha.$key}}">{{uloha.nazovUlohy}}</label>
                 </li>
@@ -72,7 +74,9 @@
             </div>
             <div class="modal-body">
               <ul class="priklady GroupList">
-                <li *ngFor="let uloha of zoznamUloh" id="zobrazPriradenuUlohu{{uloha.$key}}">
+                <li *ngIf="nacitajZoznamPriradenychUloh">Zoznam priradených úloh nieje načítaný</li>
+                <li *ngIf="zoznamZobrazPriradeneUlohy.length == 0 ">Zoznam priradených úloh je prázdny</li>
+                <li *ngFor="let uloha of zoznamZobrazPriradeneUlohy" id="zobrazPriradenuUlohu{{uloha.$key}}">
                   <a class="open">{{uloha.nazovUlohy}}</a>
                   <a class="close" data-dismiss="modal"><i class="fa fa-window-close-o" aria-hidden="true"></i></a>
                 </li>

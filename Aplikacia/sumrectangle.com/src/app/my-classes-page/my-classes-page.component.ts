@@ -20,9 +20,8 @@ export class MyClassesPageComponent implements OnInit {
 
   private itemsZoznamUloh: FirebaseListObservable<any[]>;
   public zoznamUloh: Array<any> = [];
-
-  private itemsZobrazPriradeneUlohy: FirebaseListObservable<any[]>;
   public zoznamZobrazPriradeneUlohy: Array<any> = [];
+  public zoznamMojichUloh: Array<any> = [];
 
   constructor(private angularFire: AngularFire, public authService: AuthService, private router: Router) {
     this.isLoadedPage = false;
@@ -31,9 +30,8 @@ export class MyClassesPageComponent implements OnInit {
         if (auth !== null) {
           this.items = angularFire.database.list('/CLASSES');
           this.itemsZoznamUloh = angularFire.database.list('/EXAMS');
-          this.itemsZobrazPriradeneUlohy = angularFire.database.list('/');
           this.zobrazTriedy();
-          this.zobrazZoznamUlohNaPridanie();
+          this.getZoznamMojichUloh();
           let users = this.angularFire.database.object('/USERS/' + auth.uid);
           users.subscribe(snapshot => {
             this.isLoadedPage = true;
@@ -63,17 +61,55 @@ export class MyClassesPageComponent implements OnInit {
     });
   }
 
-  public zobrazZoznamUlohNaPridanie() {
+  public getZoznamMojichUloh() {
     this.itemsZoznamUloh.subscribe(snapshot => {
       let ulohy = [];
       snapshot.forEach( uloha => {
         if (uloha.teacherID === this.uId) {
-          ulohy.push(uloha);
+            ulohy.push(uloha);
         }
+      });
+      this.zoznamMojichUloh = ulohy;
+    });
+  }
+
+  public zobrazZoznamPriradenychUloh(classId: string) {
+    let nacitajZoznamPriradenychUloh = true;
+    let _zoznamUlohNaTabuli = this.angularFire.database.list('/TABLES/' + classId);
+    let priradeneUlohy = [];
+    _zoznamUlohNaTabuli.subscribe(prikladyNaTabuli => {
+      prikladyNaTabuli.forEach(prikladNaTabuli => {
+        this.zoznamMojichUloh.forEach(uloha => {
+          if ( uloha.$key ===  prikladNaTabuli.$key) {
+            priradeneUlohy.push(uloha);
+          }
+        });
+      });
+      nacitajZoznamPriradenychUloh = false;
+    });
+    this.zoznamZobrazPriradeneUlohy = priradeneUlohy;
+  }
+
+  public ulozPridaneUlohy(classId: string) {
+
+  }
+
+  public zobrazZoznamUlohNaPridanie(classId: string) {
+    let nacitajZoznamUlohnaPridanie = true;
+    let _zoznamPriradenychUloh = this.angularFire.database.list('/TABLES/' + classId);
+    let zoznamPUloh = this.authService.ConvertToArray(_zoznamPriradenychUloh);
+    this.itemsZoznamUloh.subscribe(snapshot => {
+      let ulohy = [];
+      snapshot.forEach( uloha => {
+        if (uloha.teacherID === this.uId) {
+          if (!zoznamPUloh.some(x => x.$key === uloha.$key)) {
+            ulohy.push(uloha);
+          }
+        }
+        nacitajZoznamUlohnaPridanie = false;
       });
       this.zoznamUloh = ulohy;
     });
-
   }
 
   public deleteClass(id: string) {
