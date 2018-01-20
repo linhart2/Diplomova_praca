@@ -1,6 +1,6 @@
 import { browser, element, by } from 'protractor';
 
-export class DiaangularPage {
+export class AppPage {
   navigateTo() {
     return browser.get('/');
   }
