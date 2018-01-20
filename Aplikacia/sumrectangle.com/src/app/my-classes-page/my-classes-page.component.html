@@ -19,8 +19,8 @@
                 </div>
               </a>
               <div class="ButtonBox1">
-                <a class="pridaj_ulohu pajpa" id="pridaj{{d.$key}}" name="" data-toggle="modal" data-target="#pridajUlohu">Pridaj ulohu</a>
-                <a class="zobraz_ulohy pajpa" id="zobraz{{d.$key}}" name="" data-toggle="modal" data-target="#zobrazUlohy">Zobraz ulohy</a>
+                <a class="pridaj_ulohu pajpa" id="pridaj{{d.$key}}" name="" data-toggle="modal" data-target="#pridajUlohu" (click)="zobrazZoznamUlohNaPridanie(d.$key,d.className)">Pridaj ulohu</a>
+                <a class="zobraz_ulohy pajpa" id="zobraz{{d.$key}}" name="" data-toggle="modal" data-target="#zobrazUlohy" (click)="zobrazZoznamPriradenychUloh(d.$key,d.className)">Zobraz ulohy</a>
                 <a disabled="true">Zobraz statistiky</a>
               </div>
               <div class="ButtonBox2">
@@ -47,17 +47,19 @@
           <div class="modal-content">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal">&times;</button>
-              <h4 id="pridajU" class="modal-title">Pridaj ulohu</h4>
+              <h4 id="pridajU" class="modal-title">Pridaj ulohu {{menoTriedy}}</h4>
             </div>
-            <div class="modal-body">
+            <div class="modal-body" [id]="idTriedy">
               <ul class="priklady GroupList">
+                <li *ngIf="nacitajZoznamUlohnaPridanie">Zoznam úloh na priradenie nieje načítaný</li>
+                <li *ngIf="zoznamUloh.length == 0 ">Zoznam úloh na priradenie je prázdny</li>
                 <li *ngFor="let uloha of zoznamUloh">
-                  <label for="ulohaNaPriradenie{{uloha.$key}}"><input type="checkbox" name="Priklad1" value="Priklad1" id="ulohaNaPriradenie{{uloha.$key}}">{{uloha.nazovUlohy}}</label>
+                  <label for="ulohaNaPriradenie{{uloha.$key}}"><input type="checkbox" class="_checkbox" name="Priklad1" (change)="pridajPrikladNaTabulu($event)" value="{{uloha.$key}}" id="ulohaNaPriradenie{{uloha.$key}}">{{uloha.nazovUlohy}}</label>
                 </li>
               </ul>
             </div>
             <div class="modal-footer">
-              <button class="btn btn-default" onclick="ulozUlohy()" data-dismiss="modal">Uloz</button>
+              <button class="btn btn-default" (click)="ulozPridaneUlohy()" data-dismiss="modal">Uloz</button>
             </div>
           </div>
         </div>
@@ -68,13 +70,15 @@
           <div class="modal-content">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal">&times;</button>
-              <h4 id="zobrazU" class="modal-title">Zoznam uloh</h4>
+              <h4 id="zobrazU" class="modal-title">Zoznam uloh {{menoTriedy}}</h4>
             </div>
-            <div class="modal-body">
+            <div class="modal-body _zobrazUlohy" [id]="idTriedy">
               <ul class="priklady GroupList">
-                <li *ngFor="let uloha of zoznamUloh" id="zobrazPriradenuUlohu{{uloha.$key}}">
+                <li *ngIf="nacitajZoznamPriradenychUloh">Zoznam priradených úloh nieje načítaný</li>
+                <li *ngIf="zoznamZobrazPriradeneUlohy.length == 0 ">Zoznam priradených úloh je prázdny</li>
+                <li *ngFor="let uloha of zoznamZobrazPriradeneUlohy" id="zobrazPriradenuUlohu{{uloha.$key}}">
                   <a class="open">{{uloha.nazovUlohy}}</a>
-                  <a class="close" data-dismiss="modal"><i class="fa fa-window-close-o" aria-hidden="true"></i></a>
+                  <a class="close" (click)="zmazPridaneUlohy(uloha.$key)" data-dismiss="modal"><i class="fa fa-window-close-o" aria-hidden="true"></i></a>
                 </li>
               </ul>
             </div>

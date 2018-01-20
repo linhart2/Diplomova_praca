@@ -75,4 +75,14 @@ export class AuthService {
     }
   }
 
+  ConvertToArray(object) {
+    let pole = [];
+    object.subscribe( obj => {
+      obj.forEach( o => {
+        pole.push(o);
+      });
+    });
+    return pole;
+  }
+
 }
