@@ -1,10 +1,10 @@
-import { DiaangularPage } from './app.po';
+import { SumrectanglePage } from './app.po';
 
-describe('diaangular App', () => {
-  let page: DiaangularPage;
+describe('sumrectangle App', () => {
+  let page: SumrectanglePage;
 
   beforeEach(() => {
-    page = new DiaangularPage();
+    page = new SumrectanglePage();
   });
 
   it('should display message saying app works', () => {
