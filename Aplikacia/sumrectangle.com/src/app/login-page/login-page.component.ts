@@ -11,7 +11,9 @@ import {AngularFire} from 'angularfire2';
 })
 export class LoginPageComponent implements OnInit {
     errorMessage: {};
+    isLoadedPage: boolean;
     constructor(private angularFire: AngularFire, public authService: AuthService, private router: Router) {
+      this.isLoadedPage = false;
       this.authService.angularFire.auth.subscribe(
         (auth) => {
           if (auth !== null) {
@@ -22,6 +24,7 @@ export class LoginPageComponent implements OnInit {
               }else {
                 this.router.navigate(['ssss']);
               }
+              this.isLoadedPage = true;
             });
           }
         }

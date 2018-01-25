@@ -1,6 +1,7 @@
 <div [className]="errorMessage.type">
   {{errorMessage.msg}}
 </div>
+<div class="loader" *ngIf="!isLoadedPage"></div>
 <section class="PridajTriedu bodyHeight" *ngIf="isLoadedPage">
   <div class="container CreateClass">
     <div class="row">

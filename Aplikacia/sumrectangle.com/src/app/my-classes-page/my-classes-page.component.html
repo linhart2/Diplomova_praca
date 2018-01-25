@@ -1,6 +1,7 @@
 <div [className]="errorMessage.type">
   {{errorMessage.msg}}
 </div>
+<div class="loader" *ngIf="!isLoadedPage"></div>
 <div *ngIf="isLoadedPage">
   <section class="application bodyHeight">
     <div class="container show-classes footer_p">
@@ -51,7 +52,7 @@
             </div>
             <div class="modal-body" [id]="idTriedy">
               <ul class="priklady GroupList">
-                <li *ngIf="nacitajZoznamUlohnaPridanie">Zoznam úloh na priradenie nieje načítaný</li>
+                <li *ngIf="nacitajZoznamUlohnaPridanie"><div class="loader" *ngIf="nacitajZoznamUlohnaPridanie"></div></li>
                 <li *ngIf="zoznamUloh.length == 0 ">Zoznam úloh na priradenie je prázdny</li>
                 <li *ngFor="let uloha of zoznamUloh">
                   <label for="ulohaNaPriradenie{{uloha.$key}}"><input type="checkbox" class="_checkbox" name="Priklad1" (change)="pridajPrikladNaTabulu($event)" value="{{uloha.$key}}" id="ulohaNaPriradenie{{uloha.$key}}">{{uloha.nazovUlohy}}</label>
@@ -74,7 +75,7 @@
             </div>
             <div class="modal-body _zobrazUlohy" [id]="idTriedy">
               <ul class="priklady GroupList">
-                <li *ngIf="nacitajZoznamPriradenychUloh">Zoznam priradených úloh nieje načítaný</li>
+                <li *ngIf="nacitajZoznamPriradenychUloh"><div class="loader" *ngIf="nacitajZoznamPriradenychUloh"></div></li>
                 <li *ngIf="zoznamZobrazPriradeneUlohy.length == 0 ">Zoznam priradených úloh je prázdny</li>
                 <li *ngFor="let uloha of zoznamZobrazPriradeneUlohy" id="zobrazPriradenuUlohu{{uloha.$key}}">
                   <a class="open">{{uloha.nazovUlohy}}</a>
