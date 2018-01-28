@@ -1,6 +1,7 @@
 <div [className]="errorMessage.type">
   {{errorMessage.msg}}
 </div>
+<div class="loader" *ngIf="!isLoadedPage"></div>
 <div *ngIf="isLoadedPage">
   <section class="application bodyHeight">
     <div class="container show-classes footer_p">

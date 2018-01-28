@@ -10,7 +10,9 @@ import {AngularFire} from 'angularfire2';
 })
 export class RegistrationPageComponent implements OnInit {
   errorMessage: {};
+  isLoadedPage: boolean;
   constructor(private angularFire: AngularFire, public authService: AuthService, private router: Router) {
+    this.isLoadedPage = false;
     this.authService.angularFire.auth.subscribe(
       (auth) => {
         if (auth !== null) {
@@ -23,6 +25,7 @@ export class RegistrationPageComponent implements OnInit {
             }
           });
         }
+        this.isLoadedPage = true;
       }
     );
     this.errorMessage = {};
