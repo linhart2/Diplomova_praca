@@ -24,9 +24,9 @@ export class LoginPageComponent implements OnInit {
               }else {
                 this.router.navigate(['ssss']);
               }
-              this.isLoadedPage = true;
             });
           }
+          this.isLoadedPage = true;
         }
       );
         this.errorMessage = {};
