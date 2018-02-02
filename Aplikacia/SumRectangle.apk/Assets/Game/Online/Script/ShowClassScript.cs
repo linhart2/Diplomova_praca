@@ -13,11 +13,11 @@ public class ShowClassScript : MonoBehaviour
     public Button btnGotoClass;
     public InputField inputInsertClassKey;
     private PlayerData playerData = new PlayerData();
-    GlobalData globalData;
 
     void Start()
     {
         playerData = GlobalData.playerData;
+        GlobalData.playerData.SelectedClass = null;
         fbC = new FirebaseCommunicationLibrary();
         txtLoggedUser.text = string.Format("{0} {1}", txtLoggedUser.text, playerData.Name);
         btnOdhlasit.onClick.AddListener(delegate
@@ -26,16 +26,26 @@ public class ShowClassScript : MonoBehaviour
         });
         btnGotoClass.onClick.AddListener(delegate
         {
-            fbC.FindClass(inputInsertClassKey.text, playerData.UserId);
+            fbC.FindClass(inputInsertClassKey.text, playerData.UserId, playerData.Name);
         });
-        for (int i = 0; i < playerData.Classes.Count; i++)
+#if DEBUG
+        playerData.Name = "TestLingo";
+        playerData.UserId = "ZAT4DktlgdYBVGwXYRpOfA3temm1";
+        playerData.SelectedClass = "ZSsMSHalic_skuska_1A";
+        playerData.LoggedUser = true;
+#endif
+        if (playerData.Classes != null && playerData.Classes.Count > 0)
         {
-            AddButtonWithClassName("obj" + playerData.Classes[i], new Vector3(0, -i * 30, 0), playerData.Classes[i]);
+            int i = 0;
+            foreach (var trieda in playerData.Classes)
+            {
+                AddButtonWithClassName("obj" + trieda.Value, new Vector3(0, -i * 30, 0), trieda.Value, trieda.Key);
+                i++;
+            }
         }
-
     }
 
-    private void AddButtonWithClassName(string ObjName, Vector3 vector, string className)
+    private void AddButtonWithClassName(string ObjName, Vector3 vector, string className, string classKey)
     {
         var panelG = new GameObject(ObjName).AddComponent<GridLayoutGroup>();
         panelG.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
@@ -54,14 +64,17 @@ public class ShowClassScript : MonoBehaviour
         newButton.GetComponentInChildren<Text>().text = className;
         newButton.onClick.AddListener(delegate
         {
-            SelectClass(className);
+            SelectClass(className, classKey);
         });
 
     }
 
-    private void SelectClass(string className)
+    private void SelectClass(string className, string classId)
     {
-        GlobalData.playerData.SelectedClass = className;
+        GlobalData.playerData.SelectedClass = classId;
+        fbC.insertIntoStudentsInClass(classId, playerData.UserId, playerData.Name);
+        fbC.insertIntoOnlineStudent(classId, playerData.UserId, playerData.Name);
+        fbC.setSelectedClass(playerData.UserId, classId);
         SceneManager.LoadScene("LogedSelectLevel");
     }
 }

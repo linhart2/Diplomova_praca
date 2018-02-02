@@ -13,6 +13,7 @@ public class SceneLoader : MonoBehaviour
 
     private void Start()
     {
+        GlobalData.playerData.SelectedClass = null;
         fbC = new FirebaseCommunicationLibrary();
         fbC.GetUserData(GlobalData.playerData.UserId, true);
         StartCoroutine(EndLoading());
