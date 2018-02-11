@@ -11,10 +11,18 @@ public class SceneLoader : MonoBehaviour
     private PlayerData playerData = new PlayerData();
     private FirebaseCommunicationLibrary fbC;
 
-    private void Start()
+    private void Awake()
     {
         fbC = new FirebaseCommunicationLibrary();
         fbC.GetUserData(GlobalData.playerData.UserId, true);
+    }
+
+
+    private void Start()
+    {
+        GlobalData.playerData.SelectedClass = null;
+        //fbC = new FirebaseCommunicationLibrary();
+        //fbC.GetUserData(GlobalData.playerData.UserId, true);
         StartCoroutine(EndLoading());
 
     }
@@ -40,7 +48,6 @@ public class SceneLoader : MonoBehaviour
     IEnumerator EndLoading()
     {
         yield return new WaitForSeconds(30.0f);
-
         SceneManager.LoadScene("CheckConnection");
     }
 }

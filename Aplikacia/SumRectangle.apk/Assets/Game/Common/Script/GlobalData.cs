@@ -16,5 +16,5 @@ public class PlayerData
     public string Name;
     public string SelectedClass;
     public bool LoggedUser;
-    public List<string> Classes;
+    public Dictionary<string, string> Classes;
 }

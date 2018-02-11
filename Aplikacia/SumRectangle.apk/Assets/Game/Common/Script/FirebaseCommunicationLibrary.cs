@@ -27,7 +27,7 @@ public class FirebaseCommunicationLibrary
         AuthStateChanged(this, null);
     }
 
-    public void SaveGlobalDataAll(string name, string userId, List<string> classses, bool loggedUser)
+    public void SaveGlobalDataAll(string name, string userId, Dictionary<string, string> classses, bool loggedUser)
     {
         GlobalData.playerData.Name = name;
         GlobalData.playerData.UserId = userId;
@@ -142,6 +142,10 @@ public class FirebaseCommunicationLibrary
     {
         mDatabaseRef.Child("USERS").Child(userId).SetRawJsonValueAsync(JsonUtility.ToJson(student));
     }
+    public void setSelectedClass(string userId, string classID)
+    {
+        mDatabaseRef.Child("USERS").Child(userId).Child("selectClass").SetValueAsync(classID);
+    }
     private void addStudentToClass(string userId, string hesloTriedy, string classID)
     {
         mDatabaseRef.Child("USERS").Child(userId).Child("MY_CLASS").Child(classID).SetValueAsync(hesloTriedy);
@@ -158,16 +162,25 @@ public class FirebaseCommunicationLibrary
     {
         mDatabaseRef.Child("USERS").Child(userId).Child("waitForShare").Child(key).SetRawJsonValueAsync(JsonUtility.ToJson(value));
     }
-
-    /*private void addClass(string heslo, string teacherID, string className)
+    public void insertIntoOnlineStudent(string classId, string userId, string name)
     {
-        string key = mDatabaseRef.Child("CLASSES").Push().Key;
-        ClassRoom classroom = new ClassRoom(heslo, teacherID, className);
-        string json = JsonUtility.ToJson(classroom);
-        mDatabaseRef.Child("CLASSES").Child(key).SetRawJsonValueAsync(json);
-    }*/
+        mDatabaseRef.Child("CLASSES").Child(classId).Child("ONLINE_STUDENTS").Child(userId).SetValueAsync(name);
+    }
+    public void insertIntoStudentsInClass(string classId, string userId, string name)
+    {
+        mDatabaseRef.Child("CLASSES").Child(classId).Child("STUDENTS_IN_CLASS").Child(userId).SetValueAsync(name);
+    }
+    public void insertIntoTableViews(string tableId, string userId, string examsViews)
+    {
+        mDatabaseRef.Child("USERS").Child(userId).Child("TABLE_VIEWS").Child(tableId).SetValueAsync(examsViews);
+    }
     #endregion
-
+    #region removeFromDB
+    public void removeOfflineStudent(string classId, string userId)
+    {
+        FirebaseDatabase.DefaultInstance.GetReference("/CLASSES/" + classId + "/ONLINE_STUDENTS/").Child(userId).RemoveValueAsync();
+    }
+    #endregion
     #region LoadDataFromDB
     public void GetUserData(string userId, bool changeScene = false, int scene = 19)
     {
@@ -186,10 +199,10 @@ public class FirebaseCommunicationLibrary
                             {
                                 DataSnapshot snapshot = task.Result;
                                 playerData.Name = UserName(snapshot.Child("firstName").Value.ToString(), snapshot.Child("lastName").Value.ToString());
-                                List<string> _classData = new List<string>();
+                                Dictionary<string, string> _classData = new Dictionary<string, string>();
                                 foreach (var classData in snapshot.Child("MY_CLASS").Children.ToList())
                                 {
-                                    _classData.Add(classData.Value.ToString());
+                                    _classData[classData.Key] = classData.Value.ToString();
                                 }
                                 playerData.Classes = _classData;
                                 playerData.UserId = userId;
@@ -232,7 +245,7 @@ public class FirebaseCommunicationLibrary
         return _data;
     }
 
-    public void FindClass(string hesloTriedy, string studentID)
+    public void FindClass(string hesloTriedy, string studentID, string studentName)
     {
         FirebaseDatabase.DefaultInstance.GetReference("/CLASSES").OrderByChild("heslo").EqualTo(hesloTriedy)
                     .GetValueAsync().ContinueWith(task =>
@@ -240,23 +253,28 @@ public class FirebaseCommunicationLibrary
                         if (task.IsFaulted) { }
                         else if (task.IsCompleted)
                         {
+                            Debug.Log("FindClass");
                             DataSnapshot snapshot = task.Result;
                             bool exists = (snapshot.Value != null);
                             string classID = snapshot.Children.SingleOrDefault().Key;
-                            classExistCallback(hesloTriedy, classID, studentID, exists);
+                            string className = snapshot.Child(classID).Child("className").Value.ToString();
+                            classExistCallback(hesloTriedy, classID, studentID, exists, className, studentName);
                         }
                     });
     }
     #endregion
 
     #region Callback
-    private void classExistCallback(string hesloTriedy, string classID, string studentID, bool exists)
+    private void classExistCallback(string hesloTriedy, string classID, string studentID, bool exists, string className, string studentName)
     {
         if (exists)
         {
             Debug.Log("class " + hesloTriedy + " exists!!!");
-            addStudentToClass(studentID, hesloTriedy, classID);
-            GlobalData.playerData.Classes.Add(hesloTriedy);
+            insertIntoStudentsInClass(classID, studentID, studentName);
+            insertIntoOnlineStudent(classID, studentID, studentName);
+            setSelectedClass(studentID, classID);
+            addStudentToClass(studentID, string.Format("{0} -> {1}", className, hesloTriedy), classID);
+            GlobalData.playerData.Classes[classID] = string.Format("{0} -> {1}", className, hesloTriedy);
             SaveGlobalSelectedClass(hesloTriedy);
             SceneManager.LoadScene("LogedSelectLevel");
 
@@ -269,7 +287,7 @@ public class FirebaseCommunicationLibrary
     #endregion
 
     #region Property
-    private string UserName(string fName, string lName) { return string.Format("{0} {1}", fName, lName); }
+    public string UserName(string fName, string lName) { return string.Format("{0} {1}", fName, lName); }
     #endregion
 
 }
@@ -293,7 +311,6 @@ class LoadScene : ILoadScene
         SceneManager.LoadScene(this.idScene);
     }
 }
-
 public class Student
 {
     public string firstName;

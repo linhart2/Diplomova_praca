@@ -39,6 +39,10 @@ public class HelperMethod : MonoBehaviour
     {
         SceneManager.LoadScene(value);
     }
+    public void SwitchScene(string value)
+    {
+        SceneManager.LoadScene(value);
+    }
 
     public void StartLevel(string value1) //this function will be used on our Play button
     {
