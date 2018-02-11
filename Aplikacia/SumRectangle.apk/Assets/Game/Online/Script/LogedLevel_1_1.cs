@@ -39,12 +39,46 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
     DatabaseReference controlSharedScreenWithMe;
     DatabaseReference controlAllStudentInClass;
 
+
+    private void Awake()
+    {
+        Button btnBack = GameObject.Find("Back").GetComponent<Button>();
+        btnBack.onClick.AddListener(delegate
+        {
+            UnbindAllHandler();
+            SceneManager.LoadScene("LogedSelectLevel");
+
+        });
+        Button btnZrus = GameObject.Find("btnZrus").GetComponent<Button>();
+        btnZrus.onClick.AddListener(delegate
+        {
+            showSharedWith.enabled = false;
+            GameObject.Find("tbOznacVsetkych").GetComponent<Toggle>().isOn = false;
+            DeselectAllUser();
+
+        });
+        Button btnShare = GameObject.Find("Share").GetComponent<Button>();
+        btnShare.onClick.AddListener(delegate
+        {
+            showSharedWith.enabled = true;
+        });
+        Button btnZdielaj = GameObject.Find("btnZdielaj").GetComponent<Button>();
+        btnZdielaj.onClick.AddListener(delegate
+        {
+            ShareScreenWith();
+        });
+        Toggle tbOznacVsetkych = GameObject.Find("tbOznacVsetkych").GetComponent<Toggle>();
+        tbOznacVsetkych.onValueChanged.AddListener(delegate
+        {
+            SelectAllUser();
+        });
+        firebase = new FirebaseConnect();
+        fbc = new FirebaseCommunicationLibrary();
+    }
+
     void Start()
     {
         playerData = GlobalData.playerData;
-        //saveloadprogress = new SaveLoadProgress();
-        firebase = new FirebaseConnect();
-        fbc = new FirebaseCommunicationLibrary();
 
 #if DEBUG
         playerData.Name = "TestLingo";
@@ -81,36 +115,6 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
         progressBar.slider.value = 0f;
         StartFillingUpProgressBar();
         HasChanged();
-        Button btnBack = GameObject.Find("Back").GetComponent<Button>();
-        btnBack.onClick.AddListener(delegate
-        {
-            UnbindAllHandler();
-            SceneManager.LoadScene("LogedSelectLevel");
-
-        });
-        Button btnZrus = GameObject.Find("btnZrus").GetComponent<Button>();
-        btnZrus.onClick.AddListener(delegate
-                    {
-                        showSharedWith.enabled = false;
-                        GameObject.Find("tbOznacVsetkych").GetComponent<Toggle>().isOn = false;
-                        DeselectAllUser();
-
-                    });
-        Button btnShare = GameObject.Find("Share").GetComponent<Button>();
-        btnShare.onClick.AddListener(delegate
-                        {
-                            showSharedWith.enabled = true;
-                        });
-        Button btnZdielaj = GameObject.Find("btnZdielaj").GetComponent<Button>();
-        btnZdielaj.onClick.AddListener(delegate
-                        {
-                            ShareScreenWith();
-                        });
-        Toggle tbOznacVsetkych = GameObject.Find("tbOznacVsetkych").GetComponent<Toggle>();
-        tbOznacVsetkych.onValueChanged.AddListener(delegate
-                        {
-                            SelectAllUser();
-                        });
     }
 
     public void ShareScreenWith()

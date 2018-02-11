@@ -7,26 +7,31 @@ using UnityEngine.UI;
 public class ShowClassScript : MonoBehaviour
 {
 
-    FirebaseCommunicationLibrary fbC;
+    FirebaseCommunicationLibrary fbc;
     public Text txtLoggedUser;
     public Button btnOdhlasit;
     public Button btnGotoClass;
     public InputField inputInsertClassKey;
     private PlayerData playerData = new PlayerData();
 
+    private void Awake()
+    {
+        fbc = new FirebaseCommunicationLibrary();
+    }
+
     void Start()
     {
         playerData = GlobalData.playerData;
         GlobalData.playerData.SelectedClass = null;
-        fbC = new FirebaseCommunicationLibrary();
+
         txtLoggedUser.text = string.Format("{0} {1}", txtLoggedUser.text, playerData.Name);
         btnOdhlasit.onClick.AddListener(delegate
         {
-            fbC.OnDestroy(new LoadScene(17));
+            fbc.OnDestroy(new LoadScene(17));
         });
         btnGotoClass.onClick.AddListener(delegate
         {
-            fbC.FindClass(inputInsertClassKey.text, playerData.UserId, playerData.Name);
+            fbc.FindClass(inputInsertClassKey.text, playerData.UserId, playerData.Name);
         });
 #if DEBUG
         playerData.Name = "TestLingo";
@@ -72,9 +77,9 @@ public class ShowClassScript : MonoBehaviour
     private void SelectClass(string className, string classId)
     {
         GlobalData.playerData.SelectedClass = classId;
-        fbC.insertIntoStudentsInClass(classId, playerData.UserId, playerData.Name);
-        fbC.insertIntoOnlineStudent(classId, playerData.UserId, playerData.Name);
-        fbC.setSelectedClass(playerData.UserId, classId);
+        fbc.insertIntoStudentsInClass(classId, playerData.UserId, playerData.Name);
+        fbc.insertIntoOnlineStudent(classId, playerData.UserId, playerData.Name);
+        fbc.setSelectedClass(playerData.UserId, classId);
         SceneManager.LoadScene("LogedSelectLevel");
     }
 }

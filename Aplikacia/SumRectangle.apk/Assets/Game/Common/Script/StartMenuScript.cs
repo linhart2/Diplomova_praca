@@ -9,11 +9,14 @@ public class StartMenuScript : MonoBehaviour
     public Button btnOnlineVersion;
     private PlayerData playerData = new PlayerData();
 
+    private void Awake()
+    {
+        btnOfflineVersion = btnOfflineVersion.GetComponent<Button>();
+        btnOnlineVersion = btnOfflineVersion.GetComponent<Button>();
+    }
     void Start()
     {
         playerData = GlobalData.playerData;
         GlobalData.playerData.SelectedClass = null;
-        btnOfflineVersion = btnOfflineVersion.GetComponent<Button>();
-        btnOnlineVersion = btnOfflineVersion.GetComponent<Button>();
     }
 }

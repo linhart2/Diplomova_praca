@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 public class LoginScript : MonoBehaviour
 {
 
-    FirebaseCommunicationLibrary fbC;
+    FirebaseCommunicationLibrary fbc;
     public Button btnLogin;
     public Button btnRegistration;
     public InputField txtLoginName;
@@ -16,10 +16,16 @@ public class LoginScript : MonoBehaviour
     private Color red = new Color(1, 0, 0, 1);
     private Color white = new Color(255, 255, 255, 1);
 
+
+    private void Awake()
+    {
+        fbc = new FirebaseCommunicationLibrary();
+    }
+
     void Start()
     {
         GlobalData.playerData.SelectedClass = null;
-        fbC = new FirebaseCommunicationLibrary();
+
         btnLogin.onClick.AddListener(delegate
         {
             Login(txtLoginName.text, txtLoginPassworld.text);
@@ -34,7 +40,7 @@ public class LoginScript : MonoBehaviour
             setFieldColor(txtLoginName, red);
             return;
         }
-        fbC.Login(email, password, new LoadScene(19));
+        fbc.Login(email, password, new LoadScene(19));
     }
 
     private void setFieldColor(InputField name, Color color)

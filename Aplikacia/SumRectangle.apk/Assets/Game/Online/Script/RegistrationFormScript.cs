@@ -8,7 +8,7 @@ using UnityEngine.SceneManagement;
 public class RegistrationFormScript : MonoBehaviour
 {
 
-    FirebaseCommunicationLibrary fbC;
+    FirebaseCommunicationLibrary fbc;
     public InputField txtMeno;
     public InputField txtPriezvisko;
     public InputField txtEmail;
@@ -18,12 +18,16 @@ public class RegistrationFormScript : MonoBehaviour
     private Color red = new Color(1, 0, 0, 1);
     private Color white = new Color(255, 255, 255, 1);
 
+    private void Awake()
+    {
+        fbc = new FirebaseCommunicationLibrary();
+    }
 
     // Use this for initialization
     void Start()
     {
         GlobalData.playerData.SelectedClass = null;
-        fbC = new FirebaseCommunicationLibrary();
+
         btnRegistrovat.onClick.AddListener(delegate
         {
             registrovat();
@@ -57,7 +61,7 @@ public class RegistrationFormScript : MonoBehaviour
             setFieldColor(txtHesloAgain, red);
             return;
         }
-        fbC.RegistrationNewAccount(txtMeno.text, txtPriezvisko.text, txtEmail.text, txtHeslo.text, txtHesloAgain.text, new LoadScene(19));
+        fbc.RegistrationNewAccount(txtMeno.text, txtPriezvisko.text, txtEmail.text, txtHeslo.text, txtHesloAgain.text, new LoadScene(19));
     }
 
     private void setFieldColor(InputField name, Color color)

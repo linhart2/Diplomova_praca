@@ -170,6 +170,10 @@ public class FirebaseCommunicationLibrary
     {
         mDatabaseRef.Child("CLASSES").Child(classId).Child("STUDENTS_IN_CLASS").Child(userId).SetValueAsync(name);
     }
+    public void insertIntoTableViews(string tableId, string userId, string examsViews)
+    {
+        mDatabaseRef.Child("USERS").Child(userId).Child("TABLE_VIEWS").Child(tableId).SetValueAsync(examsViews);
+    }
     #endregion
     #region removeFromDB
     public void removeOfflineStudent(string classId, string userId)
@@ -177,7 +181,6 @@ public class FirebaseCommunicationLibrary
         FirebaseDatabase.DefaultInstance.GetReference("/CLASSES/" + classId + "/ONLINE_STUDENTS/").Child(userId).RemoveValueAsync();
     }
     #endregion
-
     #region LoadDataFromDB
     public void GetUserData(string userId, bool changeScene = false, int scene = 19)
     {
@@ -284,7 +287,7 @@ public class FirebaseCommunicationLibrary
     #endregion
 
     #region Property
-    private string UserName(string fName, string lName) { return string.Format("{0} {1}", fName, lName); }
+    public string UserName(string fName, string lName) { return string.Format("{0} {1}", fName, lName); }
     #endregion
 
 }
