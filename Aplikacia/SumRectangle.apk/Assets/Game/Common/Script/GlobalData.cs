@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
+using Firebase.Database;
 
 public class GlobalData
 {
@@ -17,4 +18,7 @@ public class PlayerData
     public string SelectedClass;
     public bool LoggedUser;
     public Dictionary<string, string> Classes;
+    public string idSelectedExamOnBoard;
+    public int selectedExamOnBoardCount;
+    public List<DataSnapshot> selectedExamOnBoard;
 }
