@@ -42,6 +42,8 @@ public class LoggedSelectLevel : MonoBehaviour
         Button btnShowTable = GameObject.Find("btnTable").GetComponent<Button>();
         btnShowTable.onClick.AddListener(delegate
         {
+            fbc.insertIntoTableViews(playerData.SelectedClass, playerData.UserId, GameObject.Find("Content").transform.childCount.ToString());
+            GameObject.Find("txtPocetUloh").GetComponent<Text>().text = "0";
             _blackBoard.enabled = true;
         });
 
@@ -95,10 +97,11 @@ public class LoggedSelectLevel : MonoBehaviour
                                           var meno = fbc.UserName(snap2.Child("firstName").Value.ToString(), snap2.Child("lastName").Value.ToString());
                                           generateExamToogleList(exam.Key, new Vector3(-1.5f, 0, 0), GetMenoNazovUlohy(meno, nazov), GetFormatedExamsCount(exam.Value.ToString()));
 
-
-
                                           DataSnapshot snaps = task3.Result;
-                                          _examsOnBoardDbVal = snaps.Value.ToString();
+                                          if (snaps.Value == null)
+                                              _examsOnBoardDbVal = "0";
+                                          else
+                                              _examsOnBoardDbVal = snaps.Value.ToString();
                                           GameObject.Find("txtPocetUloh").GetComponent<Text>().text = GetCountsNewExamsOnBoard(int.Parse(_examsOnBoardDbVal), GameObject.Find("Content").transform.childCount);
                                       }
                                   });
@@ -126,7 +129,10 @@ public class LoggedSelectLevel : MonoBehaviour
             if (task3.IsCompleted)
             {
                 DataSnapshot snaps = task3.Result;
-                _examsOnBoardDbVal = snaps.Value.ToString();
+                if (snaps.Value == null)
+                    _examsOnBoardDbVal = "0";
+                else
+                    _examsOnBoardDbVal = snaps.Value.ToString();
                 GameObject.Find("txtPocetUloh").GetComponent<Text>().text = GetCountsNewExamsOnBoard(int.Parse(_examsOnBoardDbVal), GameObject.Find("Content").transform.childCount);
             }
         });
@@ -168,7 +174,7 @@ public class LoggedSelectLevel : MonoBehaviour
     {
 
         makeRow(GameObject.Find("Content"), ObjName, vector);
-        makeTogglePrefabs(GameObject.Find(ObjName), txtName, txtPocet);
+        makeTogglePrefabs(GameObject.Find(ObjName), txtName, txtPocet, ObjName);
 
     }
     private void makeRow(GameObject cnvs, string objName, Vector3 vector)
@@ -198,7 +204,7 @@ public class LoggedSelectLevel : MonoBehaviour
         panelM.layer = LayerMask.NameToLayer("UI");
         return panelM;
     }
-    private void makeTogglePrefabs(GameObject ObjName, string txtName, string txtPocet)
+    private void makeTogglePrefabs(GameObject ObjName, string txtName, string txtPocet, string idSelectedExamOnBoard)
     {
         GameObject newItem = Instantiate(togglePrefab) as GameObject;
         newItem.transform.SetParent(ObjName.transform);
@@ -206,6 +212,48 @@ public class LoggedSelectLevel : MonoBehaviour
         newItem.name = "Toggle";
         newItem.transform.GetChild(0).GetComponent<Text>().text = txtName;
         newItem.transform.GetChild(1).GetComponent<Text>().text = txtPocet;
+        newItem.transform.GetChild(2).GetComponent<Button>().onClick.AddListener(delegate
+        {
+            GlobalData.playerData.idSelectedExamOnBoard = idSelectedExamOnBoard;
+            FirebaseDatabase.DefaultInstance.GetReference("/EXAMS/" + idSelectedExamOnBoard + "/priklady").GetValueAsync().ContinueWith(task =>
+            {
+                if (task.IsCompleted)
+                {
+                    FirebaseDatabase.DefaultInstance.GetReference("/USERS/" + playerData.UserId + "/SOLVE_EXAMS/" + idSelectedExamOnBoard).GetValueAsync().ContinueWith(task2 =>
+                        {
+                            if (task2.IsCompleted)
+                            {
+                                DataSnapshot snapshot = task.Result;
+                                DataSnapshot snapshot2 = task2.Result;
+                                GlobalData.playerData.selectedExamOnBoardCount = (int)snapshot.ChildrenCount;
+                                GlobalData.playerData.selectedExamOnBoard = snapshot.Children.ToList();
+                                if (snapshot2.Value != null)
+                                {
+                                    string[] parse = snapshot2.Value.ToString().Split('/');
+                                    int preskocPrvychX = int.Parse(parse[0]);
+                                    GlobalData.playerData.selectedExamOnBoard.RemoveRange(0, preskocPrvychX);
+                                    txtPocet = snapshot2.Value.ToString();
+                                    newItem.transform.GetChild(1).GetComponent<Text>().text = txtPocet;
+                                }
+                                FirebaseDatabase.DefaultInstance.GetReference("/USERS").Child(playerData.UserId).Child("SOLVE_EXAMS").Child(idSelectedExamOnBoard).SetValueAsync(txtPocet);
+                                var x = GlobalData.playerData.selectedExamOnBoard.First();
+                                switch (x.ChildrenCount)
+                                {
+                                    case 3:
+                                        SceneManager.LoadScene("LogLvl_1");
+                                        break;
+                                    case 6:
+                                        SceneManager.LoadScene("LogLvl_1");
+                                        break;
+                                    case 10:
+                                        SceneManager.LoadScene("LogLvl_1");
+                                        break;
+                                }
+                            }
+                        });
+                }
+            });
+        });
         newItem.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
 
     }

@@ -174,6 +174,10 @@ public class FirebaseCommunicationLibrary
     {
         mDatabaseRef.Child("USERS").Child(userId).Child("TABLE_VIEWS").Child(tableId).SetValueAsync(examsViews);
     }
+    public void zapisStavRozriesenejUlohy(string userId, string idSelectedExamOnBoard, string txtPocet)
+    {
+        mDatabaseRef.Child("/USERS").Child(userId).Child("SOLVE_EXAMS").Child(idSelectedExamOnBoard).SetValueAsync(txtPocet);
+    }
     #endregion
     #region removeFromDB
     public void removeOfflineStudent(string classId, string userId)
@@ -264,6 +268,17 @@ public class FirebaseCommunicationLibrary
     }
     #endregion
 
+    #region UpdateData
+    public void UpdateResult(Dictionary<string, string> ex, string pathToSharedData)
+    {
+        LeaderBoardEntry entry = new LeaderBoardEntry(ex);
+        Dictionary<string, object> entryValues = entry.ToDictionary();
+        Dictionary<string, object> childUpdates = new Dictionary<string, object>();
+        childUpdates[pathToSharedData] = entryValues;
+        mDatabaseRef.UpdateChildrenAsync(childUpdates);
+    }
+    #endregion
+
     #region Callback
     private void classExistCallback(string hesloTriedy, string classID, string studentID, bool exists, string className, string studentName)
     {
@@ -274,8 +289,9 @@ public class FirebaseCommunicationLibrary
             insertIntoOnlineStudent(classID, studentID, studentName);
             setSelectedClass(studentID, classID);
             addStudentToClass(studentID, string.Format("{0} -> {1}", className, hesloTriedy), classID);
+            insertIntoTableViews(classID, studentID, "0");
             GlobalData.playerData.Classes[classID] = string.Format("{0} -> {1}", className, hesloTriedy);
-            SaveGlobalSelectedClass(hesloTriedy);
+            SaveGlobalSelectedClass(classID);
             SceneManager.LoadScene("LogedSelectLevel");
 
         }
