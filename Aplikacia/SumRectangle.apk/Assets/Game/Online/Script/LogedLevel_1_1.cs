@@ -12,22 +12,19 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
     [SerializeField]
     public Canvas gratulation;      //- object gratulacia
     public Canvas nespravne;        //- object nespravne
-    public Canvas unlock_level;     //- object otvoreny novy level
     public Canvas showSharedWith;      //- object zdielat s....
     public Canvas infoAboutShare;
 
-    public CustomProgressBar progressBar; //- object progress bar
     public GameObject[] itemPrefab;
     public GameObject togglePrefab;
     private GameObject[] slots;
-    private bool zobrazSlider = true;
     public int lvl;
     public static List<int> table = null;
     [SerializeField]
     public Dictionary<string, string> ExamArray;
     Generator_uloh priklad;
     Kontrola skontroluj;
-    //SaveLoadProgress saveloadprogress;
+
     private FirebaseConnect firebase;
     public Dictionary<string, GameObject> ListStudent = new Dictionary<string, GameObject>();
     private PlayerData playerData = new PlayerData();
@@ -99,7 +96,6 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
         infoAboutShare = infoAboutShare.GetComponent<Canvas>();
         showSharedWith = showSharedWith.GetComponent<Canvas>();
         nespravne = nespravne.GetComponent<Canvas>();
-        unlock_level = unlock_level.GetComponent<Canvas>();
         skontroluj = new Kontrola(2);
         priklad = new Generator_uloh(lvl);
         table = priklad.get_array(3);
@@ -108,12 +104,7 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
         gratulation.enabled = false;
         showSharedWith.enabled = false;
         nespravne.enabled = false;
-        unlock_level.enabled = false;
         infoAboutShare.enabled = false;
-        progressBar.slider.maxValue = 10f;
-        progressBar.slider.minValue = 0f;
-        progressBar.slider.value = 0f;
-        StartFillingUpProgressBar();
         HasChanged();
     }
 
@@ -358,19 +349,6 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
         }
     }
 
-    public void progressAdd()
-    {
-        progressBar.slider.value += 0.5f;
-    }
-    public void StartFillingUpProgressBar()
-    {
-        //progressBar.slider.value;
-        if (progressBar.slider.value.Equals(progressBar.slider.maxValue))
-        {
-            progressBar.gameObject.SetActive(false);
-        }
-        //isFillingProgressBar = true;
-    }
     public void HasChanged(bool zaznamenajDoDB = true)
     {
         // metoda kontroluje ci nenastali zmeny v slotoch
@@ -412,19 +390,7 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
             bool pom = skontroluj.Vyhodnot(kontrola);
             if (pom)
             {
-                progressAdd();
-                if (zobrazSlider && progressBar.slider.value.Equals(progressBar.slider.maxValue))
-                {
-                    zobrazSlider = false;
-                    show_unlock();
-                    //saveloadprogress.SaveLock(lvl);
-                    //saveloadprogress.Save(lvl, zobrazSlider, progressBar.slider.value);
-                }
-                else
-                {
-                    congrats_show();
-                    //saveloadprogress.Save(lvl, zobrazSlider, progressBar.slider.value);
-                }
+                congrats_show();
             }
             else
             {
@@ -443,21 +409,6 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
     {
         nespravne.enabled = true;
         StartCoroutine(nespravne_hide());
-    }
-
-    void show_unlock()
-    {
-        unlock_level.enabled = true;
-        StartCoroutine(hide_unlock());
-    }
-
-    IEnumerator hide_unlock()
-    {
-        yield return new WaitForSeconds(2.0f);
-
-        unlock_level.enabled = false;
-        UnbindAllHandler();
-        SceneManager.LoadScene(18);
     }
 
     IEnumerator congrats_hide()
