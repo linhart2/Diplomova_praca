@@ -1,55 +1,57 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.UI;
-using System;
 using UIAddons;
-using Firebase.Database;
-using UnityEngine.SceneManagement;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
+using UnityEngine.UI;
 using System.Linq;
+using System;
+using UnityEngine.SceneManagement;
+using Firebase.Database;
 
-public class LogLvlUniversal : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
+public class LoggedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
 {
+    #region inicializacne Data
     private const string NAZOV_PANELOV = "Panel1_";
     private const string SLOT = "Slot_";
     private const string SLOTM = "SlotM_";
     private const string FLAG_PODMIENKA = "-PODMIENKA";
     private const string FLAG_DISABLED = "-DISABLED";
 
+    [SerializeField]
     public Canvas gratulation;      //- object gratulacia
     public Canvas nespravne;        //- object nespravne
     public Canvas showSharedWith;      //- object zdielat s....
     public Canvas infoAboutShare;
-    public GameObject[] itemPrefab;
+    public GameObject[] itemPrefab; //- prefabsy cisla
     public GameObject togglePrefab;
-    public int vysledokPomocnehoSuctu;
-    public int urovenVstupPreKontrolu;
-
 
     private Kontrola _skontroluj;
     private Dictionary<string, GameObject> _listStudent = new Dictionary<string, GameObject>();
     private PlayerData _playerData = new PlayerData();
     private FirebaseCommunicationLibrary _fbc;
     private Dictionary<string, string> _examArray;
-    private List<int> _zoznamCiselPrikladu = new List<int>();
-    private string pathToSharedData;
+    private string _pathToSharedData;
     private string _pathActualPlayerScreen;
     private string _pathActualPlayerScreenDate;
-    private int _pomSuc0 = -1;
-    private int _pomSuc1 = -1;
     private bool _useButtonShareSchreenWith = false;
     private DatabaseReference _controlChangeData;
     private DatabaseReference _controlSharedScreenWithMe;
     private DatabaseReference _controlAllStudentInClass;
     private Dictionary<string, int?> table_M = new Dictionary<string, int?>();  // - zadany priklad + moznosti
     private List<string> _poliaKtoreSaNevykreslia = new List<string>();                        //- ktore policko sa vynecha a nevykresli
-    private int _pocetPoliKtoreSaKontroluju;
+    private Generator_uloh _priklad;
+    private List<int> _table;
+    #endregion
 
-
-
-    // Use this for initialization
     private void Awake()
     {
+        Button btnRestart = GameObject.Find("Reset").GetComponent<Button>();
+        btnRestart.onClick.AddListener(delegate
+        {
+            Restart();
+        });
         Button btnBack = GameObject.Find("Back").GetComponent<Button>();
         btnBack.onClick.AddListener(delegate
         {
@@ -81,23 +83,11 @@ public class LogLvlUniversal : MonoBehaviour, UnityEngine.EventSystems.IHasChang
             SelectAllUser();
         });
         _fbc = new FirebaseCommunicationLibrary();
-
     }
 
+    // Use this for initialization
     void Start()
     {
-        switch (urovenVstupPreKontrolu)
-        {
-            case 2:
-                _pocetPoliKtoreSaKontroluju = 3;
-                break;
-            case 3:
-                _pocetPoliKtoreSaKontroluju = 6;
-                break;
-            case 4:
-                _pocetPoliKtoreSaKontroluju = 10;
-                break;
-        }
         _playerData = GlobalData.playerData;
 
 #if DEBUG
@@ -108,19 +98,6 @@ public class LogLvlUniversal : MonoBehaviour, UnityEngine.EventSystems.IHasChang
 #endif
         _pathActualPlayerScreen = string.Format("/USERS/{0}/ACTUAL_SCREEN/SCREEN", _playerData.UserId);
         _pathActualPlayerScreenDate = string.Format("/USERS/{0}/ACTUAL_SCREEN/DATE", _playerData.UserId);
-        switch (_playerData.selectedExamOnBoard.First().Children.Count())
-        {
-            case 3:
-            case 6:
-            case 10:
-                _examArray = _playerData.selectedExamOnBoard.First().Children.ToDictionary(t => string.Format("{0}{1}", SLOTM, t.Key.Substring(t.Key.IndexOf('_') + 1)), t => t.Value.ToString());
-                break;
-            default:
-                _examArray = _playerData.selectedExamOnBoard.First().Children.ToDictionary(t => t.Key, t => t.Value.ToString());
-                break;
-        }
-
-        addInputToTableM(_examArray);
 
         _controlAllStudentInClass = FirebaseDatabase.DefaultInstance
                                                    .GetReference("/CLASSES/" + _playerData.SelectedClass + "/ONLINE_STUDENTS");
@@ -131,23 +108,26 @@ public class LogLvlUniversal : MonoBehaviour, UnityEngine.EventSystems.IHasChang
                                                         .GetReference("/USERS/" + _playerData.UserId + "/waitForShare");
         _controlSharedScreenWithMe.ChildAdded += HandleControlRequestSharedScreen;
 
-        gratulation = gratulation.GetComponent<Canvas>();
-        infoAboutShare = infoAboutShare.GetComponent<Canvas>();
-        showSharedWith = showSharedWith.GetComponent<Canvas>();
-        nespravne = nespravne.GetComponent<Canvas>();
-
-        _skontroluj = new Kontrola(urovenVstupPreKontrolu);
+        _skontroluj = new Kontrola(2);
+        generator_uloh();
 
         draw();
-        CreateArrayExam();
 
+
+        gratulation = gratulation.GetComponent<Canvas>();
         gratulation.enabled = false;
-        showSharedWith.enabled = false;
+        nespravne = nespravne.GetComponent<Canvas>();
         nespravne.enabled = false;
+        infoAboutShare = infoAboutShare.GetComponent<Canvas>();
         infoAboutShare.enabled = false;
+        showSharedWith = showSharedWith.GetComponent<Canvas>();
+        showSharedWith.enabled = false;
 
         HasChanged();
+
     }
+
+    #region zdielanie
     public void ShareScreenWith()
     {
         SharedScreen screen = new SharedScreen()
@@ -160,8 +140,8 @@ public class LogLvlUniversal : MonoBehaviour, UnityEngine.EventSystems.IHasChang
         LeaderBoardEntry entry = new LeaderBoardEntry(_examArray);
         Dictionary<string, object> entryValues = entry.ToDictionary();
         Dictionary<string, object> childUpdates = new Dictionary<string, object>();
-        pathToSharedData = "/SHARED_SCREEN/" + key + "/data/";
-        childUpdates[pathToSharedData] = entryValues;
+        _pathToSharedData = "/SHARED_SCREEN/" + key + "/data/";
+        childUpdates[_pathToSharedData] = entryValues;
         _fbc.addSharedScreen(key, screen);
         _fbc.inserMyIdToSharedScreen(_playerData.UserId, _playerData.Name, key);
         FirebaseDatabase.DefaultInstance.RootReference.UpdateChildrenAsync(childUpdates);
@@ -224,13 +204,13 @@ public class LogLvlUniversal : MonoBehaviour, UnityEngine.EventSystems.IHasChang
 
     public void AcceptShareScreen(string screenKey, string requestKey)
     {
-        pathToSharedData = "/SHARED_SCREEN/" + screenKey + "/data/";
+        _pathToSharedData = "/SHARED_SCREEN/" + screenKey + "/data/";
         infoAboutShare.enabled = false;
         _useButtonShareSchreenWith = true;
         Console.WriteLine("AcceptShareScren id={0} name={1} screenKey={2}", _playerData.UserId, _playerData.Name, screenKey);
         _fbc.inserMyIdToSharedScreen(_playerData.UserId, _playerData.Name, screenKey);
         _controlChangeData = FirebaseDatabase.DefaultInstance
-                                            .GetReference(pathToSharedData);
+                                            .GetReference(_pathToSharedData);
         _controlChangeData.ChildChanged += HandleChildChanged;
         _controlChangeData.ChildAdded += HandleChildChanged;
         FirebaseDatabase.DefaultInstance.GetReference("/USERS/" + _playerData.UserId + "/waitForShare/").Child(requestKey).RemoveValueAsync();
@@ -240,6 +220,7 @@ public class LogLvlUniversal : MonoBehaviour, UnityEngine.EventSystems.IHasChang
         infoAboutShare.enabled = false;
         FirebaseDatabase.DefaultInstance.GetReference("/USERS/" + _playerData.UserId + "/waitForShare/").Child(requestKey).RemoveValueAsync();
     }
+    #endregion
 
     #region HandleUsers
     public void HandleShowAllUserInClassAdd(object sender, ChildChangedEventArgs args)
@@ -317,7 +298,7 @@ public class LogLvlUniversal : MonoBehaviour, UnityEngine.EventSystems.IHasChang
         string key = args.Snapshot.Key;
         object value = args.Snapshot.Value;
         _examArray[key] = value.ToString();
-        Destroy();
+        CleanScreen();
         draw();
         HasChanged(false);
     }
@@ -331,7 +312,6 @@ public class LogLvlUniversal : MonoBehaviour, UnityEngine.EventSystems.IHasChang
             _controlChangeData.ChildChanged -= HandleChildChanged;
     }
     #endregion
-
     #region game
     public void CreateArrayExam()
     {
@@ -350,60 +330,47 @@ public class LogLvlUniversal : MonoBehaviour, UnityEngine.EventSystems.IHasChang
                 }
             }
         }
-        _fbc.zapisDatumActualScreen(_pathActualPlayerScreenDate);
         _fbc.UpdateResult(_examArray, _pathActualPlayerScreen);
     }
 
     public void DajFlagStatickymHodnotamVtrojuholniku(Transform slot, string flag_disabled = "")
     {
         GameObject item = slot.GetComponent<Slot>().item;
-        if (slot.name.Equals(SLOT + _pomSuc0) || slot.name.Equals(SLOT + _pomSuc1))
-        {
-            DajFlagSlotomSpodmienkou(slot, item, FLAG_PODMIENKA, flag_disabled);
-
-        }
-        else
-        {
-            DajFlagSlotomSpodmienkou(slot, item, "", flag_disabled);
-        }
-
-    }
-
-    public void DajFlagSlotomSpodmienkou(Transform slot, GameObject item, string flag_slot = "", string flag_disabled = "")
-    {
         if (item)
         {
-            _examArray[slot.name + flag_slot] = item.name.Substring(0, item.name.IndexOf("(")) + flag_disabled;
+            _examArray[slot.name] = item.name.Substring(0, item.name.IndexOf("(")) + flag_disabled;
         }
         else
-            _examArray.Add(slot.name + flag_slot, "null");
+            _examArray.Add(slot.name, "null");
     }
 
-
-    public void Destroy()
+    public void CleanScreen()
     {
-        foreach (Transform objekt in GameObject.Find("Panel1").gameObject.transform)
+        int y = 1;
+        for (int i = 0; i < GameObject.Find("Panel1").gameObject.transform.childCount - 4; i++)
         {
-            foreach (Transform slot in objekt)
+            for (int j = 0; j < GameObject.Find(NAZOV_PANELOV + y).gameObject.transform.childCount; j++)
             {
-                if (slot.childCount > 0)
-                {
-                    DestroyImmediate(slot.gameObject.transform.GetChild(0).gameObject);
-                }
+
+                var pom = GameObject.Find(NAZOV_PANELOV + y).gameObject.transform.GetChild(j);
+                if (pom.gameObject.transform.childCount > 0)
+                    DestroyImmediate(pom.gameObject.transform.GetChild(0).gameObject);
             }
+            y++;
         }
     }
-    /*
+
+
     public void Restart()
     {
-        Destroy();
+        CleanScreen();
         draw();
-    }*/
+    }
 
     public void draw()
     {
         // metoda vykresli vygenerovane riesenie do prazdnych slotov
-        GameObject[] _slots = new GameObject[24];
+        GameObject[] _slots = new GameObject[6];
         int y = 1;
         int poc = 0;
         for (int i = 0; i < GameObject.Find("Panel1").gameObject.transform.childCount - 4; i++)
@@ -416,20 +383,13 @@ public class LogLvlUniversal : MonoBehaviour, UnityEngine.EventSystems.IHasChang
                     GameObject newItem = Instantiate(itemPrefab[(int)table_M[_slots[j].name]]) as GameObject;
                     newItem.transform.parent = _slots[j].transform;
                     newItem.transform.localScale = new Vector3(1, 1, 1);
-                    if (poc < _pocetPoliKtoreSaKontroluju)
-                    {   // nastavy aby sa hodnoty ktore su nazaciatku umiestnene nedali presuvat
-                        newItem.GetComponent<DragHandeler>().enabled = false;
-                    }
-                    if (_pomSuc0 != -1 && _pomSuc1 != -1)
-                    {
-                        ChangeCol(_pomSuc0, true);
-                        ChangeCol(_pomSuc1, true);
-                    }
+
                 }
                 poc++;
             }
             y++;
         }
+        CreateArrayExam();
     }
 
 
@@ -452,42 +412,19 @@ public class LogLvlUniversal : MonoBehaviour, UnityEngine.EventSystems.IHasChang
 
                 if (slot.GetComponent<Slot>().item == null)
                 {
-                    if (slot.name.Equals(SLOT + _pomSuc0) || slot.name.Equals(SLOT + _pomSuc1))
-                    {
-                        _examArray[slot.name + FLAG_PODMIENKA] = "null";
-                    }
-                    else
-                    {
-                        _examArray[slot.name] = "null";
-                    }
+                    _examArray[slot.name] = "null";
                 }
                 else
                 {
-                    if (slot.name.Equals(SLOT + _pomSuc0) || slot.name.Equals(SLOT + _pomSuc1))
-                    {
-                        _examArray[slot.name + FLAG_PODMIENKA] = slot.GetComponent<Slot>().item.name.Substring(0, slot.GetComponent<Slot>().item.name.IndexOf("("));
-                    }
-                    else
-                    {
-                        _examArray[slot.name] = slot.GetComponent<Slot>().item.name.Substring(0, slot.GetComponent<Slot>().item.name.IndexOf("("));
-                    }
+                    _examArray[slot.name] = slot.GetComponent<Slot>().item.name.Substring(0, slot.GetComponent<Slot>().item.name.IndexOf("("));
                 }
             }
         }
         _fbc.UpdateResult(_examArray, _pathActualPlayerScreen);
         _fbc.zapisDatumActualScreen(_pathActualPlayerScreenDate);
-        if (kontrola.Count == _pocetPoliKtoreSaKontroluju)
+        if (kontrola.Count == 3)
         {
-            int _pomSuc0Hodnota = 0;
-            int _pomSuc1Hodnota = 0;
-            if (_pomSuc0 != -1 && _pomSuc1 != -1)
-            {
-                _pomSuc0Hodnota = reverse(kontrola)[_pomSuc0];
-                _pomSuc1Hodnota = reverse(kontrola)[_pomSuc1];
-                _pomSuc0 = kontrola.FindIndex(x => x == _pomSuc0Hodnota);
-                _pomSuc1 = kontrola.FindIndex(x => x == _pomSuc1Hodnota);
-            }
-            bool pom = _pomSuc0 == -1 && _pomSuc1 == -1 ? _skontroluj.Vyhodnot(kontrola) : _skontroluj.Vyhodnot(kontrola, _pomSuc1, _pomSuc0, _pomSuc0Hodnota + _pomSuc1Hodnota);
+            bool pom = _skontroluj.Vyhodnot(kontrola);
             if (pom)
             {
                 congrats_show();
@@ -499,90 +436,33 @@ public class LogLvlUniversal : MonoBehaviour, UnityEngine.EventSystems.IHasChang
         }
     }
 
-    public void addInputToTableM(Dictionary<string, string> input)
+    void generator_uloh()
     {
-        table_M = new Dictionary<string, int?>();
+        _priklad = new Generator_uloh(1);
+        table_M = new Dictionary<string, int?> { };
         _poliaKtoreSaNevykreslia = new List<string>();
-        List<string> podmienka = new List<string>();
-        int input_Pocet = input.Count;
-        switch (input_Pocet)
-        {
-            case 3:
-            case 6:
-            case 10:
-                for (int i = 0; i < input_Pocet; i++)
-                    input.Add(SLOT + i, "null");
-                break;
-        }
+        _table = _priklad.get_array(3);
 
-        foreach (var x in input)
+        int pocitadloSlotov = 0;
+        foreach (var num in _table)
         {
-            if (x.Key.Contains(FLAG_PODMIENKA) && x.Value.Contains(FLAG_DISABLED))
-            {
-                string hodnotaString = x.Value.Substring(0, x.Value.IndexOf('-'));
-                int? hodnota = null;
-                if (hodnotaString != "null")
-                    hodnota = Int32.Parse(hodnotaString);
-                table_M.Add(x.Key.Substring(0, x.Key.IndexOf('-')), hodnota);
-                podmienka.Add(x.Key.Substring(0, x.Key.IndexOf('-')));
-            }
-            else if (!x.Key.Contains(FLAG_PODMIENKA) && x.Value.ToString().Contains(FLAG_DISABLED))
-            {
-                string hodnotaString = x.Value.Substring(0, x.Value.IndexOf('-'));
-                int? hodnota = null;
-                if (hodnotaString != "null")
-                    hodnota = Int32.Parse(hodnotaString);
-                table_M.Add(x.Key, hodnota);
-            }
-            else if (x.Key.Contains(FLAG_PODMIENKA) && !x.Value.Contains(FLAG_DISABLED))
-            {
-                int? hodnota = null;
-                if (x.Value.ToString() == "null")
-                    _poliaKtoreSaNevykreslia.Add(x.Key.Substring(0, x.Key.IndexOf('-')));
-                if (x.Value.ToString() != "null")
-                    hodnota = Int32.Parse(x.Value);
-                table_M.Add(x.Key.Substring(0, x.Key.IndexOf('-')), hodnota);
-                podmienka.Add(x.Key.Substring(0, x.Key.IndexOf('-')));
-            }
-            else
-            {
-                int? hodnota = null;
-                if (x.Value.ToString() == "null")
-                    _poliaKtoreSaNevykreslia.Add(x.Key);
-                if (x.Value.ToString() != "null")
-                    hodnota = Int32.Parse(x.Value);
-                table_M.Add(x.Key, hodnota);
-            }
-        }
-        if (podmienka.Count() > 1)
-        {
-            _pomSuc0 = Int32.Parse(podmienka[0].Substring(podmienka[0].IndexOf('_') + 1));
-            _pomSuc1 = Int32.Parse(podmienka[1].Substring(podmienka[1].IndexOf('_') + 1));
-        }
-    }
-
-    public void ChangeCol(int col, bool f)
-    {
-        GameObject slotName = GameObject.Find(SLOT + col);
-        Image change = slotName.GetComponent<Image>();
-        if (f)
-        {
-            change.color = new Color(0, 0, 255, 0.61f);
-        }
-        else
-        {
-            change.color = new Color(255, 255, 255, 0.61f);
+            table_M.Add(SLOT + pocitadloSlotov, null);
+            _poliaKtoreSaNevykreslia.Add(SLOT + pocitadloSlotov);
+            table_M.Add(SLOTM + pocitadloSlotov, num);
+            pocitadloSlotov++;
         }
     }
 
     public void congrats_show()
     {
+        // zobrazi gratulaciu a zavola metodu na skrytie gratulacie
         gratulation.enabled = true;
         StartCoroutine(congrats_hide());
     }
 
     public void nespravne_show()
     {
+        //zobrazi oznam a zavola metodu na skrytie
         nespravne.enabled = true;
         StartCoroutine(nespravne_hide());
     }
@@ -590,31 +470,17 @@ public class LogLvlUniversal : MonoBehaviour, UnityEngine.EventSystems.IHasChang
     IEnumerator congrats_hide()
     {
         yield return new WaitForSeconds(2.0f);
-        gratulation.enabled = false;
         UnbindAllHandler();
-        SceneManager.LoadScene("LoggedSelectLevel");
+        gratulation.enabled = false;
+        SceneManager.LoadScene(UnityEngine.Random.Range(21, 25));
     }
 
     IEnumerator nespravne_hide()
     {
         yield return new WaitForSeconds(2.0f);
         nespravne.enabled = false;
-        //UnbindAllHandler();
-        //SceneManager.LoadScene("LogedSelectLevel");
-    }
-
-    public List<int> reverse(List<int> x)
-    {
-        List<int> pom = new List<int> { };
-        for (int i = (x.Count - 1); i >= 0; i--)
-        {
-            pom.Add(x[i]);
-        }
-        return pom;
     }
     #endregion
-
-
     #region ToogleList
     private void generateStudentToogleList(string ObjName, Vector3 vector, string txtName)
     {

@@ -56,7 +56,7 @@ public class LoggedSelectLevel : MonoBehaviour
         });
     }
     #region Handle
-    void showExamsOnBoardAdd(object sender, ChildChangedEventArgs args)
+    public void showExamsOnBoardAdd(object sender, ChildChangedEventArgs args)
     {
 
         if (args.DatabaseError != null)
@@ -141,6 +141,12 @@ public class LoggedSelectLevel : MonoBehaviour
         Destroy(GameObject.Find(key));
     }
 
+    public void UnbindAllHandler()
+    {
+        _examsOnBoard.ChildAdded -= showExamsOnBoardAdd;
+        _examsOnBoard.ChildRemoved -= showExamsOnBoardRemove;
+
+    }
     #endregion
 
     private string GetMenoNazovUlohy(string meno, string nazov)
@@ -166,6 +172,7 @@ public class LoggedSelectLevel : MonoBehaviour
             fbc.setSelectedClass(playerData.UserId, "null");
             fbc.removeOfflineStudent(playerData.SelectedClass, playerData.UserId);
         }
+        UnbindAllHandler();
         SceneManager.LoadScene(value);
     }
 
@@ -240,13 +247,20 @@ public class LoggedSelectLevel : MonoBehaviour
                                 switch (x.ChildrenCount)
                                 {
                                     case 3:
+                                        UnbindAllHandler();
                                         SceneManager.LoadScene("LogLvl1_1");
                                         break;
                                     case 6:
+                                        UnbindAllHandler();
                                         SceneManager.LoadScene("LogLvl3_1");
                                         break;
                                     case 10:
+                                        UnbindAllHandler();
                                         SceneManager.LoadScene("LogLvl4_1");
+                                        break;
+                                    case 24:
+                                        UnbindAllHandler();
+                                        SceneManager.LoadScene("LogLvl4_2");
                                         break;
                                 }
                             }
