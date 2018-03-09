@@ -8,6 +8,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using System.Linq;
 using System.Threading.Tasks;
+using System;
 
 public class FirebaseCommunicationLibrary
 {
@@ -177,6 +178,10 @@ public class FirebaseCommunicationLibrary
     public void zapisStavRozriesenejUlohy(string userId, string idSelectedExamOnBoard, string txtPocet)
     {
         mDatabaseRef.Child("/USERS").Child(userId).Child("SOLVE_EXAMS").Child(idSelectedExamOnBoard).SetValueAsync(txtPocet);
+    }
+    public void zapisDatumActualScreen(string path)
+    {
+        mDatabaseRef.Child(path).SetValueAsync(DateTime.Now.ToString("dd.MM.yyyy HH.mm.ss"));
     }
     #endregion
     #region removeFromDB

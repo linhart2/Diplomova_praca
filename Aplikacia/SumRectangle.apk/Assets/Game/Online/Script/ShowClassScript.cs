@@ -80,6 +80,6 @@ public class ShowClassScript : MonoBehaviour
         fbc.insertIntoStudentsInClass(classId, playerData.UserId, playerData.Name);
         fbc.insertIntoOnlineStudent(classId, playerData.UserId, playerData.Name);
         fbc.setSelectedClass(playerData.UserId, classId);
-        SceneManager.LoadScene("LogedSelectLevel");
+        SceneManager.LoadScene("LoggedSelectLevel");
     }
 }

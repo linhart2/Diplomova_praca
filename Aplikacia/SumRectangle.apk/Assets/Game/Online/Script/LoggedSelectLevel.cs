@@ -240,13 +240,13 @@ public class LoggedSelectLevel : MonoBehaviour
                                 switch (x.ChildrenCount)
                                 {
                                     case 3:
-                                        SceneManager.LoadScene("LogLvl_1");
+                                        SceneManager.LoadScene("LogLvl1_1");
                                         break;
                                     case 6:
-                                        SceneManager.LoadScene("LogLvl_1");
+                                        SceneManager.LoadScene("LogLvl3_1");
                                         break;
                                     case 10:
-                                        SceneManager.LoadScene("LogLvl_1");
+                                        SceneManager.LoadScene("LogLvl4_1");
                                         break;
                                 }
                             }

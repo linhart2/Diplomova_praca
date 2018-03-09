@@ -10,6 +10,7 @@ using System;
 using UnityEngine.SceneManagement;
 using Firebase.Database;
 
+
 public class LogLvl_4_2 : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
 {
     private const string NAZOV_PANELOV = "Panel1_";
@@ -59,7 +60,7 @@ public class LogLvl_4_2 : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
         btnBack.onClick.AddListener(delegate
         {
             UnbindAllHandler();
-            SceneManager.LoadScene("LogedSelectLevel");
+            SceneManager.LoadScene("LoggedSelectLevel");
 
         });
         Button btnZrus = GameObject.Find("btnZrus").GetComponent<Button>();

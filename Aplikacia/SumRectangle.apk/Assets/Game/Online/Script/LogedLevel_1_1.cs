@@ -43,7 +43,7 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
         btnBack.onClick.AddListener(delegate
         {
             UnbindAllHandler();
-            SceneManager.LoadScene("LogedSelectLevel");
+            SceneManager.LoadScene("LoggedSelectLevel");
 
         });
         Button btnZrus = GameObject.Find("btnZrus").GetComponent<Button>();
