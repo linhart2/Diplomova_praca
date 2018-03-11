@@ -86,7 +86,7 @@ export class CreateExamPageComponent implements OnInit {
         pom = 10;
         break;
     }
-    for (let i = 1; i <= pom; i++) {
+    for (let i = 0; i < pom; i++) {
       this.priklad[ 'Slot_' + i] = null;
     }
   }
@@ -95,8 +95,10 @@ export class CreateExamPageComponent implements OnInit {
     this.isRectVisible = false;
   }
   controlTask() {
+    console.log("input");
     let pom = true;
     for (let pr in this.priklad) {
+      console.log(pr);
       if ( this.priklad[pr] === null ) {
         $('#' + pr).css('background-color', 'red');
         pom = false;
