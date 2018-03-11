@@ -28,7 +28,7 @@ public class LoggedSelectLevel : MonoBehaviour
 #if DEBUG
         playerData.Name = "TestLingo";
         playerData.UserId = "ZAT4DktlgdYBVGwXYRpOfA3temm1";
-        playerData.SelectedClass = "-KweS-rI-bTBYVX3g3vS";
+        playerData.SelectedClass = "-L7EL2Ny6sBTqGX_kZtU";
         playerData.LoggedUser = true;
 #endif
         _blackBoard = _blackBoard.GetComponent<Canvas>();

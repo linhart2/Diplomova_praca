@@ -41,9 +41,10 @@ public class LogLvlUniversal : MonoBehaviour, UnityEngine.EventSystems.IHasChang
     private DatabaseReference _controlChangeData;
     private DatabaseReference _controlSharedScreenWithMe;
     private DatabaseReference _controlAllStudentInClass;
-    private Dictionary<string, int?> table_M = new Dictionary<string, int?>();  // - zadany priklad + moznosti
     private List<string> _poliaKtoreSaNevykreslia = new List<string>();                        //- ktore policko sa vynecha a nevykresli
     private int _pocetPoliKtoreSaKontroluju;
+    private List<string> _poliaOznaceneDisable = new List<string>();
+    private List<string> _podmienka = new List<string>();
 
 
 
@@ -103,24 +104,40 @@ public class LogLvlUniversal : MonoBehaviour, UnityEngine.EventSystems.IHasChang
 #if DEBUG
         _playerData.Name = "TestLingo";
         _playerData.UserId = "ZAT4DktlgdYBVGwXYRpOfA3temm1";
-        _playerData.SelectedClass = "-KweS-rI-bTBYVX3g3vS";
+        _playerData.SelectedClass = "-L7EL2Ny6sBTqGX_kZtU";
         _playerData.LoggedUser = true;
 #endif
         _pathActualPlayerScreen = string.Format("/USERS/{0}/ACTUAL_SCREEN/SCREEN", _playerData.UserId);
         _pathActualPlayerScreenDate = string.Format("/USERS/{0}/ACTUAL_SCREEN/DATE", _playerData.UserId);
-        switch (_playerData.selectedExamOnBoard.First().Children.Count())
+
+        pathToSharedData = _playerData.cestaKZdielanymDatam;
+        _playerData.cestaKZdielanymDatam = null;
+        int rozlisTypUlohy = _playerData.selectedExamOnBoard != null ? 0 : 1;
+        switch (rozlisTypUlohy)
         {
-            case 3:
-            case 6:
-            case 10:
+            case 0:
                 _examArray = _playerData.selectedExamOnBoard.First().Children.ToDictionary(t => string.Format("{0}{1}", SLOTM, t.Key.Substring(t.Key.IndexOf('_') + 1)), t => t.Value.ToString());
+                doplnChybajuceData(_examArray);
+                break;
+            case 1:
+                _examArray = _playerData.zdielaneDataAll.Child("data").Children.ToDictionary(t => t.Key, t => t.Value.ToString());
+                _pomSuc0 = int.Parse(_playerData.zdielaneDataAll.Child("pomSucet0and1").Child("0").Value.ToString());
+                _pomSuc1 = int.Parse(_playerData.zdielaneDataAll.Child("pomSucet0and1").Child("1").Value.ToString());
+                _poliaOznaceneDisable = _playerData.zdielaneDataAll.Child("poliaOznaceneDisable").Children.Select(val => val.Value.ToString()).ToList();
+                _poliaKtoreSaNevykreslia = _playerData.zdielaneDataAll.Child("poliaOznaceneDisable").Children.Select(val => val.Value.ToString()).ToList();
                 break;
             default:
-                _examArray = _playerData.selectedExamOnBoard.First().Children.ToDictionary(t => t.Key, t => t.Value.ToString());
                 break;
         }
 
-        addInputToTableM(_examArray);
+        if (pathToSharedData != null && pathToSharedData != string.Empty)
+        {
+            _useButtonShareSchreenWith = true;
+            _controlChangeData = FirebaseDatabase.DefaultInstance
+                                            .GetReference(pathToSharedData);
+            _controlChangeData.ChildChanged += HandleChildChanged;
+            _controlChangeData.ChildAdded += HandleChildChanged;
+        }
 
         _controlAllStudentInClass = FirebaseDatabase.DefaultInstance
                                                    .GetReference("/CLASSES/" + _playerData.SelectedClass + "/ONLINE_STUDENTS");
@@ -139,7 +156,6 @@ public class LogLvlUniversal : MonoBehaviour, UnityEngine.EventSystems.IHasChang
         _skontroluj = new Kontrola(urovenVstupPreKontrolu);
 
         draw();
-        CreateArrayExam();
 
         gratulation.enabled = false;
         showSharedWith.enabled = false;
@@ -154,7 +170,7 @@ public class LogLvlUniversal : MonoBehaviour, UnityEngine.EventSystems.IHasChang
         {
             screeen_locker = false,
             admin_name = _playerData.Name,
-            screen_name = "screen1a",
+            screen_name = "LogLvl4_2",
         };
         String key = FirebaseDatabase.DefaultInstance.GetReference("/SHARED_SCREEN").Push().Key;
         LeaderBoardEntry entry = new LeaderBoardEntry(_examArray);
@@ -317,7 +333,7 @@ public class LogLvlUniversal : MonoBehaviour, UnityEngine.EventSystems.IHasChang
         string key = args.Snapshot.Key;
         object value = args.Snapshot.Value;
         _examArray[key] = value.ToString();
-        Destroy();
+        ClearScreen();
         draw();
         HasChanged(false);
     }
@@ -333,54 +349,7 @@ public class LogLvlUniversal : MonoBehaviour, UnityEngine.EventSystems.IHasChang
     #endregion
 
     #region game
-    public void CreateArrayExam()
-    {
-        _examArray = new Dictionary<string, string>();
-        foreach (Transform objekt in GameObject.Find("Panel1").gameObject.transform)
-        {
-            foreach (Transform slot in objekt)
-            {
-                if (!slot.name.Contains("SlotM"))
-                {
-                    DajFlagStatickymHodnotamVtrojuholniku(slot, FLAG_DISABLED);
-                }
-                else
-                {
-                    DajFlagStatickymHodnotamVtrojuholniku(slot);
-                }
-            }
-        }
-        _fbc.zapisDatumActualScreen(_pathActualPlayerScreenDate);
-        _fbc.UpdateResult(_examArray, _pathActualPlayerScreen);
-    }
-
-    public void DajFlagStatickymHodnotamVtrojuholniku(Transform slot, string flag_disabled = "")
-    {
-        GameObject item = slot.GetComponent<Slot>().item;
-        if (slot.name.Equals(SLOT + _pomSuc0) || slot.name.Equals(SLOT + _pomSuc1))
-        {
-            DajFlagSlotomSpodmienkou(slot, item, FLAG_PODMIENKA, flag_disabled);
-
-        }
-        else
-        {
-            DajFlagSlotomSpodmienkou(slot, item, "", flag_disabled);
-        }
-
-    }
-
-    public void DajFlagSlotomSpodmienkou(Transform slot, GameObject item, string flag_slot = "", string flag_disabled = "")
-    {
-        if (item)
-        {
-            _examArray[slot.name + flag_slot] = item.name.Substring(0, item.name.IndexOf("(")) + flag_disabled;
-        }
-        else
-            _examArray.Add(slot.name + flag_slot, "null");
-    }
-
-
-    public void Destroy()
+    public void ClearScreen()
     {
         foreach (Transform objekt in GameObject.Find("Panel1").gameObject.transform)
         {
@@ -393,30 +362,26 @@ public class LogLvlUniversal : MonoBehaviour, UnityEngine.EventSystems.IHasChang
             }
         }
     }
-    /*
+
     public void Restart()
     {
-        Destroy();
+        ClearScreen();
         draw();
-    }*/
+    }
 
     public void draw()
     {
-        // metoda vykresli vygenerovane riesenie do prazdnych slotov
-        GameObject[] _slots = new GameObject[24];
-        int y = 1;
-        int poc = 0;
-        for (int i = 0; i < GameObject.Find("Panel1").gameObject.transform.childCount - 4; i++)
+        //create a new item, name it, and set the parent
+        foreach (Transform objekt in GameObject.Find("Panel1").gameObject.transform)
         {
-            for (int j = 0; j < GameObject.Find(NAZOV_PANELOV + y).gameObject.transform.childCount; j++)
+            foreach (Transform slot in objekt)
             {
-                _slots[j] = GameObject.Find(NAZOV_PANELOV + y).gameObject.transform.GetChild(j).gameObject;
-                if (!_poliaKtoreSaNevykreslia.Contains(_slots[j].name))
+                if (_examArray[slot.name] != "null")
                 {
-                    GameObject newItem = Instantiate(itemPrefab[(int)table_M[_slots[j].name]]) as GameObject;
-                    newItem.transform.parent = _slots[j].transform;
+                    GameObject newItem = Instantiate(itemPrefab[int.Parse(_examArray[slot.name])]) as GameObject;
+                    newItem.transform.parent = slot.transform;
                     newItem.transform.localScale = new Vector3(1, 1, 1);
-                    if (poc < _pocetPoliKtoreSaKontroluju)
+                    if (_poliaOznaceneDisable.Contains(slot.name))
                     {   // nastavy aby sa hodnoty ktore su nazaciatku umiestnene nedali presuvat
                         newItem.GetComponent<DragHandeler>().enabled = false;
                     }
@@ -426,12 +391,9 @@ public class LogLvlUniversal : MonoBehaviour, UnityEngine.EventSystems.IHasChang
                         ChangeCol(_pomSuc1, true);
                     }
                 }
-                poc++;
             }
-            y++;
         }
     }
-
 
     public void HasChanged(bool zaznamenajDoDB = true)
     {
@@ -452,30 +414,20 @@ public class LogLvlUniversal : MonoBehaviour, UnityEngine.EventSystems.IHasChang
 
                 if (slot.GetComponent<Slot>().item == null)
                 {
-                    if (slot.name.Equals(SLOT + _pomSuc0) || slot.name.Equals(SLOT + _pomSuc1))
-                    {
-                        _examArray[slot.name + FLAG_PODMIENKA] = "null";
-                    }
-                    else
-                    {
-                        _examArray[slot.name] = "null";
-                    }
+                    _examArray[slot.name] = "null";
                 }
                 else
                 {
-                    if (slot.name.Equals(SLOT + _pomSuc0) || slot.name.Equals(SLOT + _pomSuc1))
-                    {
-                        _examArray[slot.name + FLAG_PODMIENKA] = slot.GetComponent<Slot>().item.name.Substring(0, slot.GetComponent<Slot>().item.name.IndexOf("("));
-                    }
-                    else
-                    {
-                        _examArray[slot.name] = slot.GetComponent<Slot>().item.name.Substring(0, slot.GetComponent<Slot>().item.name.IndexOf("("));
-                    }
+                    _examArray[slot.name] = slot.GetComponent<Slot>().item.name.Substring(0, slot.GetComponent<Slot>().item.name.IndexOf("("));
                 }
             }
         }
         _fbc.UpdateResult(_examArray, _pathActualPlayerScreen);
         _fbc.zapisDatumActualScreen(_pathActualPlayerScreenDate);
+        if (_useButtonShareSchreenWith && zaznamenajDoDB)
+        {
+            _fbc.UpdateResult(_examArray, pathToSharedData);
+        }
         if (kontrola.Count == _pocetPoliKtoreSaKontroluju)
         {
             int _pomSuc0Hodnota = 0;
@@ -499,11 +451,8 @@ public class LogLvlUniversal : MonoBehaviour, UnityEngine.EventSystems.IHasChang
         }
     }
 
-    public void addInputToTableM(Dictionary<string, string> input)
+    public void doplnChybajuceData(Dictionary<string, string> input)
     {
-        table_M = new Dictionary<string, int?>();
-        _poliaKtoreSaNevykreslia = new List<string>();
-        List<string> podmienka = new List<string>();
         int input_Pocet = input.Count;
         switch (input_Pocet)
         {
@@ -513,51 +462,6 @@ public class LogLvlUniversal : MonoBehaviour, UnityEngine.EventSystems.IHasChang
                 for (int i = 0; i < input_Pocet; i++)
                     input.Add(SLOT + i, "null");
                 break;
-        }
-
-        foreach (var x in input)
-        {
-            if (x.Key.Contains(FLAG_PODMIENKA) && x.Value.Contains(FLAG_DISABLED))
-            {
-                string hodnotaString = x.Value.Substring(0, x.Value.IndexOf('-'));
-                int? hodnota = null;
-                if (hodnotaString != "null")
-                    hodnota = Int32.Parse(hodnotaString);
-                table_M.Add(x.Key.Substring(0, x.Key.IndexOf('-')), hodnota);
-                podmienka.Add(x.Key.Substring(0, x.Key.IndexOf('-')));
-            }
-            else if (!x.Key.Contains(FLAG_PODMIENKA) && x.Value.ToString().Contains(FLAG_DISABLED))
-            {
-                string hodnotaString = x.Value.Substring(0, x.Value.IndexOf('-'));
-                int? hodnota = null;
-                if (hodnotaString != "null")
-                    hodnota = Int32.Parse(hodnotaString);
-                table_M.Add(x.Key, hodnota);
-            }
-            else if (x.Key.Contains(FLAG_PODMIENKA) && !x.Value.Contains(FLAG_DISABLED))
-            {
-                int? hodnota = null;
-                if (x.Value.ToString() == "null")
-                    _poliaKtoreSaNevykreslia.Add(x.Key.Substring(0, x.Key.IndexOf('-')));
-                if (x.Value.ToString() != "null")
-                    hodnota = Int32.Parse(x.Value);
-                table_M.Add(x.Key.Substring(0, x.Key.IndexOf('-')), hodnota);
-                podmienka.Add(x.Key.Substring(0, x.Key.IndexOf('-')));
-            }
-            else
-            {
-                int? hodnota = null;
-                if (x.Value.ToString() == "null")
-                    _poliaKtoreSaNevykreslia.Add(x.Key);
-                if (x.Value.ToString() != "null")
-                    hodnota = Int32.Parse(x.Value);
-                table_M.Add(x.Key, hodnota);
-            }
-        }
-        if (podmienka.Count() > 1)
-        {
-            _pomSuc0 = Int32.Parse(podmienka[0].Substring(podmienka[0].IndexOf('_') + 1));
-            _pomSuc1 = Int32.Parse(podmienka[1].Substring(podmienka[1].IndexOf('_') + 1));
         }
     }
 
@@ -592,15 +496,42 @@ public class LogLvlUniversal : MonoBehaviour, UnityEngine.EventSystems.IHasChang
         yield return new WaitForSeconds(2.0f);
         gratulation.enabled = false;
         UnbindAllHandler();
-        SceneManager.LoadScene("LoggedSelectLevel");
+        if (_playerData.selectedExamOnBoard != null)
+        {
+            _playerData.selectedExamOnBoard.RemoveAt(0);
+            var pocet = _playerData.selectedExamOnBoardCount - _playerData.selectedExamOnBoard.Count();
+            if (_playerData.selectedExamOnBoard.Count() <= 0)
+            {
+                _fbc.zapisStavRozriesenejUlohy(_playerData.UserId, _playerData.idSelectedExamOnBoard, "1");
+                SceneManager.LoadScene("LoggedSelectLevel");
+            }
+            else
+            {
+                _fbc.zapisStavRozriesenejUlohy(_playerData.UserId, _playerData.idSelectedExamOnBoard, pocet + "/" + _playerData.selectedExamOnBoardCount);
+                switch (_playerData.selectedExamOnBoard.First().ChildrenCount)
+                {
+                    case 3:
+                        SceneManager.LoadScene("LogLvl1_1");
+                        break;
+                    case 6:
+                        SceneManager.LoadScene("LogLvl3_1");
+                        break;
+                    case 10:
+                        SceneManager.LoadScene("LogLvl4_1");
+                        break;
+                }
+            }
+        }
+        else
+        {
+            SceneManager.LoadScene("LoggedSelectLevel");
+        }
     }
 
     IEnumerator nespravne_hide()
     {
         yield return new WaitForSeconds(2.0f);
         nespravne.enabled = false;
-        //UnbindAllHandler();
-        //SceneManager.LoadScene("LogedSelectLevel");
     }
 
     public List<int> reverse(List<int> x)

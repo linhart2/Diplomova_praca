@@ -368,32 +368,34 @@ public class SharedScreen
     public string screen_name;
     public string admin_name;
     public List<string> users_id = new List<string>();
+    public List<int> pomSucet0and1 = new List<int>();
+    public List<string> poliaKtoreSaNevykreslia = new List<string>();
+    public List<string> poliaOznaceneDisable = new List<string>();
 
     public SharedScreen() { }
-    public SharedScreen(Dictionary<string, object> data, bool screeen_locker, string screen_name, string admin_name, List<string> users_id)
+    public SharedScreen(Dictionary<string, object> data, bool screeen_locker, string screen_name, string admin_name, List<string> users_id, List<int> pomSucet0and1, List<string> poliaKtoreSaNevykreslia, List<string> poliaOznaceneDisable)
     {
         this.data = data;
         this.screeen_locker = screeen_locker;
         this.screen_name = screen_name;
         this.admin_name = admin_name;
         this.users_id = users_id;
+        this.pomSucet0and1 = pomSucet0and1;
+        this.poliaKtoreSaNevykreslia = poliaKtoreSaNevykreslia;
+        this.poliaOznaceneDisable = poliaOznaceneDisable;
     }
 }
 
 public class SharedScreenRequest
 {
-
-
     public string share_object;
     public string admin_name;
-
 
     public SharedScreenRequest() { }
     public SharedScreenRequest(string share_object, string admin_name)
     {
         this.share_object = share_object;
         this.admin_name = admin_name;
-
     }
 }
 
