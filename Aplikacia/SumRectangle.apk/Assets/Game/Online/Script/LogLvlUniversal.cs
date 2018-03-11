@@ -6,37 +6,49 @@ using System;
 using UIAddons;
 using Firebase.Database;
 using UnityEngine.SceneManagement;
+using System.Linq;
 
-public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
+public class LogLvlUniversal : MonoBehaviour, UnityEngine.EventSystems.IHasChanged
 {
-    [SerializeField]
+    private const string NAZOV_PANELOV = "Panel1_";
+    private const string SLOT = "Slot_";
+    private const string SLOTM = "SlotM_";
+    private const string FLAG_PODMIENKA = "-PODMIENKA";
+    private const string FLAG_DISABLED = "-DISABLED";
+
     public Canvas gratulation;      //- object gratulacia
     public Canvas nespravne;        //- object nespravne
     public Canvas showSharedWith;      //- object zdielat s....
     public Canvas infoAboutShare;
-
     public GameObject[] itemPrefab;
     public GameObject togglePrefab;
-    private GameObject[] slots;
-    public int lvl;
-    public static List<int> table = null;
-    [SerializeField]
-    public Dictionary<string, string> ExamArray;
-    Generator_uloh priklad;
-    Kontrola skontroluj;
+    public int vysledokPomocnehoSuctu;
+    public int urovenVstupPreKontrolu;
 
-    private FirebaseConnect firebase;
-    public Dictionary<string, GameObject> ListStudent = new Dictionary<string, GameObject>();
-    private PlayerData playerData = new PlayerData();
-    private FirebaseCommunicationLibrary fbc;
 
+    private Kontrola _skontroluj;
+    private Dictionary<string, GameObject> _listStudent = new Dictionary<string, GameObject>();
+    private PlayerData _playerData = new PlayerData();
+    private FirebaseCommunicationLibrary _fbc;
+    private Dictionary<string, string> _examArray;
+    private List<int> _zoznamCiselPrikladu = new List<int>();
     private string pathToSharedData;
-    private bool useButtonShareSchreenWith = false;
-    DatabaseReference controlChangeData;
-    DatabaseReference controlSharedScreenWithMe;
-    DatabaseReference controlAllStudentInClass;
+    private string _pathActualPlayerScreen;
+    private string _pathActualPlayerScreenDate;
+    private int _pomSuc0 = -1;
+    private int _pomSuc1 = -1;
+    private bool _useButtonShareSchreenWith = false;
+    private DatabaseReference _controlChangeData;
+    private DatabaseReference _controlSharedScreenWithMe;
+    private DatabaseReference _controlAllStudentInClass;
+    private List<string> _poliaKtoreSaNevykreslia = new List<string>();                        //- ktore policko sa vynecha a nevykresli
+    private int _pocetPoliKtoreSaKontroluju;
+    private List<string> _poliaOznaceneDisable = new List<string>();
+    private List<string> _podmienka = new List<string>();
 
 
+
+    // Use this for initialization
     private void Awake()
     {
         Button btnBack = GameObject.Find("Back").GetComponent<Button>();
@@ -69,65 +81,109 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
         {
             SelectAllUser();
         });
-        firebase = new FirebaseConnect();
-        fbc = new FirebaseCommunicationLibrary();
+        _fbc = new FirebaseCommunicationLibrary();
+
     }
 
     void Start()
     {
-        playerData = GlobalData.playerData;
+        switch (urovenVstupPreKontrolu)
+        {
+            case 2:
+                _pocetPoliKtoreSaKontroluju = 3;
+                break;
+            case 3:
+                _pocetPoliKtoreSaKontroluju = 6;
+                break;
+            case 4:
+                _pocetPoliKtoreSaKontroluju = 10;
+                break;
+        }
+        _playerData = GlobalData.playerData;
 
 #if DEBUG
-        playerData.Name = "TestLingo";
-        playerData.UserId = "ZAT4DktlgdYBVGwXYRpOfA3temm1";
-        playerData.SelectedClass = "-KweS-rI-bTBYVX3g3vS";
-        playerData.LoggedUser = true;
+        _playerData.Name = "TestLingo";
+        _playerData.UserId = "ZAT4DktlgdYBVGwXYRpOfA3temm1";
+        _playerData.SelectedClass = "-L7EL2Ny6sBTqGX_kZtU";
+        _playerData.LoggedUser = true;
 #endif
-        controlAllStudentInClass = FirebaseDatabase.DefaultInstance
-                                                   .GetReference("/CLASSES/" + playerData.SelectedClass + "/ONLINE_STUDENTS");
-        controlAllStudentInClass.ChildAdded += HandleShowAllUserInClassAdd;
-        controlAllStudentInClass.ChildRemoved += HandleShowAllUserInClassRemove;
+        _pathActualPlayerScreen = string.Format("/USERS/{0}/ACTUAL_SCREEN/SCREEN", _playerData.UserId);
+        _pathActualPlayerScreenDate = string.Format("/USERS/{0}/ACTUAL_SCREEN/DATE", _playerData.UserId);
 
-        controlSharedScreenWithMe = FirebaseDatabase.DefaultInstance
-                                                        .GetReference("/USERS/" + playerData.UserId + "/waitForShare");
-        controlSharedScreenWithMe.ChildAdded += HandleControlRequestSharedScreen;
+        pathToSharedData = _playerData.cestaKZdielanymDatam;
+        _playerData.cestaKZdielanymDatam = null;
+        int rozlisTypUlohy = _playerData.selectedExamOnBoard != null ? 0 : 1;
+        switch (rozlisTypUlohy)
+        {
+            case 0:
+                _examArray = _playerData.selectedExamOnBoard.First().Children.ToDictionary(t => string.Format("{0}{1}", SLOTM, t.Key.Substring(t.Key.IndexOf('_') + 1)), t => t.Value.ToString());
+                doplnChybajuceData(_examArray);
+                break;
+            case 1:
+                _examArray = _playerData.zdielaneDataAll.Child("data").Children.ToDictionary(t => t.Key, t => t.Value.ToString());
+                _pomSuc0 = int.Parse(_playerData.zdielaneDataAll.Child("pomSucet0and1").Child("0").Value.ToString());
+                _pomSuc1 = int.Parse(_playerData.zdielaneDataAll.Child("pomSucet0and1").Child("1").Value.ToString());
+                _poliaOznaceneDisable = _playerData.zdielaneDataAll.Child("poliaOznaceneDisable").Children.Select(val => val.Value.ToString()).ToList();
+                _poliaKtoreSaNevykreslia = _playerData.zdielaneDataAll.Child("poliaOznaceneDisable").Children.Select(val => val.Value.ToString()).ToList();
+                break;
+            default:
+                break;
+        }
+
+        if (pathToSharedData != null && pathToSharedData != string.Empty)
+        {
+            _useButtonShareSchreenWith = true;
+            _controlChangeData = FirebaseDatabase.DefaultInstance
+                                            .GetReference(pathToSharedData);
+            _controlChangeData.ChildChanged += HandleChildChanged;
+            _controlChangeData.ChildAdded += HandleChildChanged;
+        }
+
+        _controlAllStudentInClass = FirebaseDatabase.DefaultInstance
+                                                   .GetReference("/CLASSES/" + _playerData.SelectedClass + "/ONLINE_STUDENTS");
+        _controlAllStudentInClass.ChildAdded += HandleShowAllUserInClassAdd;
+        _controlAllStudentInClass.ChildRemoved += HandleShowAllUserInClassRemove;
+
+        _controlSharedScreenWithMe = FirebaseDatabase.DefaultInstance
+                                                        .GetReference("/USERS/" + _playerData.UserId + "/waitForShare");
+        _controlSharedScreenWithMe.ChildAdded += HandleControlRequestSharedScreen;
 
         gratulation = gratulation.GetComponent<Canvas>();
         infoAboutShare = infoAboutShare.GetComponent<Canvas>();
         showSharedWith = showSharedWith.GetComponent<Canvas>();
         nespravne = nespravne.GetComponent<Canvas>();
-        skontroluj = new Kontrola(2);
-        priklad = new Generator_uloh(lvl);
-        table = priklad.get_array(3);
-        CreateArrayExam(table);
+
+        _skontroluj = new Kontrola(urovenVstupPreKontrolu);
+
         draw();
+
         gratulation.enabled = false;
         showSharedWith.enabled = false;
         nespravne.enabled = false;
         infoAboutShare.enabled = false;
+
         HasChanged();
     }
-
     public void ShareScreenWith()
     {
         SharedScreen screen = new SharedScreen()
         {
             screeen_locker = false,
-            admin_name = playerData.Name,
-            screen_name = "screen1a",
+            admin_name = _playerData.Name,
+            screen_name = "LogLvl4_2",
         };
         String key = FirebaseDatabase.DefaultInstance.GetReference("/SHARED_SCREEN").Push().Key;
-        LeaderBoardEntry entry = new LeaderBoardEntry(ExamArray);
+        LeaderBoardEntry entry = new LeaderBoardEntry(_examArray);
         Dictionary<string, object> entryValues = entry.ToDictionary();
         Dictionary<string, object> childUpdates = new Dictionary<string, object>();
         pathToSharedData = "/SHARED_SCREEN/" + key + "/data/";
         childUpdates[pathToSharedData] = entryValues;
-        fbc.addSharedScreen(key, screen);
-        fbc.inserMyIdToSharedScreen(playerData.UserId, playerData.Name, key);
+        _fbc.addSharedScreen(key, screen);
+        _fbc.inserMyIdToSharedScreen(_playerData.UserId, _playerData.Name, key);
         FirebaseDatabase.DefaultInstance.RootReference.UpdateChildrenAsync(childUpdates);
 
         List<string> selectedStudent = new List<string>();
-        foreach (var student in ListStudent)
+        foreach (var student in _listStudent)
         {
             if (student.Value.transform.GetChild(0).GetComponent<Toggle>().isOn)
             {
@@ -136,13 +192,13 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
         }
         SendRequest(key, selectedStudent);
 
-        controlChangeData = FirebaseDatabase.DefaultInstance
+        _controlChangeData = FirebaseDatabase.DefaultInstance
                                             .GetReference("/SHARED_SCREEN/" + key + "/data/");
-        controlChangeData.ChildChanged += HandleChildChanged;
+        _controlChangeData.ChildChanged += HandleChildChanged;
         showSharedWith.enabled = false;
         DeselectAllUser();
 
-        useButtonShareSchreenWith = true;
+        _useButtonShareSchreenWith = true;
     }
 
     public void SendRequest(string Screeen_key, List<string> zoznamLudi)
@@ -151,11 +207,11 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
         {
             SharedScreenRequest request = new SharedScreenRequest()
             {
-                admin_name = playerData.Name,
+                admin_name = _playerData.Name,
                 share_object = Screeen_key
             };
             String key = FirebaseDatabase.DefaultInstance.GetReference("/USERS/" + user + "/waitForShare/").Push().Key;
-            fbc.SendRequestWithShareScreen(user, key, request);
+            _fbc.SendRequestWithShareScreen(user, key, request);
         }
     }
 
@@ -164,7 +220,7 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
         bool selectAll = GameObject.Find("tbOznacVsetkych").GetComponent<Toggle>().isOn;
         if (selectAll)
         {
-            foreach (var student in ListStudent)
+            foreach (var student in _listStudent)
             {
                 student.Value.transform.GetChild(0).GetComponent<Toggle>().isOn = true;
             }
@@ -176,7 +232,7 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
     }
     public void DeselectAllUser()
     {
-        foreach (var student in ListStudent)
+        foreach (var student in _listStudent)
         {
             student.Value.transform.GetChild(0).GetComponent<Toggle>().isOn = false;
         }
@@ -186,20 +242,21 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
     {
         pathToSharedData = "/SHARED_SCREEN/" + screenKey + "/data/";
         infoAboutShare.enabled = false;
-        useButtonShareSchreenWith = true;
-        Console.WriteLine("AcceptShareScren id={0} name={1} screenKey={2}", playerData.UserId, playerData.Name, screenKey);
-        fbc.inserMyIdToSharedScreen(playerData.UserId, playerData.Name, screenKey);
-        controlChangeData = FirebaseDatabase.DefaultInstance
+        _useButtonShareSchreenWith = true;
+        Console.WriteLine("AcceptShareScren id={0} name={1} screenKey={2}", _playerData.UserId, _playerData.Name, screenKey);
+        _fbc.inserMyIdToSharedScreen(_playerData.UserId, _playerData.Name, screenKey);
+        _controlChangeData = FirebaseDatabase.DefaultInstance
                                             .GetReference(pathToSharedData);
-        controlChangeData.ChildChanged += HandleChildChanged;
-        controlChangeData.ChildAdded += HandleChildChanged;
-        FirebaseDatabase.DefaultInstance.GetReference("/USERS/" + playerData.UserId + "/waitForShare/").Child(requestKey).RemoveValueAsync();
+        _controlChangeData.ChildChanged += HandleChildChanged;
+        _controlChangeData.ChildAdded += HandleChildChanged;
+        FirebaseDatabase.DefaultInstance.GetReference("/USERS/" + _playerData.UserId + "/waitForShare/").Child(requestKey).RemoveValueAsync();
     }
     public void MissedShareScreen(string requestKey)
     {
         infoAboutShare.enabled = false;
-        FirebaseDatabase.DefaultInstance.GetReference("/USERS/" + playerData.UserId + "/waitForShare/").Child(requestKey).RemoveValueAsync();
+        FirebaseDatabase.DefaultInstance.GetReference("/USERS/" + _playerData.UserId + "/waitForShare/").Child(requestKey).RemoveValueAsync();
     }
+
     #region HandleUsers
     public void HandleShowAllUserInClassAdd(object sender, ChildChangedEventArgs args)
     {
@@ -222,7 +279,7 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
                             else if (task.IsCompleted)
                             {
                                 DataSnapshot snapshot = task.Result;
-                                if (snapshot.Child("selectClass").Value.Equals(playerData.SelectedClass))
+                                if (snapshot.Child("selectClass").Value.Equals(_playerData.SelectedClass))
                                     generateStudentToogleList(key, new Vector3(-1.5f, 0, 0), value);
                             }
                         });
@@ -236,8 +293,8 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
             return;
         }
         string key = args.Snapshot.Key;
-        Destroy(ListStudent[key]);
-        ListStudent.Remove(key);
+        Destroy(_listStudent[key]);
+        _listStudent.Remove(key);
 
     }
 
@@ -275,44 +332,24 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
         }
         string key = args.Snapshot.Key;
         object value = args.Snapshot.Value;
-        ExamArray[key] = value.ToString();
-        Destroy();
+        _examArray[key] = value.ToString();
+        ClearScreen();
         draw();
         HasChanged(false);
     }
 
     public void UnbindAllHandler()
     {
-        controlSharedScreenWithMe.ChildAdded -= HandleControlRequestSharedScreen;
-        controlAllStudentInClass.ChildAdded -= HandleShowAllUserInClassAdd;
-        controlAllStudentInClass.ChildRemoved -= HandleShowAllUserInClassRemove;
-        if (useButtonShareSchreenWith)
-            controlChangeData.ChildChanged -= HandleChildChanged;
+        _controlSharedScreenWithMe.ChildAdded -= HandleControlRequestSharedScreen;
+        _controlAllStudentInClass.ChildAdded -= HandleShowAllUserInClassAdd;
+        _controlAllStudentInClass.ChildRemoved -= HandleShowAllUserInClassRemove;
+        if (_useButtonShareSchreenWith)
+            _controlChangeData.ChildChanged -= HandleChildChanged;
     }
     #endregion
 
     #region game
-    public void CreateArrayExam(List<int> pr)
-    {
-        ExamArray = new Dictionary<string, string>();
-        foreach (Transform objekt in GameObject.Find("Panel1").gameObject.transform)
-        {
-            foreach (Transform slot in objekt)
-            {
-                if (slot.name.Contains("SlotM"))
-                {
-                    int index = Int32.Parse(slot.name.Substring(slot.name.IndexOf("_") + 1));
-                    ExamArray.Add(slot.name, pr[index].ToString());
-                }
-                else
-                {
-                    ExamArray.Add(slot.name, "null");
-                }
-            }
-        }
-    }
-
-    public void Destroy()
+    public void ClearScreen()
     {
         foreach (Transform objekt in GameObject.Find("Panel1").gameObject.transform)
         {
@@ -328,7 +365,7 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
 
     public void Restart()
     {
-        Destroy();
+        ClearScreen();
         draw();
     }
 
@@ -339,11 +376,20 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
         {
             foreach (Transform slot in objekt)
             {
-                if (ExamArray[slot.name] != "null")
+                if (_examArray[slot.name] != "null")
                 {
-                    GameObject newItem = Instantiate(itemPrefab[int.Parse(ExamArray[slot.name])]) as GameObject;
+                    GameObject newItem = Instantiate(itemPrefab[int.Parse(_examArray[slot.name])]) as GameObject;
                     newItem.transform.parent = slot.transform;
                     newItem.transform.localScale = new Vector3(1, 1, 1);
+                    if (_poliaOznaceneDisable.Contains(slot.name))
+                    {   // nastavy aby sa hodnoty ktore su nazaciatku umiestnene nedali presuvat
+                        newItem.GetComponent<DragHandeler>().enabled = false;
+                    }
+                    if (_pomSuc0 != -1 && _pomSuc1 != -1)
+                    {
+                        ChangeCol(_pomSuc0, true);
+                        ChangeCol(_pomSuc1, true);
+                    }
                 }
             }
         }
@@ -357,14 +403,6 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
         {
             foreach (Transform slot in objekt)
             {
-                if (slot.GetComponent<Slot>().item == null)
-                {
-                    ExamArray[slot.name] = "null";
-                }
-                else
-                {
-                    ExamArray[slot.name] = slot.GetComponent<Slot>().item.name.Substring(0, slot.GetComponent<Slot>().item.name.IndexOf("("));
-                }
                 if (!slot.name.Contains("SlotM"))
                 {
                     GameObject item = slot.GetComponent<Slot>().item;
@@ -373,21 +411,35 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
                         kontrola.Add(int.Parse(item.name.Substring(0, item.name.IndexOf("("))));
                     }
                 }
+
+                if (slot.GetComponent<Slot>().item == null)
+                {
+                    _examArray[slot.name] = "null";
+                }
+                else
+                {
+                    _examArray[slot.name] = slot.GetComponent<Slot>().item.name.Substring(0, slot.GetComponent<Slot>().item.name.IndexOf("("));
+                }
             }
         }
-        if (useButtonShareSchreenWith && zaznamenajDoDB)
+        _fbc.UpdateResult(_examArray, _pathActualPlayerScreen);
+        _fbc.zapisDatumActualScreen(_pathActualPlayerScreenDate);
+        if (_useButtonShareSchreenWith && zaznamenajDoDB)
         {
-            firebase.UpdateResult(ExamArray, pathToSharedData);
+            _fbc.UpdateResult(_examArray, pathToSharedData);
         }
-        solution_control(kontrola);
-
-    }
-
-    public void solution_control(List<int> kontrola)
-    {
-        if (kontrola.Count == 3)
+        if (kontrola.Count == _pocetPoliKtoreSaKontroluju)
         {
-            bool pom = skontroluj.Vyhodnot(kontrola);
+            int _pomSuc0Hodnota = 0;
+            int _pomSuc1Hodnota = 0;
+            if (_pomSuc0 != -1 && _pomSuc1 != -1)
+            {
+                _pomSuc0Hodnota = reverse(kontrola)[_pomSuc0];
+                _pomSuc1Hodnota = reverse(kontrola)[_pomSuc1];
+                _pomSuc0 = kontrola.FindIndex(x => x == _pomSuc0Hodnota);
+                _pomSuc1 = kontrola.FindIndex(x => x == _pomSuc1Hodnota);
+            }
+            bool pom = _pomSuc0 == -1 && _pomSuc1 == -1 ? _skontroluj.Vyhodnot(kontrola) : _skontroluj.Vyhodnot(kontrola, _pomSuc1, _pomSuc0, _pomSuc0Hodnota + _pomSuc1Hodnota);
             if (pom)
             {
                 congrats_show();
@@ -396,6 +448,34 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
             {
                 nespravne_show();
             }
+        }
+    }
+
+    public void doplnChybajuceData(Dictionary<string, string> input)
+    {
+        int input_Pocet = input.Count;
+        switch (input_Pocet)
+        {
+            case 3:
+            case 6:
+            case 10:
+                for (int i = 0; i < input_Pocet; i++)
+                    input.Add(SLOT + i, "null");
+                break;
+        }
+    }
+
+    public void ChangeCol(int col, bool f)
+    {
+        GameObject slotName = GameObject.Find(SLOT + col);
+        Image change = slotName.GetComponent<Image>();
+        if (f)
+        {
+            change.color = new Color(0, 0, 255, 0.61f);
+        }
+        else
+        {
+            change.color = new Color(255, 255, 255, 0.61f);
         }
     }
 
@@ -414,21 +494,57 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
     IEnumerator congrats_hide()
     {
         yield return new WaitForSeconds(2.0f);
-
         gratulation.enabled = false;
         UnbindAllHandler();
-        //SceneManager.LoadScene(UnityEngine.Random.Range(19, 20));
-        SceneManager.LoadScene(21);
+        if (_playerData.selectedExamOnBoard != null)
+        {
+            _playerData.selectedExamOnBoard.RemoveAt(0);
+            var pocet = _playerData.selectedExamOnBoardCount - _playerData.selectedExamOnBoard.Count();
+            if (_playerData.selectedExamOnBoard.Count() <= 0)
+            {
+                _fbc.zapisStavRozriesenejUlohy(_playerData.UserId, _playerData.idSelectedExamOnBoard, "1");
+                SceneManager.LoadScene("LoggedSelectLevel");
+            }
+            else
+            {
+                _fbc.zapisStavRozriesenejUlohy(_playerData.UserId, _playerData.idSelectedExamOnBoard, pocet + "/" + _playerData.selectedExamOnBoardCount);
+                switch (_playerData.selectedExamOnBoard.First().ChildrenCount)
+                {
+                    case 3:
+                        SceneManager.LoadScene("LogLvl1_1");
+                        break;
+                    case 6:
+                        SceneManager.LoadScene("LogLvl3_1");
+                        break;
+                    case 10:
+                        SceneManager.LoadScene("LogLvl4_1");
+                        break;
+                }
+            }
+        }
+        else
+        {
+            SceneManager.LoadScene("LoggedSelectLevel");
+        }
     }
 
     IEnumerator nespravne_hide()
     {
         yield return new WaitForSeconds(2.0f);
         nespravne.enabled = false;
-        UnbindAllHandler();
-        SceneManager.LoadScene(21);
+    }
+
+    public List<int> reverse(List<int> x)
+    {
+        List<int> pom = new List<int> { };
+        for (int i = (x.Count - 1); i >= 0; i--)
+        {
+            pom.Add(x[i]);
+        }
+        return pom;
     }
     #endregion
+
 
     #region ToogleList
     private void generateStudentToogleList(string ObjName, Vector3 vector, string txtName)
@@ -457,7 +573,7 @@ public class LogedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChange
         grid.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 0.5f);
         grid.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 0.5f);
         grid.GetComponent<RectTransform>().sizeDelta = new Vector2(820, 60);
-        ListStudent[objName] = rowObj;
+        _listStudent[objName] = rowObj;
     }
     GameObject createRowObj(GameObject cnvs, string objName)
     {

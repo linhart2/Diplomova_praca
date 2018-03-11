@@ -21,4 +21,6 @@ public class PlayerData
     public string idSelectedExamOnBoard;
     public int selectedExamOnBoardCount;
     public List<DataSnapshot> selectedExamOnBoard;
+    public DataSnapshot zdielaneDataAll;
+    public string cestaKZdielanymDatam;
 }
