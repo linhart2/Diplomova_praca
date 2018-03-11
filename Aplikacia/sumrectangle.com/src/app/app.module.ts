@@ -28,6 +28,7 @@ import { MyExamsPageComponent } from './my-exams-page/my-exams-page.component';
 import { OpenExamPageComponent } from './open-exam-page/open-exam-page.component';
 import { ShowExamPageComponent } from './show-exam-page/show-exam-page.component';
 import { EditExamPageComponent } from './edit-exam-page/edit-exam-page.component';
+import { ActualScreenPageComponent } from './actual-screen-page/actual-screen-page.component';
 
 @NgModule({
   declarations: [
@@ -43,6 +44,7 @@ import { EditExamPageComponent } from './edit-exam-page/edit-exam-page.component
     OpenExamPageComponent,
     ShowExamPageComponent,
     EditExamPageComponent,
+    ActualScreenPageComponent,
 
   ],
   imports: [

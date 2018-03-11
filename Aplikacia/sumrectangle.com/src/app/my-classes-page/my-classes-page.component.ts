@@ -73,7 +73,7 @@ export class MyClassesPageComponent implements OnInit {
 
   public pridajPrikladNaTabulu(ev) {
     if (ev.target.checked) {
-      this.ulohyNaUlozenie[ev.target.defaultValue] = this.zoznamMojichUloh.find(x => x.$key === ev.target.defaultValue).priklady.length;
+      this.ulohyNaUlozenie[ev.target.defaultValue] = this.zoznamMojichUloh.find(x => x.$key === ev.target.defaultValue).priklady.length-1;
     }else {
       delete this.ulohyNaUlozenie[ev.target.defaultValue];
     }

@@ -135,6 +135,9 @@ form table input.sendButton,input.sendButton{
   background-repeat: no-repeat;
   background-color: white;
 }
+.OpenClass{
+  height: 204px;
+}
 .MainBox .ButtonBox2{
   display: flex;
   justify-content: right;
@@ -143,16 +146,16 @@ form table input.sendButton,input.sendButton{
   border-top: 1px;
   border-top-style: solid;
 }
-.MainBox .ButtonBox2 a.close {
+.MainBox .ButtonBox2 a.close,.MainBox .ButtonBox1 a.close {
   padding: 4px 6px 4px 6px;
   text-shadow: none;
 }
-.MainBox .ButtonBox2 a.close:hover {
+.MainBox .ButtonBox2 a.close:hover,.MainBox .ButtonBox1 a.close:hover {
   background-color: red;
   color: white;
   opacity: 1;
 }
-.MainBox .ButtonBox2 a.edit {
+.MainBox .ButtonBox2 a.edit,.MainBox .ButtonBox1 a.edit {
   padding: 4px 6px 4px 6px;
   text-shadow: none;
   float: right;
@@ -163,10 +166,14 @@ form table input.sendButton,input.sendButton{
   opacity: 1;
   color: black;
 }
-.MainBox .ButtonBox2 a.edit:hover{
+.MainBox .ButtonBox2 a.edit:hover,.MainBox .ButtonBox1 a.edit:hover{
   background-color: #1A7E1E;
   color: white;
   opacity: 1;
+}
+.MainBox .ButtonBox1 .zobraz_statistiky{
+  font-size: 11pt;
+  padding: 4px 11px 5px 11px;
 }
 .MainBox .ButtonBox1{
   display: flex;

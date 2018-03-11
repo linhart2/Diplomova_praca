@@ -10,6 +10,7 @@ import { CreateExamPageComponent } from '../app/create-exam-page/create-exam-pag
 import { OpenExamPageComponent } from '../app/open-exam-page/open-exam-page.component';
 import { ShowExamPageComponent } from '../app/show-exam-page/show-exam-page.component';
 import { EditExamPageComponent } from '../app/edit-exam-page/edit-exam-page.component';
+import { ActualScreenPageComponent } from '../app/actual-screen-page/actual-screen-page.component';
 
 
 
@@ -22,6 +23,7 @@ export const routesConfig: Routes = [
   { path: 'createclass', component: CreateClassPageComponent },
   { path: 'updateclass/:id', component: CreateClassPageComponent },
   { path: 'openclass/:id', component: OpenClassPageComponent },
+  { path: 'actualscreen/:uid', component: ActualScreenPageComponent },
   { path: 'createexam', component: CreateExamPageComponent },
   { path: 'openexam/:id', component: OpenExamPageComponent },
   { path: 'showexam/:id/:pid', component: ShowExamPageComponent },
