@@ -14,20 +14,16 @@
       <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
           <div class="all_classes">
-            <div class="MainBox" *ngFor="let d of zoznamZiakov">
-              <a class="ImageBox" href="showstudent $post->class_id, $post->class_name">
+            <div class="MainBox OpenClass" *ngFor="let d of zoznamZiakov">
+              <a class="ImageBox" [routerLink]="['/actualscreen', d.$key]">
                 <div class="c_name">
                   {{d.$value}}
                 </div>
               </a>
               <div class="ButtonBox1">
-                <a class="pridaj_ulohu pajpa" id="2" name="" data-toggle="modal" data-target="#pridajUlohu">Pridaj ulohu</a>
-                <a class="zobraz_ulohy pajpa" id="1" name="" data-toggle="modal" data-target="#zobrazUlohy">Zobraz ulohy</a>
-                <a disabled="true">Zobraz statistiky</a>
-              </div>
-              <div class="ButtonBox2">
-                <a class='edit' [routerLink]="['/updateclass', d.$key]" ><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
-                <a class='close' onclick="return PopupAlert('triedu')" href=""><i class='fa fa-window-close-o' aria-hidden=true></i></a>
+                <a disabled="true" class="zobraz_statistiky pajpa" name="" >Zobraz statistiky</a>
+                <a disabled="true" class="pajpa edit" name="" ><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
+                <a disabled="true" class="close" ><i class='fa fa-window-close-o' aria-hidden=true></i></a>
               </div>
             </div>
           </div>
