@@ -13,22 +13,21 @@
         <div class="collapse navbar-collapse" id="myNavbar">
           <ul class="nav navbar-nav">
             <li class="dropdown btn header-btn btn-danger">
-              <a class="dropdown-toggle" data-toggle="dropdown" href="#">Create
+              <a class="dropdown-toggle" data-toggle="dropdown" href="#">Vytvoriť
                 <span class="caret"></span></a>
               <ul class="dropdown-menu">
-                <li><a routerLink="/createclass">Class</a></li>
-                <li><a routerLink="/createexam">Exams</a></li>
+                <li><a routerLink="/createclass">Triedu</a></li>
+                <li><a routerLink="/createexam">Úlohu</a></li>
               </ul>
             </li>
-            <li><a routerLink="/classes">My class</a></li>
-            <li><a routerLink="/exams">My exams</a></li>
-            <li><a href="Homepage:#download">Compare</a></li>
+            <li><a routerLink="/classes">Moje triedy</a></li>
+            <li><a routerLink="/exams">Moje úlohy</a></li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
             <!-- <li><a n:href="Register:register"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li> -->
 
-            <li><a><span class="glyphicon glyphicon-user"></span> Logged {{fName}} {{lName}}</a></li>
-            <li><a (click)="logout()" ><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+            <li><a><span class="glyphicon glyphicon-user"></span> Prihlásený používateľ {{fName}} {{lName}}</a></li>
+            <li><a (click)="logout()" ><span class="glyphicon glyphicon-log-out"></span> Odhlásiť</a></li>
           </ul>
         </div>
       </div>
@@ -53,8 +52,8 @@
           <ul class="nav navbar-nav navbar-right" *ngIf="isLogged">
             <!-- <li><a n:href="Register:register"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li> -->
 
-            <li><a><span class="glyphicon glyphicon-user"></span> Logged {{fName}} {{lName}}</a></li>
-            <li><a (click)="logout()" ><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+            <li><a><span class="glyphicon glyphicon-user"></span> Prihlásený používateľ {{fName}} {{lName}}</a></li>
+            <li><a (click)="logout()" ><span class="glyphicon glyphicon-log-out"></span> Odhlásiť</a></li>
           </ul>
         </div>
       </div>
@@ -65,7 +64,7 @@
 
   <footer class="footer">
     <div class="container">
-      <p class="text-muted">Designed by Daniel Linhart</p>
+      <p class="text-muted">Vytvoril Daniel Linhart</p>
     </div>
   </footer>
 </div>
