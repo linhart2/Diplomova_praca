@@ -274,6 +274,7 @@ public class LogLvlUniversal : MonoBehaviour, UnityEngine.EventSystems.IHasChang
                             if (task.IsFaulted)
                             {
                                 Debug.Log("skontroluj pripojenie");
+                                UnbindAllHandler();
                                 SceneManager.LoadScene("CheckConnection");
                             }
                             else if (task.IsCompleted)
@@ -344,7 +345,10 @@ public class LogLvlUniversal : MonoBehaviour, UnityEngine.EventSystems.IHasChang
         _controlAllStudentInClass.ChildAdded -= HandleShowAllUserInClassAdd;
         _controlAllStudentInClass.ChildRemoved -= HandleShowAllUserInClassRemove;
         if (_useButtonShareSchreenWith)
+        {
             _controlChangeData.ChildChanged -= HandleChildChanged;
+            _controlChangeData.ChildAdded -= HandleChildChanged;
+        }
     }
     #endregion
 
@@ -503,6 +507,7 @@ public class LogLvlUniversal : MonoBehaviour, UnityEngine.EventSystems.IHasChang
             if (_playerData.selectedExamOnBoard.Count() <= 0)
             {
                 _fbc.zapisStavRozriesenejUlohy(_playerData.UserId, _playerData.idSelectedExamOnBoard, "1");
+                UnbindAllHandler();
                 SceneManager.LoadScene("LoggedSelectLevel");
             }
             else
@@ -511,12 +516,15 @@ public class LogLvlUniversal : MonoBehaviour, UnityEngine.EventSystems.IHasChang
                 switch (_playerData.selectedExamOnBoard.First().ChildrenCount)
                 {
                     case 3:
+                        UnbindAllHandler();
                         SceneManager.LoadScene("LogLvl1_1");
                         break;
                     case 6:
+                        UnbindAllHandler();
                         SceneManager.LoadScene("LogLvl3_1");
                         break;
                     case 10:
+                        UnbindAllHandler();
                         SceneManager.LoadScene("LogLvl4_1");
                         break;
                 }
@@ -524,6 +532,7 @@ public class LogLvlUniversal : MonoBehaviour, UnityEngine.EventSystems.IHasChang
         }
         else
         {
+            UnbindAllHandler();
             SceneManager.LoadScene("LoggedSelectLevel");
         }
     }

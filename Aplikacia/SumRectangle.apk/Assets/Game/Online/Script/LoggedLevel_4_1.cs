@@ -247,6 +247,7 @@ public class LoggedLevel_4_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChang
                             if (task.IsFaulted)
                             {
                                 Debug.Log("skontroluj pripojenie");
+                                UnbindAllHandler();
                                 SceneManager.LoadScene("CheckConnection");
                             }
                             else if (task.IsCompleted)

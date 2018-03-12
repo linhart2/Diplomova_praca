@@ -297,7 +297,7 @@ public class FirebaseCommunicationLibrary
             insertIntoTableViews(classID, studentID, "0");
             GlobalData.playerData.Classes[classID] = string.Format("{0} -> {1}", className, hesloTriedy);
             SaveGlobalSelectedClass(classID);
-            SceneManager.LoadScene("LogedSelectLevel");
+            SceneManager.LoadScene("LoggedSelectLevel");
 
         }
         else
