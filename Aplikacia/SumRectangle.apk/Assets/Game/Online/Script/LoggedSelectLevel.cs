@@ -103,7 +103,8 @@ public class LoggedSelectLevel : MonoBehaviour
           if (task.IsCompleted)
           {
               DataSnapshot snapshot = task.Result;
-              if (!snapshot.Child("SOLVE_EXAMS").Child(args.Snapshot.Key).Exists || snapshot.Child("SOLVE_EXAMS").Child(args.Snapshot.Key).Value.ToString() != "1")
+              var pocetVyriesenychPrikladovUlohy = snapshot.Child("SOLVE_EXAMS").Child(args.Snapshot.Key).Value.ToString();
+              if (!snapshot.Child("SOLVE_EXAMS").Child(args.Snapshot.Key).Exists || pocetVyriesenychPrikladovUlohy != "1")
               {
                   var exam = args.Snapshot;
                   FirebaseDatabase.DefaultInstance
@@ -127,7 +128,9 @@ public class LoggedSelectLevel : MonoBehaviour
                                       {
                                           DataSnapshot snap2 = task2.Result;
                                           var meno = _fbc.UserName(snap2.Child("firstName").Value.ToString(), snap2.Child("lastName").Value.ToString());
-                                          generateExamToogleList(exam.Key, new Vector3(-1.5f, 0, 0), GetMenoNazovUlohy(meno, nazov), GetFormatedExamsCount(exam.Value.ToString()));
+                                          if (pocetVyriesenychPrikladovUlohy == null && pocetVyriesenychPrikladovUlohy == string.Empty)
+                                              pocetVyriesenychPrikladovUlohy = GetFormatedExamsCount(exam.Value.ToString());
+                                          generateExamToogleList(exam.Key, new Vector3(-1.5f, 0, 0), GetMenoNazovUlohy(meno, nazov), pocetVyriesenychPrikladovUlohy);
 
                                           DataSnapshot snaps = task3.Result;
                                           if (snaps.Value == null)
@@ -238,7 +241,6 @@ public class LoggedSelectLevel : MonoBehaviour
     #region ToogleList
     private void generateExamToogleList(string ObjName, Vector3 vector, string txtName, string txtPocet)
     {
-
         makeRow(GameObject.Find("Content"), ObjName, vector);
         makeTogglePrefabs(GameObject.Find(ObjName), txtName, txtPocet, ObjName);
 

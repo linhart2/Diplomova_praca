@@ -450,6 +450,7 @@ public class LoggedLevel_4_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChang
             _poliaKtoreSaNevykreslia.Add(SLOT + pocitadloSlotov);
             pocitadloSlotov++;
         }
+        _examArray = new ShuffleDictionary().Shuffle(_examArray);
     }
 
     public List<int> reverse(List<int> x)
