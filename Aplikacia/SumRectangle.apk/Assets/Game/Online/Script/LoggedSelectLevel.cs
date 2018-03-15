@@ -104,98 +104,91 @@ public class LoggedSelectLevel : MonoBehaviour
                 if (task.IsCompleted)
                 {
                     DataSnapshot dataUcitela = task.Result;
-                    if (dataUcitela.Child("SOLVE_EXAMS").Value != null)
+                    if (dataUcitela.Child("SOLVE_EXAMS").Value != null && dataUcitela.Child("SOLVE_EXAMS").Child(args.Snapshot.Key).Value != null && dataUcitela.Child("SOLVE_EXAMS").Child(args.Snapshot.Key).Value.ToString() != "1")
                     {
-                        if (dataUcitela.Child("SOLVE_EXAMS").Child(args.Snapshot.Key).Value != null && dataUcitela.Child("SOLVE_EXAMS").Child(args.Snapshot.Key).Value.ToString() != "1")
-                        {
-                            var exam = args.Snapshot;
-                            FirebaseDatabase.DefaultInstance
-                                          .GetReference("EXAMS/" + exam.Key)
-                                .GetValueAsync().ContinueWith(task1 =>
+                        var exam = args.Snapshot;
+                        FirebaseDatabase.DefaultInstance
+                                      .GetReference("EXAMS/" + exam.Key)
+                            .GetValueAsync().ContinueWith(task1 =>
+                            {
+                                if (task.IsCompleted)
+                                {
+                                    DataSnapshot snap = task1.Result;
+                                    var nazov = snap.Child("nazovUlohy").Value.ToString();
+                                    FirebaseDatabase.DefaultInstance
+                                                    .GetReference("USERS/" + snap.Child("teacherID").Value)
+                                .GetValueAsync().ContinueWith(task2 =>
                                 {
                                     if (task.IsCompleted)
                                     {
-                                        DataSnapshot snap = task1.Result;
-                                        var nazov = snap.Child("nazovUlohy").Value.ToString();
-                                        FirebaseDatabase.DefaultInstance
-                                                        .GetReference("USERS/" + snap.Child("teacherID").Value)
-                                    .GetValueAsync().ContinueWith(task2 =>
-                                    {
-                                        if (task.IsCompleted)
+
+                                        FirebaseDatabase.DefaultInstance.GetReference("/USERS/" + _playerData.UserId + "/TABLE_VIEWS/" + _playerData.SelectedClass).GetValueAsync().ContinueWith(task3 =>
                                         {
-
-                                            FirebaseDatabase.DefaultInstance.GetReference("/USERS/" + _playerData.UserId + "/TABLE_VIEWS/" + _playerData.SelectedClass).GetValueAsync().ContinueWith(task3 =>
+                                            if (task3.IsCompleted)
                                             {
-                                                if (task3.IsCompleted)
-                                                {
-                                                    DataSnapshot snap2 = task2.Result;
-                                                    var meno = _fbc.UserName(snap2.Child("firstName").Value.ToString(), snap2.Child("lastName").Value.ToString());
+                                                DataSnapshot snap2 = task2.Result;
+                                                var meno = _fbc.UserName(snap2.Child("firstName").Value.ToString(), snap2.Child("lastName").Value.ToString());
 
-                                                    generateExamToogleList(exam.Key, new Vector3(-1.5f, 0, 0), GetMenoNazovUlohy(meno, nazov), dataUcitela.Child("SOLVE_EXAMS").Child(args.Snapshot.Key).Value.ToString());
+                                                generateExamToogleList(exam.Key, new Vector3(-1.5f, 0, 0), GetMenoNazovUlohy(meno, nazov), dataUcitela.Child("SOLVE_EXAMS").Child(args.Snapshot.Key).Value.ToString());
 
-                                                    DataSnapshot snaps = task3.Result;
-                                                    if (snaps.Value == null)
-                                                        _examsOnBoardDbVal = "0";
-                                                    else
-                                                        _examsOnBoardDbVal = snaps.Value.ToString();
-                                                    GameObject.Find("txtPocetUloh").GetComponent<Text>().text = GetCountsNewExamsOnBoard(int.Parse(_examsOnBoardDbVal), GameObject.Find("Content").transform.childCount);
-                                                }
-                                            });
+                                                DataSnapshot snaps = task3.Result;
+                                                if (snaps.Value == null)
+                                                    _examsOnBoardDbVal = "0";
+                                                else
+                                                    _examsOnBoardDbVal = snaps.Value.ToString();
+                                                GameObject.Find("txtPocetUloh").GetComponent<Text>().text = GetCountsNewExamsOnBoard(int.Parse(_examsOnBoardDbVal), GameObject.Find("Content").transform.childCount);
+                                            }
+                                        });
 
-
-                                        }
-                                    });
 
                                     }
                                 });
-                        }
-                        else if (dataUcitela.Child("SOLVE_EXAMS").Child(args.Snapshot.Key).Value == null)
-                        {
-                            var exam = args.Snapshot;
-                            FirebaseDatabase.DefaultInstance
-                                          .GetReference("EXAMS/" + exam.Key)
-                                .GetValueAsync().ContinueWith(task1 =>
+
+                                }
+                            });
+                    }
+                    else if (dataUcitela.Child("SOLVE_EXAMS").Value == null || dataUcitela.Child("SOLVE_EXAMS").Child(args.Snapshot.Key).Value == null)
+                    {
+                        var exam = args.Snapshot;
+                        FirebaseDatabase.DefaultInstance
+                                      .GetReference("EXAMS/" + exam.Key)
+                            .GetValueAsync().ContinueWith(task1 =>
+                            {
+                                if (task.IsCompleted)
+                                {
+                                    DataSnapshot snap = task1.Result;
+                                    var nazov = snap.Child("nazovUlohy").Value.ToString();
+                                    FirebaseDatabase.DefaultInstance
+                                                    .GetReference("USERS/" + snap.Child("teacherID").Value)
+                                .GetValueAsync().ContinueWith(task2 =>
                                 {
                                     if (task.IsCompleted)
                                     {
-                                        DataSnapshot snap = task1.Result;
-                                        var nazov = snap.Child("nazovUlohy").Value.ToString();
-                                        FirebaseDatabase.DefaultInstance
-                                                        .GetReference("USERS/" + snap.Child("teacherID").Value)
-                                    .GetValueAsync().ContinueWith(task2 =>
-                                    {
-                                        if (task.IsCompleted)
+
+                                        FirebaseDatabase.DefaultInstance.GetReference("/USERS/" + _playerData.UserId + "/TABLE_VIEWS/" + _playerData.SelectedClass).GetValueAsync().ContinueWith(task3 =>
                                         {
-
-                                            FirebaseDatabase.DefaultInstance.GetReference("/USERS/" + _playerData.UserId + "/TABLE_VIEWS/" + _playerData.SelectedClass).GetValueAsync().ContinueWith(task3 =>
+                                            if (task3.IsCompleted)
                                             {
-                                                if (task3.IsCompleted)
-                                                {
-                                                    DataSnapshot snap2 = task2.Result;
-                                                    var meno = _fbc.UserName(snap2.Child("firstName").Value.ToString(), snap2.Child("lastName").Value.ToString());
+                                                DataSnapshot snap2 = task2.Result;
+                                                var meno = _fbc.UserName(snap2.Child("firstName").Value.ToString(), snap2.Child("lastName").Value.ToString());
 
-                                                    generateExamToogleList(exam.Key, new Vector3(-1.5f, 0, 0), GetMenoNazovUlohy(meno, nazov), GetFormatedExamsCount(exam.Value.ToString()));
+                                                generateExamToogleList(exam.Key, new Vector3(-1.5f, 0, 0), GetMenoNazovUlohy(meno, nazov), GetFormatedExamsCount(exam.Value.ToString()));
 
-                                                    DataSnapshot snaps = task3.Result;
-                                                    if (snaps.Value == null)
-                                                        _examsOnBoardDbVal = "0";
-                                                    else
-                                                        _examsOnBoardDbVal = snaps.Value.ToString();
-                                                    GameObject.Find("txtPocetUloh").GetComponent<Text>().text = GetCountsNewExamsOnBoard(int.Parse(_examsOnBoardDbVal), GameObject.Find("Content").transform.childCount);
-                                                }
-                                            });
+                                                DataSnapshot snaps = task3.Result;
+                                                if (snaps.Value == null)
+                                                    _examsOnBoardDbVal = "0";
+                                                else
+                                                    _examsOnBoardDbVal = snaps.Value.ToString();
+                                                GameObject.Find("txtPocetUloh").GetComponent<Text>().text = GetCountsNewExamsOnBoard(int.Parse(_examsOnBoardDbVal), GameObject.Find("Content").transform.childCount);
+                                            }
+                                        });
 
-
-                                        }
-                                    });
 
                                     }
                                 });
-                        }
-                        else
-                        {
-                            Debug.Log("false");
-                        }
+
+                                }
+                            });
                     }
                 }
             });
