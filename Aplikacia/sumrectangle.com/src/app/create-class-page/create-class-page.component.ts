@@ -22,6 +22,9 @@ export class CreateClassPageComponent implements OnInit {
   items: FirebaseListObservable<any[]>;
   menoTriedy: string;
   hesloTriedy: string;
+  farbaPolaPreHeslo: string;
+  heslaVsetkychTried: Map<string, string >;
+  vyhodnotExistenciuHesla: boolean;
 
   constructor(private angularFire: AngularFire, public authService: AuthService, private router: Router, private route: ActivatedRoute) {
     this.route.params.subscribe(params => {
@@ -29,6 +32,7 @@ export class CreateClassPageComponent implements OnInit {
 
       // In a real app: dispatch action to load the details here.
     });
+    this.farbaPolaPreHeslo = 'default';
     this.isLoadedPage = false;
     this.authService.angularFire.auth.subscribe(
       (auth) => {
@@ -59,6 +63,19 @@ export class CreateClassPageComponent implements OnInit {
   }
 
   addClass(className: string, classPassword: string ) {
+    if ( className.length < 1 ) {
+      this.errorMessage = this.authService.getErrorMsg('error',
+        { code: 'OwnText', text: 'Názov triedy nieje vyplnený' } );
+      return;
+    }
+    if ( classPassword.length < 1 ) {
+      this.errorMessage = this.authService.getErrorMsg('error',
+        { code: 'OwnText', text: 'Heslo triedy nieje vyplnené' } );
+      return;
+    }
+    if ( this.vyhodnotExistenciuHesla) {
+      return;
+    }
     if (this.classId) {
       let classData = this.angularFire.database.object('/CLASSES/' + this.classId);
       classData.update({className: className, heslo: classPassword} );
@@ -69,7 +86,29 @@ export class CreateClassPageComponent implements OnInit {
       this.errorMessage = this.authService.getErrorMsg('success', { code: 'OwnText', text: 'Trieda bola úspešne vytvorená' } );
       setTimeout(() => {this.router.navigate(['classes']); }, 2000);
     }
+  }
 
+  onKeyKontrolaExistencieHesla(event: any, classPassword: string) { // without type info
+    this.heslaVsetkychTried = new Map();
+    this.vyhodnotExistenciuHesla = false;
+    let existPasswd = this.angularFire.database.list('/CLASSES/');
+    existPasswd.subscribe(snapshot => {
+      snapshot.forEach(snap => { this.heslaVsetkychTried.set(snap.$key, snap.heslo);
+        if ( snap.heslo === classPassword && this.heslaVsetkychTried.get(this.classId) !== classPassword ) {
+        this.vyhodnotExistenciuHesla = true;
+      }
+      });
+
+      if ( this.vyhodnotExistenciuHesla) {
+        this.farbaPolaPreHeslo = 'error';
+        this.errorMessage = this.authService.getErrorMsg('error',
+          { code: 'OwnText', text: 'Zadané heslo používa iná trieda.' } );
+      }else {
+        this.farbaPolaPreHeslo = 'inputSucces';
+        this.errorMessage = this.authService.getErrorMsg('skryHtml',
+          { code: 'OwnText', text: '' } );
+      }
+    });
   }
 
   ngOnInit() {

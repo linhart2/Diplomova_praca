@@ -19,7 +19,7 @@
             </tr>
             <tr>
               <td><b>Kód pre vstup do triedy:</b></td>
-              <td><input #classPassword id="classPasswd" class="longText form-control" type="text" name="classPasswd" value="{{hesloTriedy}}" placeholder="Kód triedy"></td>
+              <td><input #classPassword (keyup)="onKeyKontrolaExistencieHesla($event,classPassword.value)" id="classPasswd" class="longText form-control {{farbaPolaPreHeslo}}"  type="text" name="classPasswd" value="{{hesloTriedy}}" placeholder="Kód triedy"></td>
             </tr>
             <tr>
               <td></td>

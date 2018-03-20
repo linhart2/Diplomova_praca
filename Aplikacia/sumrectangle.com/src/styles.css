@@ -95,6 +95,15 @@ section{
 .error{
   background-color: red;
 }
+.default{
+  background-color: white;
+}
+.inputSucces{
+  background-color: #40ff40b3;
+}
+.skryHtml{
+  display: none;
+}
 
 .title-container{
   text-align: center;
