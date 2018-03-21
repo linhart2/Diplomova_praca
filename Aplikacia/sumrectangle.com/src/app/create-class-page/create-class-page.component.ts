@@ -100,7 +100,7 @@ export class CreateClassPageComponent implements OnInit {
       });
 
       if ( this.vyhodnotExistenciuHesla) {
-        this.farbaPolaPreHeslo = 'error';
+        this.farbaPolaPreHeslo = 'inputError';
         this.errorMessage = this.authService.getErrorMsg('error',
           { code: 'OwnText', text: 'Zadané heslo používa iná trieda.' } );
       }else {
