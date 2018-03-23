@@ -429,6 +429,7 @@ public class LoggedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChang
             _examArray.Add(SLOTM + pocitadloSlotov, num.ToString());
             pocitadloSlotov++;
         }
+        _examArray = new ShuffleDictionary().Shuffle(_examArray);
     }
 
     public void congrats_show()

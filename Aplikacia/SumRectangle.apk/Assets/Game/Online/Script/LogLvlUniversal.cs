@@ -467,6 +467,7 @@ public class LogLvlUniversal : MonoBehaviour, UnityEngine.EventSystems.IHasChang
                     input.Add(SLOT + i, "null");
                 break;
         }
+        _examArray = new ShuffleDictionary().Shuffle(_examArray);
     }
 
     public void ChangeCol(int col, bool f)

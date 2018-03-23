@@ -14,7 +14,8 @@ public class Generator_uloh
     public Vrchol x;
     public int level;
 
-    public Generator_uloh(int level = 0) {
+    public Generator_uloh(int level = 0)
+    {
         this.level = level;
     }
 
@@ -54,7 +55,7 @@ public class Generator_uloh
             while (s)
             {
                 this.pole[2].data = Random.Range(1, 10);
-                this.pole[1].data = Random.Range(1, 10);                
+                this.pole[1].data = Random.Range(1, 10);
                 this.pole[0].data = this.pole[1].data + this.pole[2].data;
                 if (this.pole[0].data <= 10)
                 {
@@ -65,7 +66,7 @@ public class Generator_uloh
 
         if (this.level == 2)
         {
-            bool s=true;
+            bool s = true;
             while (s)
             {
                 this.pole[5].data = Random.Range(1, 12);
@@ -73,7 +74,7 @@ public class Generator_uloh
                 this.pole[3].data = Random.Range(1, 12);
                 this.pole[2].data = this.pole[5].data + this.pole[4].data;
                 this.pole[1].data = this.pole[4].data + this.pole[3].data;
-                this.pole[0].data = this.pole[2].data + this.pole[1].data;                
+                this.pole[0].data = this.pole[2].data + this.pole[1].data;
                 if (this.pole[0].data <= 30)
                 {
                     s = false;
@@ -81,16 +82,18 @@ public class Generator_uloh
             }
         }
 
-        if (this.level == 3) { 
-        this.pole[this.pom_suc0].data = Random.Range(13, 21);
-        this.pole[this.pom_suc1].data = 25 - this.pole[this.pom_suc0].data;
+        if (this.level == 3)
+        {
+            this.pole[this.pom_suc0].data = Random.Range(13, 21);
+            this.pole[this.pom_suc1].data = 25 - this.pole[this.pom_suc0].data;
         }
-        if (this.level >= 4) { 
+        if (this.level >= 4)
+        {
             this.pole[this.pom_suc0].data = Random.Range(23, 35);
             this.pole[this.pom_suc1].data = 45 - this.pole[this.pom_suc0].data;
             this.pole[this.pom_suc2].data = Random.Range(1, 6);
         }
-                
+
         if (this.level > 2)
         {
             if ((this.pom_suc0 == 2 && this.pom_suc1 == 3) || (this.pom_suc0 == 1 && this.pom_suc1 == 5))
@@ -124,7 +127,7 @@ public class Generator_uloh
                 if (x.data > this.pole[5].data)
                     x = this.pole[5];
 
-                this.pole[x.index].left.data = x.data / 3;                
+                this.pole[x.index].left.data = x.data / 3;
                 this.generuj();
                 if (x.index == 5)
                     this.pole[6].data = this.pole[3].data - this.pole[7].data;
@@ -134,10 +137,10 @@ public class Generator_uloh
         for (int i = 0; i < this.pole.Count; i++)
             this.table.Add(this.pole[i].data);
         if (this.table.Contains(0))
-            this.get_array(velkost);                    
+            this.get_array(velkost);
         return this.table;
     }
-    
+
     public void generuj()
     {
         zasobnik = new List<int> { 0, };
@@ -160,7 +163,8 @@ public class Generator_uloh
             {
                 this.pole[v].left.data = this.pole[v].data - this.pole[v].right.data;
             }
-            else {
+            else
+            {
 
                 if (!visited.Contains(v))
                     zasobnik.Add(v);
@@ -177,7 +181,7 @@ public class Generator_uloh
     {
         List<int> pom = new List<int> { };
         for (int i = (x.Count - 1); i >= 0; i--)
-        {            
+        {
             pom.Add(x[i]);
         }
         return pom;
@@ -203,17 +207,17 @@ public class Vrchol
 
 public class Kontrola
 {
-    public int velkost;      
+    public int velkost;
 
     public Kontrola(int velkost)
     {
-        this.velkost = velkost;        
+        this.velkost = velkost;
     }
 
     public List<int[][]> Sprav_pole(List<int> pole, int p1 = 0, int p2 = 0)
     {
-        List<int[][]> ret = new List<int[][]> { };   
-        int y = this.velkost;        
+        List<int[][]> ret = new List<int[][]> { };
+        int y = this.velkost;
         int pom = 0;
         int[][] pom_pole = new int[this.velkost][];
         int[][] p1p2 = new int[2][];
@@ -223,7 +227,7 @@ public class Kontrola
         {
             pom_pole[i] = new int[y];
             for (int j = 0; j < y; j++)
-            {               
+            {
                 if (p1 == pom)
                 {
                     p1p2[0][0] = i;
@@ -235,43 +239,90 @@ public class Kontrola
                     p1p2[1][0] = i;
                     p1p2[1][1] = j;
                     ret.Add(p1p2);
-                }                
-                pom_pole[i][j] = pole[pom];                
+                }
+                pom_pole[i][j] = pole[pom];
                 pom++;
             }
             y--;
         }
-        ret.Add(pom_pole);        
+        ret.Add(pom_pole);
         return ret;
     }
 
-    public bool Vyhodnot(List<int> v_pole,int p1=0,int p2=0,int result=0)
-    {                
+    public bool Vyhodnot(List<int> v_pole, int p1 = 0, int p2 = 0, int result = 0)
+    {
         bool ries = true;
-        List<int[][]> pom_pole = this.Sprav_pole(v_pole,p1,p2);
-        int[][] pole = pom_pole[2];              
+        List<int[][]> pom_pole = this.Sprav_pole(v_pole, p1, p2);
+        int[][] pole = pom_pole[2];
         int i1 = pom_pole[0][0][0];
         int j1 = pom_pole[0][0][1];
         int i2 = pom_pole[1][1][0];
-        int j2 = pom_pole[1][1][1];        
+        int j2 = pom_pole[1][1][1];
         for (int i = 0; i < pole.Length - 1; i++)
         {
             for (int j = 0; j < pole[i].Length - 1; j++)
-            {                
+            {
                 if (pole[i][j] + pole[i][j + 1] != pole[i + 1][j])
-                {                   
-                    ries = false;                    
+                {
+                    ries = false;
                 }
             }
-        }        
-        if (ries) {
-            if (result != 0 && (p1!=0 || p2!=0))
+        }
+        if (ries)
+        {
+            if (result != 0 && (p1 != 0 || p2 != 0))
             {
-                if (pole[i1][j1] + pole[i2][j2] != result) {                    
-                    return false; }
-            }          
-            return true; }
-        else {            
-            return false; }
+                if (pole[i1][j1] + pole[i2][j2] != result)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
+}
+public class ShuffleDictionary
+{
+
+    public Dictionary<string, string> Shuffle(Dictionary<string, string> input)
+    {
+        int vstupDoGeneratoraA = 0;
+        int vstupDoGeneratoraB = 0;
+        int pocetOpakovani = 1;
+        switch (input.Count)
+        {
+            case 6:
+                vstupDoGeneratoraA = 2;
+                vstupDoGeneratoraB = 3;
+                pocetOpakovani = 1;
+
+                break;
+            case 12:
+                vstupDoGeneratoraA = 3;
+                vstupDoGeneratoraB = 6;
+                pocetOpakovani = 2;
+                break;
+            case 20:
+                vstupDoGeneratoraA = 5;
+                vstupDoGeneratoraB = 10;
+                pocetOpakovani = 4;
+                break;
+
+        }
+
+        for (var i = 0; i < pocetOpakovani; i++)
+        {
+            var randomA = Random.Range(0, vstupDoGeneratoraA);
+            var randomB = Random.Range(vstupDoGeneratoraA, vstupDoGeneratoraB);
+            string SaveA = input["SlotM_" + randomA];
+            input["SlotM_" + randomA] = input["SlotM_" + randomB];
+            input["SlotM_" + randomB] = SaveA;
+        }
+        return input;
+    }
+
 }
