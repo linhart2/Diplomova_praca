@@ -6,7 +6,7 @@
   <div class="container CreateClass">
     <div class="row">
       <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-        <h1>Pridat triedu</h1>
+        <h1>Vytvoriť triedu</h1>
       </div>
     </div>
     <div class="row">
@@ -14,12 +14,12 @@
         <form>
           <table>
             <tr>
-              <td><b>Meno triedy:</b></td>
-              <td><input #className id="className" class="longText form-control" type="text" name="className" value="{{menoTriedy}}" placeholder="meno triedy"></td>
+              <td><b>Názov triedy:</b></td>
+              <td><input #className id="className" class="longText form-control" type="text" name="className" value="{{menoTriedy}}" placeholder="Názov triedy"></td>
             </tr>
             <tr>
               <td><b>Kód pre vstup do triedy:</b></td>
-              <td><input #classPassword id="classPasswd" class="longText form-control" type="text" name="classPasswd" value="{{hesloTriedy}}" placeholder="heslo triedy"></td>
+              <td><input #classPassword (keyup)="onKeyKontrolaExistencieHesla($event,classPassword.value)" id="classPasswd" class="longText form-control {{farbaPolaPreHeslo}}"  type="text" name="classPasswd" value="{{hesloTriedy}}" placeholder="Kód triedy"></td>
             </tr>
             <tr>
               <td></td>

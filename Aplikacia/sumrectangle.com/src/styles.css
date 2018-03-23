@@ -47,14 +47,42 @@
 }
 .header-btn {
   padding: 0px;
-  background: firebrick;
+  background: #A5402D;
   border-color: white;
   color: white;
 }
-
+.btn-danger:hover{
+  background: #A5402D;
+  border-color: #FAF0CA;
+}
 .navbar-inverse {
   background-color: #222;
   border-color: #080808;
+}
+.navbar-inverse .navbar-nav>li>a {
+  color: #fff;
+}
+.navbar-inverse .navbar-nav>li>a:hover,.navbar-inverse .navbar-nav>li>a:focus {
+  color: #FAF0CA;
+}
+.navbar-inverse .navbar-brand {
+  color: #fff;
+}
+.navbar-inverse .navbar-brand:hover {
+  color: #FAF0CA;
+}
+.navbar {
+   border-radius: 0px;
+}
+.registrovatLink{
+  color: #A5402D;
+  font-size: 12pt;
+
+}
+.registrovatLink:hover {
+  color: #fff;
+  font-size: 12pt;
+  text-decoration: underline;
 }
 
 /* Body */
@@ -69,6 +97,12 @@ html,body{
 }
 a{
   cursor: pointer;
+}
+section{
+  padding-bottom: 100px;
+}
+td, th {
+  padding: 5px 5px;
 }
 #page {
   min-height: 100%;
@@ -91,6 +125,18 @@ a{
 }
 .error{
   background-color: red;
+}
+.default{
+  background-color: white;
+}
+.inputSucces{
+  background-color: #40ff40b3;
+}
+.inputError{
+  background-color: #ff000094;
+}
+.skryHtml{
+  display: none;
 }
 
 .title-container{
@@ -229,7 +275,7 @@ form table input.sendButton,input.sendButton{
 }
 .AddClass{
   float: right;
-  color: #cd0303;
+  color: #A5402D;
   font-size: 8em;
 }
 .AddClass a{
@@ -237,7 +283,7 @@ form table input.sendButton,input.sendButton{
   font-size: inherit;
 }
 .AddClass a:hover{
-  color: white;
+  color: #FAF0CA;
   font-size: inherit;
 }
 
@@ -369,7 +415,7 @@ ul.GroupList li label input{
 }
 
 .text-muted {
-  color: #9d9d9d;
+  color: #fff;
   display: flex;
   justify-content: center;
 }
@@ -407,7 +453,7 @@ ul.GroupList li label input{
   display: inline-block;
 }
 .box:hover{
-  background-color: gray;
+  background-color: #FAF0CA;
   border: 1px solid black;
 }
 .numbers{

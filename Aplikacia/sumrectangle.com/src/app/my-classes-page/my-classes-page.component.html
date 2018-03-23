@@ -20,9 +20,9 @@
                 </div>
               </a>
               <div class="ButtonBox1">
-                <a class="pridaj_ulohu pajpa" id="pridaj{{d.$key}}" name="" data-toggle="modal" data-target="#pridajUlohu" (click)="zobrazZoznamUlohNaPridanie(d.$key,d.className)">Pridaj ulohu</a>
-                <a class="zobraz_ulohy pajpa" id="zobraz{{d.$key}}" name="" data-toggle="modal" data-target="#zobrazUlohy" (click)="zobrazZoznamPriradenychUloh(d.$key,d.className)">Zobraz ulohy</a>
-                <a disabled="true">Zobraz statistiky</a>
+                <a class="pridaj_ulohu pajpa" id="pridaj{{d.$key}}" name="" data-toggle="modal" data-target="#pridajUlohu" (click)="zobrazZoznamUlohNaPridanie(d.$key,d.className)">Priradiť úlohu</a>
+                <a class="zobraz_ulohy pajpa" id="zobraz{{d.$key}}" name="" data-toggle="modal" data-target="#zobrazUlohy" (click)="zobrazZoznamPriradenychUloh(d.$key,d.className)">Priradené úlohy</a>
+                <a disabled="true">Zobraz štatistiky</a>
               </div>
               <div class="ButtonBox2">
                 <a class='edit' [routerLink]="['/updateclass', d.$key]" ><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
@@ -48,7 +48,7 @@
           <div class="modal-content">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal">&times;</button>
-              <h4 id="pridajU" class="modal-title">Pridaj ulohu {{menoTriedy}}</h4>
+              <h4 id="pridajU" class="modal-title">Zoznam nepriradených úloh pre {{menoTriedy}}</h4>
             </div>
             <div class="modal-body" [id]="idTriedy">
               <ul class="priklady GroupList">
@@ -71,7 +71,7 @@
           <div class="modal-content">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal">&times;</button>
-              <h4 id="zobrazU" class="modal-title">Zoznam uloh {{menoTriedy}}</h4>
+              <h4 id="zobrazU" class="modal-title">Zoznam priradených úloh pre {{menoTriedy}}</h4>
             </div>
             <div class="modal-body _zobrazUlohy" [id]="idTriedy">
               <ul class="priklady GroupList">
