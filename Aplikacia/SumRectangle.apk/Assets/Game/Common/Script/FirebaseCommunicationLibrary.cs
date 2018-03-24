@@ -155,6 +155,10 @@ public class FirebaseCommunicationLibrary
     {
         mDatabaseRef.Child("SHARED_SCREEN").Child(screenId).SetRawJsonValueAsync(JsonUtility.ToJson(screen));
     }
+    public void addPinnedToTable(string screenId, SharedScreen screen)
+    {
+        mDatabaseRef.Child("EXAMS_PINNED_TO_TABLE").Child(screenId).SetRawJsonValueAsync(JsonUtility.ToJson(screen));
+    }
     public void inserMyIdToSharedScreen(string userId, string userName, string screenId)
     {
         mDatabaseRef.Child("SHARED_SCREEN").Child(screenId).Child("users_id").Child(userId).SetValueAsync(userName);
@@ -179,6 +183,11 @@ public class FirebaseCommunicationLibrary
     {
         mDatabaseRef.Child("/USERS").Child(userId).Child("SOLVE_EXAMS").Child(idSelectedExamOnBoard).SetValueAsync(txtPocet);
     }
+    public void addPinExamToTable(string classId, string examId)
+    {
+        mDatabaseRef.Child("/TABLES").Child(classId).Child(examId).SetValueAsync("pin");
+    }
+
     public void zapisDatumActualScreen(string path)
     {
         mDatabaseRef.Child(path).SetValueAsync(DateTime.Now.ToString("dd.MM.yyyy HH.mm.ss"));
@@ -367,18 +376,20 @@ public class SharedScreen
     public bool screeen_locker;
     public string screen_name;
     public string admin_name;
+    public string nazov_ulohy;
     public List<string> users_id = new List<string>();
     public List<int> pomSucet0and1 = new List<int>();
     public List<string> poliaKtoreSaNevykreslia = new List<string>();
     public List<string> poliaOznaceneDisable = new List<string>();
 
     public SharedScreen() { }
-    public SharedScreen(Dictionary<string, object> data, bool screeen_locker, string screen_name, string admin_name, List<string> users_id, List<int> pomSucet0and1, List<string> poliaKtoreSaNevykreslia, List<string> poliaOznaceneDisable)
+    public SharedScreen(Dictionary<string, object> data, bool screeen_locker, string screen_name, string admin_name, string nazov_ulohy, List<string> users_id, List<int> pomSucet0and1, List<string> poliaKtoreSaNevykreslia, List<string> poliaOznaceneDisable)
     {
         this.data = data;
         this.screeen_locker = screeen_locker;
         this.screen_name = screen_name;
         this.admin_name = admin_name;
+        this.nazov_ulohy = nazov_ulohy;
         this.users_id = users_id;
         this.pomSucet0and1 = pomSucet0and1;
         this.poliaKtoreSaNevykreslia = poliaKtoreSaNevykreslia;

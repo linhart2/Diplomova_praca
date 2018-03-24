@@ -533,6 +533,10 @@ public class LogLvlUniversal : MonoBehaviour, UnityEngine.EventSystems.IHasChang
         }
         else
         {
+            if (_playerData.idSelectedExamOnBoard != null)
+            {
+                _fbc.zapisStavRozriesenejUlohy(_playerData.UserId, _playerData.idSelectedExamOnBoard, "1");
+            }
             UnbindAllHandler();
             SceneManager.LoadScene("LoggedSelectLevel");
         }
