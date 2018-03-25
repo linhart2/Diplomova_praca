@@ -24,6 +24,7 @@ public class LoggedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChang
     public Canvas nespravne;        //- object nespravne
     public Canvas showSharedWith;      //- object zdielat s....
     public Canvas infoAboutShare;
+    public Canvas infoAboutPinExamToTable;
     public GameObject[] itemPrefab; //- prefabsy cisla
     public GameObject togglePrefab;
 
@@ -45,6 +46,9 @@ public class LoggedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChang
     private int _pomSuc0 = -1;
     private int _pomSuc1 = -1;
     private List<string> _poliaOznaceneDisable;
+
+    private string _keyPinnedExam = null;
+    private Dictionary<string, string> _zalohaExamArray;
     #endregion
 
     private void Awake()
@@ -79,6 +83,12 @@ public class LoggedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChang
         {
             ShareScreenWith();
         });
+        Button btnPinToTable = GameObject.Find("PinToTable").GetComponent<Button>();
+        btnPinToTable.onClick.AddListener(delegate
+        {
+            PripniPrikladNaTabulu();
+        });
+
         Toggle tbOznacVsetkych = GameObject.Find("tbOznacVsetkych").GetComponent<Toggle>();
         tbOznacVsetkych.onValueChanged.AddListener(delegate
         {
@@ -114,13 +124,15 @@ public class LoggedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChang
         generator_uloh();
 
         draw();
-
+        _zalohaExamArray = _examArray.ToDictionary(x => x.Key, x => x.Value);
         gratulation = gratulation.GetComponent<Canvas>();
         gratulation.enabled = false;
         nespravne = nespravne.GetComponent<Canvas>();
         nespravne.enabled = false;
         infoAboutShare = infoAboutShare.GetComponent<Canvas>();
         infoAboutShare.enabled = false;
+        infoAboutPinExamToTable = infoAboutPinExamToTable.GetComponent<Canvas>();
+        infoAboutPinExamToTable.enabled = false;
         showSharedWith = showSharedWith.GetComponent<Canvas>();
         showSharedWith.enabled = false;
 
@@ -226,6 +238,42 @@ public class LoggedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChang
     {
         infoAboutShare.enabled = false;
         FirebaseDatabase.DefaultInstance.GetReference("/USERS/" + _playerData.UserId + "/waitForShare/").Child(requestKey).RemoveValueAsync();
+    }
+
+    public void PripniPrikladNaTabulu()
+    {
+        if (_keyPinnedExam == null)
+        {
+            var nazov = "Level1 - " + DateTime.Now.ToString("d.M HH:m:s");
+            SharedScreen screen = new SharedScreen()
+            {
+                screeen_locker = false,
+                admin_name = _playerData.Name,
+                nazov_ulohy = nazov,
+                screen_name = "LogLvl1_1",
+                pomSucet0and1 = new List<int>() { _pomSuc0, _pomSuc1 },
+                poliaOznaceneDisable = _poliaOznaceneDisable,
+                poliaKtoreSaNevykreslia = _poliaKtoreSaNevykreslia
+            };
+            _keyPinnedExam = FirebaseDatabase.DefaultInstance.GetReference("/EXAMS_PINNED_TO_TABLE").Push().Key;
+            _fbc.addPinExamToTable(_playerData.SelectedClass, _keyPinnedExam);
+            _fbc.addPinnedToTable(_keyPinnedExam, screen);
+            Text text = GameObject.Find("InfoOpripnutiUlohyText").GetComponent<Text>();
+            text.text = "Úloha bola pridaná na tabuľu pod názvom " + nazov;
+            InfoAboutPin();
+        }
+        else
+        {
+            Text text = GameObject.Find("InfoOpripnutiUlohyText").GetComponent<Text>();
+            text.text = "Úloha bola aktualizovaná";
+            InfoAboutPin();
+        }
+        LeaderBoardEntry entry = new LeaderBoardEntry(_examArray);
+        Dictionary<string, object> entryValues = entry.ToDictionary();
+        Dictionary<string, object> childUpdates = new Dictionary<string, object>();
+        string _pathToPinnedExam = "/EXAMS_PINNED_TO_TABLE/" + _keyPinnedExam + "/data/";
+        childUpdates[_pathToPinnedExam] = entryValues;
+        FirebaseDatabase.DefaultInstance.RootReference.UpdateChildrenAsync(childUpdates);
     }
     #endregion
 
@@ -341,7 +389,13 @@ public class LoggedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChang
     public void Restart()
     {
         CleanScreen();
+        foreach (var zaloha in _zalohaExamArray)
+        {
+            _examArray[zaloha.Key] = zaloha.Value;
+        }
         draw();
+        HasChanged();
+
     }
 
     public void draw()
@@ -404,6 +458,10 @@ public class LoggedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChang
             bool pom = _skontroluj.Vyhodnot(kontrola);
             if (pom)
             {
+                if (_keyPinnedExam != null)
+                {
+                    _fbc.zapisStavRozriesenejUlohy(_playerData.UserId, _keyPinnedExam, "1");
+                }
                 congrats_show();
             }
             else
@@ -446,6 +504,13 @@ public class LoggedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChang
         StartCoroutine(nespravne_hide());
     }
 
+    public void InfoAboutPin()
+    {
+        //zobrazi oznam a zavola metodu na skrytie
+        infoAboutPinExamToTable.enabled = true;
+        StartCoroutine(InfoAboutPinHide());
+    }
+
     IEnumerator congrats_hide()
     {
         yield return new WaitForSeconds(2.0f);
@@ -458,6 +523,12 @@ public class LoggedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChang
     {
         yield return new WaitForSeconds(2.0f);
         nespravne.enabled = false;
+    }
+
+    IEnumerator InfoAboutPinHide()
+    {
+        yield return new WaitForSeconds(2.0f);
+        infoAboutPinExamToTable.enabled = false;
     }
     #endregion
     #region ToogleList
@@ -503,6 +574,7 @@ public class LoggedLevel_1_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChang
         newItem.layer = LayerMask.NameToLayer("UI");
         newItem.name = "Toggle";
         newItem.transform.GetChild(1).GetComponent<Text>().text = txtName;
+        newItem.transform.GetChild(1).GetComponent<Text>().color = Color.black;
         newItem.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
 
     }
