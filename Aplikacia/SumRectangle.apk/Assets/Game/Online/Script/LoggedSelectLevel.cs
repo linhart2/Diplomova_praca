@@ -16,7 +16,12 @@ public class LoggedSelectLevel : MonoBehaviour
     public GameObject togglePrefab;
     public Canvas blackBoard;
     public Canvas infoAboutShare;
+    public Canvas loading;
     private string _examsOnBoardDbVal;
+    private Text loadingText;
+
+    private float timer = 0f;
+    private float time = 30f;
 
     private void Awake()
     {
@@ -52,6 +57,7 @@ public class LoggedSelectLevel : MonoBehaviour
         _fbc = new FirebaseCommunicationLibrary();
     }
 
+
     // Use this for initialization
     void Start()
     {
@@ -66,6 +72,8 @@ public class LoggedSelectLevel : MonoBehaviour
         blackBoard.enabled = false;
         infoAboutShare = infoAboutShare.GetComponent<Canvas>();
         infoAboutShare.enabled = false;
+        loading = loading.GetComponent<Canvas>();
+        loading.enabled = false;
         _examsOnBoard = FirebaseDatabase.DefaultInstance
                                                    .GetReference("/TABLES/" + _playerData.SelectedClass);
         _examsOnBoard.ChildAdded += showExamsOnBoardAdd;
@@ -91,6 +99,27 @@ public class LoggedSelectLevel : MonoBehaviour
             GameObject.Find("txtPocetUloh").GetComponent<Text>().text = "0";
             blackBoard.enabled = false;
         });
+
+
+    }
+
+    void Update()
+    {
+        timer += Time.deltaTime;
+        loadingText = GameObject.Find("txtLoad").GetComponent<Text>();
+        if (timer >= time && loading.enabled)
+        {
+            SceneManager.LoadScene("CheckConnection");
+        }
+        if (true)
+        {
+            loadingText.color = new Color(loadingText.color.r, loadingText.color.g, loadingText.color.b, Mathf.PingPong(Time.time, 1));
+        }
+
+        if (Application.internetReachability == NetworkReachability.NotReachable)
+        {
+            SceneManager.LoadScene("CheckConnection");
+        }
     }
 
     public void AcceptShareScreen(string screenKey, string requestKey)
@@ -119,6 +148,7 @@ public class LoggedSelectLevel : MonoBehaviour
     #region Handle
     public void showExamsOnBoardAdd(object sender, ChildChangedEventArgs args)
     {
+        loading.enabled = true;
         if (args.DatabaseError != null)
         {
             Debug.LogError(args.DatabaseError.Message);
@@ -163,6 +193,7 @@ public class LoggedSelectLevel : MonoBehaviour
                                                     else
                                                         _examsOnBoardDbVal = snaps.Value.ToString();
                                                     GameObject.Find("txtPocetUloh").GetComponent<Text>().text = GetCountsNewExamsOnBoard(int.Parse(_examsOnBoardDbVal), GameObject.Find("Content").transform.childCount);
+                                                    loading.enabled = false;
                                                 }
                                             });
                                         }
@@ -201,6 +232,7 @@ public class LoggedSelectLevel : MonoBehaviour
                                                     else
                                                         _examsOnBoardDbVal = snaps.Value.ToString();
                                                     GameObject.Find("txtPocetUloh").GetComponent<Text>().text = GetCountsNewExamsOnBoard(int.Parse(_examsOnBoardDbVal), GameObject.Find("Content").transform.childCount);
+                                                    loading.enabled = false;
                                                 }
                                             });
 
@@ -240,6 +272,7 @@ public class LoggedSelectLevel : MonoBehaviour
                                                     else
                                                         _examsOnBoardDbVal = snaps.Value.ToString();
                                                     GameObject.Find("txtPocetUloh").GetComponent<Text>().text = GetCountsNewExamsOnBoard(int.Parse(_examsOnBoardDbVal), GameObject.Find("Content").transform.childCount);
+                                                    loading.enabled = false;
                                                 }
                                             });
                                         }
@@ -278,6 +311,7 @@ public class LoggedSelectLevel : MonoBehaviour
                                                     else
                                                         _examsOnBoardDbVal = snaps.Value.ToString();
                                                     GameObject.Find("txtPocetUloh").GetComponent<Text>().text = GetCountsNewExamsOnBoard(int.Parse(_examsOnBoardDbVal), GameObject.Find("Content").transform.childCount);
+                                                    loading.enabled = false;
                                                 }
                                             });
 
