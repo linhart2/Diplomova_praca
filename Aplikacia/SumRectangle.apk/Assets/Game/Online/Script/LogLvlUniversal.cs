@@ -20,6 +20,7 @@ public class LogLvlUniversal : MonoBehaviour, UnityEngine.EventSystems.IHasChang
     public Canvas nespravne;        //- object nespravne
     public Canvas showSharedWith;      //- object zdielat s....
     public Canvas infoAboutShare;
+    public Canvas loading;
     public GameObject[] itemPrefab;
     public GameObject togglePrefab;
     public int vysledokPomocnehoSuctu;
@@ -49,6 +50,10 @@ public class LogLvlUniversal : MonoBehaviour, UnityEngine.EventSystems.IHasChang
     private List<string> _podmienka = new List<string>();
     private Dictionary<string, string> _zalohaExamArray;
     private string _pathToSharedData;
+    private Text loadingText;
+
+    private float timer = 0f;
+    private float time = 30f;
 
 
 
@@ -170,9 +175,30 @@ public class LogLvlUniversal : MonoBehaviour, UnityEngine.EventSystems.IHasChang
         showSharedWith.enabled = false;
         nespravne.enabled = false;
         infoAboutShare.enabled = false;
+        loading = loading.GetComponent<Canvas>();
+        loading.enabled = false;
 
         HasChanged();
     }
+    void Update()
+    {
+        timer += Time.deltaTime;
+        loadingText = GameObject.Find("txtLoad").GetComponent<Text>();
+        if (timer >= time && loading.enabled)
+        {
+            SceneManager.LoadScene("CheckConnection");
+        }
+        if (true)
+        {
+            loadingText.color = new Color(loadingText.color.r, loadingText.color.g, loadingText.color.b, Mathf.PingPong(Time.time, 1));
+        }
+
+        if (Application.internetReachability == NetworkReachability.NotReachable)
+        {
+            SceneManager.LoadScene("CheckConnection");
+        }
+    }
+
     public void ShareScreenWith()
     {
         SharedScreen screen = new SharedScreen()
@@ -276,6 +302,7 @@ public class LogLvlUniversal : MonoBehaviour, UnityEngine.EventSystems.IHasChang
     #region HandleUsers
     public void HandleShowAllUserInClassAdd(object sender, ChildChangedEventArgs args)
     {
+        loading.enabled = true;
         if (args.DatabaseError != null)
         {
             Debug.LogError(args.DatabaseError.Message);
@@ -298,6 +325,7 @@ public class LogLvlUniversal : MonoBehaviour, UnityEngine.EventSystems.IHasChang
                                 DataSnapshot snapshot = task.Result;
                                 if (snapshot.Child("selectClass").Value.Equals(_playerData.SelectedClass))
                                     generateStudentToogleList(key, new Vector3(-1.5f, 0, 0), value);
+                                loading.enabled = false;
                             }
                         });
     }

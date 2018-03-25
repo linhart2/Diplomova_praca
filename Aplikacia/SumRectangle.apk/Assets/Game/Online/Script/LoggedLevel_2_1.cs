@@ -25,6 +25,7 @@ public class LoggedLevel_2_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChang
     public Canvas showSharedWith;      //- object zdielat s....
     public Canvas infoAboutShare;
     public Canvas infoAboutPinExamToTable;
+    public Canvas loading;
     public GameObject[] itemPrefab; //- prefabsy cisla
     public GameObject togglePrefab;
 
@@ -49,6 +50,10 @@ public class LoggedLevel_2_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChang
 
     private string _keyPinnedExam = null;
     private Dictionary<string, string> _zalohaExamArray;
+    private Text loadingText;
+
+    private float timer = 0f;
+    private float time = 30f;
     #endregion
 
     private void Awake()
@@ -135,9 +140,29 @@ public class LoggedLevel_2_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChang
         infoAboutPinExamToTable.enabled = false;
         showSharedWith = showSharedWith.GetComponent<Canvas>();
         showSharedWith.enabled = false;
+        loading = loading.GetComponent<Canvas>();
+        loading.enabled = false;
 
         HasChanged();
 
+    }
+    void Update()
+    {
+        timer += Time.deltaTime;
+        loadingText = GameObject.Find("txtLoad").GetComponent<Text>();
+        if (timer >= time && loading.enabled)
+        {
+            SceneManager.LoadScene("CheckConnection");
+        }
+        if (true)
+        {
+            loadingText.color = new Color(loadingText.color.r, loadingText.color.g, loadingText.color.b, Mathf.PingPong(Time.time, 1));
+        }
+
+        if (Application.internetReachability == NetworkReachability.NotReachable)
+        {
+            SceneManager.LoadScene("CheckConnection");
+        }
     }
 
     #region zdielanie
@@ -282,6 +307,7 @@ public class LoggedLevel_2_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChang
     #region HandleUsers
     public void HandleShowAllUserInClassAdd(object sender, ChildChangedEventArgs args)
     {
+        loading.enabled = true;
         if (args.DatabaseError != null)
         {
             Debug.LogError(args.DatabaseError.Message);
@@ -304,6 +330,7 @@ public class LoggedLevel_2_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChang
                                 DataSnapshot snapshot = task.Result;
                                 if (snapshot.Child("selectClass").Value.Equals(_playerData.SelectedClass) && key != _playerData.UserId)
                                     generateStudentToogleList(key, new Vector3(-1.5f, 0, 0), value);
+                                loading.enabled = false;
                             }
                         });
     }
