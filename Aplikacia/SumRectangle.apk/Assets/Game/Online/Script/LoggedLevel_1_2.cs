@@ -48,6 +48,7 @@ public class LoggedLevel_1_2 : MonoBehaviour, UnityEngine.EventSystems.IHasChang
     private List<string> _poliaOznaceneDisable;
 
     private string _keyPinnedExam = null;
+    private Dictionary<string, string> _zalohaExamArray;
     #endregion
 
     private void Awake()
@@ -123,7 +124,7 @@ public class LoggedLevel_1_2 : MonoBehaviour, UnityEngine.EventSystems.IHasChang
         generator_uloh();
 
         draw();
-
+        _zalohaExamArray = _examArray.ToDictionary(x => x.Key, x => x.Value);
         gratulation = gratulation.GetComponent<Canvas>();
         gratulation.enabled = false;
         nespravne = nespravne.GetComponent<Canvas>();
@@ -387,7 +388,13 @@ public class LoggedLevel_1_2 : MonoBehaviour, UnityEngine.EventSystems.IHasChang
     public void Restart()
     {
         CleanScreen();
+        foreach (var zaloha in _zalohaExamArray)
+        {
+            _examArray[zaloha.Key] = zaloha.Value;
+        }
         draw();
+        HasChanged();
+
     }
 
     public void draw()

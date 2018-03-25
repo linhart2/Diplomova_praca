@@ -24,6 +24,8 @@ public class LogLvlUniversal : MonoBehaviour, UnityEngine.EventSystems.IHasChang
     public GameObject togglePrefab;
     public int vysledokPomocnehoSuctu;
     public int urovenVstupPreKontrolu;
+    public bool farbaTextuToogleListu;
+    public string nazovSceny;
 
 
     private Kontrola _skontroluj;
@@ -45,12 +47,19 @@ public class LogLvlUniversal : MonoBehaviour, UnityEngine.EventSystems.IHasChang
     private int _pocetPoliKtoreSaKontroluju;
     private List<string> _poliaOznaceneDisable = new List<string>();
     private List<string> _podmienka = new List<string>();
+    private Dictionary<string, string> _zalohaExamArray;
+    private string _pathToSharedData;
 
 
 
     // Use this for initialization
     private void Awake()
     {
+        Button btnRestart = GameObject.Find("Reset").GetComponent<Button>();
+        btnRestart.onClick.AddListener(delegate
+        {
+            Restart();
+        });
         Button btnBack = GameObject.Find("Back").GetComponent<Button>();
         btnBack.onClick.AddListener(delegate
         {
@@ -156,7 +165,7 @@ public class LogLvlUniversal : MonoBehaviour, UnityEngine.EventSystems.IHasChang
         _skontroluj = new Kontrola(urovenVstupPreKontrolu);
 
         draw();
-
+        _zalohaExamArray = _examArray.ToDictionary(x => x.Key, x => x.Value);
         gratulation.enabled = false;
         showSharedWith.enabled = false;
         nespravne.enabled = false;
@@ -170,14 +179,17 @@ public class LogLvlUniversal : MonoBehaviour, UnityEngine.EventSystems.IHasChang
         {
             screeen_locker = false,
             admin_name = _playerData.Name,
-            screen_name = "LogLvl4_2",
+            screen_name = nazovSceny,
+            pomSucet0and1 = new List<int>() { _pomSuc0, _pomSuc1 },
+            poliaOznaceneDisable = _poliaOznaceneDisable,
+            poliaKtoreSaNevykreslia = _poliaKtoreSaNevykreslia
         };
         String key = FirebaseDatabase.DefaultInstance.GetReference("/SHARED_SCREEN").Push().Key;
         LeaderBoardEntry entry = new LeaderBoardEntry(_examArray);
         Dictionary<string, object> entryValues = entry.ToDictionary();
         Dictionary<string, object> childUpdates = new Dictionary<string, object>();
-        pathToSharedData = "/SHARED_SCREEN/" + key + "/data/";
-        childUpdates[pathToSharedData] = entryValues;
+        _pathToSharedData = "/SHARED_SCREEN/" + key + "/data/";
+        childUpdates[_pathToSharedData] = entryValues;
         _fbc.addSharedScreen(key, screen);
         _fbc.inserMyIdToSharedScreen(_playerData.UserId, _playerData.Name, key);
         FirebaseDatabase.DefaultInstance.RootReference.UpdateChildrenAsync(childUpdates);
@@ -240,16 +252,20 @@ public class LogLvlUniversal : MonoBehaviour, UnityEngine.EventSystems.IHasChang
 
     public void AcceptShareScreen(string screenKey, string requestKey)
     {
-        pathToSharedData = "/SHARED_SCREEN/" + screenKey + "/data/";
-        infoAboutShare.enabled = false;
-        _useButtonShareSchreenWith = true;
-        Console.WriteLine("AcceptShareScren id={0} name={1} screenKey={2}", _playerData.UserId, _playerData.Name, screenKey);
+        GlobalData.playerData.cestaKZdielanymDatam = "/SHARED_SCREEN/" + screenKey + "/data/";
         _fbc.inserMyIdToSharedScreen(_playerData.UserId, _playerData.Name, screenKey);
-        _controlChangeData = FirebaseDatabase.DefaultInstance
-                                            .GetReference(pathToSharedData);
-        _controlChangeData.ChildChanged += HandleChildChanged;
-        _controlChangeData.ChildAdded += HandleChildChanged;
         FirebaseDatabase.DefaultInstance.GetReference("/USERS/" + _playerData.UserId + "/waitForShare/").Child(requestKey).RemoveValueAsync();
+        FirebaseDatabase.DefaultInstance.GetReference("/SHARED_SCREEN/" + screenKey + "/").GetValueAsync().ContinueWith(task =>
+        {
+            if (task.IsCompleted)
+            {
+                DataSnapshot snap = task.Result;
+                GlobalData.playerData.zdielaneDataAll = snap;
+                string nameScene = snap.Child("screen_name").Value.ToString();
+                UnbindAllHandler();
+                SceneManager.LoadScene(nameScene);
+            }
+        });
     }
     public void MissedShareScreen(string requestKey)
     {
@@ -370,7 +386,15 @@ public class LogLvlUniversal : MonoBehaviour, UnityEngine.EventSystems.IHasChang
     public void Restart()
     {
         ClearScreen();
+        foreach (var zaloha in _zalohaExamArray)
+        {
+            _examArray[zaloha.Key] = zaloha.Value;
+        }
         draw();
+        if (_useButtonShareSchreenWith)
+        {
+            HasChanged();
+        }
     }
 
     public void draw()
@@ -603,6 +627,14 @@ public class LogLvlUniversal : MonoBehaviour, UnityEngine.EventSystems.IHasChang
         newItem.layer = LayerMask.NameToLayer("UI");
         newItem.name = "Toggle";
         newItem.transform.GetChild(1).GetComponent<Text>().text = txtName;
+        if (farbaTextuToogleListu)
+        {
+            newItem.transform.GetChild(1).GetComponent<Text>().color = Color.white;
+        }
+        else
+        {
+            newItem.transform.GetChild(1).GetComponent<Text>().color = Color.black;
+        }
         newItem.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
 
     }

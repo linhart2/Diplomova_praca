@@ -20,6 +20,35 @@ public class LoggedSelectLevel : MonoBehaviour
 
     private void Awake()
     {
+        Button btnLevel1 = GameObject.Find("Uroven1").GetComponent<Button>();
+        btnLevel1.onClick.AddListener(delegate
+        {
+            UnbindAllHandler();
+            int value = Random.Range(21, 23);
+            SceneManager.LoadScene(value);
+        });
+
+        Button btnLevel2 = GameObject.Find("Uroven2").GetComponent<Button>();
+        btnLevel2.onClick.AddListener(delegate
+        {
+            UnbindAllHandler();
+            int value = Random.Range(23, 25);
+            SceneManager.LoadScene(value);
+        });
+        Button btnLevel3 = GameObject.Find("Uroven3").GetComponent<Button>();
+        btnLevel3.onClick.AddListener(delegate
+        {
+            UnbindAllHandler();
+            int value = Random.Range(25, 27);
+            SceneManager.LoadScene(value);
+        });
+        Button btnLevel4 = GameObject.Find("Uroven4").GetComponent<Button>();
+        btnLevel4.onClick.AddListener(delegate
+        {
+            UnbindAllHandler();
+            int value = Random.Range(27, 29);
+            SceneManager.LoadScene(value);
+        });
         _fbc = new FirebaseCommunicationLibrary();
     }
 
