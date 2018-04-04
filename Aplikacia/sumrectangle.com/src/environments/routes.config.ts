@@ -11,8 +11,8 @@ import { OpenExamPageComponent } from '../app/open-exam-page/open-exam-page.comp
 import { ShowExamPageComponent } from '../app/show-exam-page/show-exam-page.component';
 import { EditExamPageComponent } from '../app/edit-exam-page/edit-exam-page.component';
 import { ActualScreenPageComponent } from '../app/actual-screen-page/actual-screen-page.component';
-
-
+import { StudentStatisticsPageComponent } from '../app/student-statistics-page/student-statistics-page.component';
+import { ClassStatisticsPageComponent } from '../app/class-statistics-page/class-statistics-page.component';
 
 export const routesConfig: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full'},
@@ -28,5 +28,7 @@ export const routesConfig: Routes = [
   { path: 'openexam/:id', component: OpenExamPageComponent },
   { path: 'showexam/:id/:pid', component: ShowExamPageComponent },
   { path: 'editexam/:id/:pid', component: EditExamPageComponent },
+  { path: 'studentstatistics/:sid', component: StudentStatisticsPageComponent },
+  { path: 'classstatistics/:cid', component: ClassStatisticsPageComponent },
   { path: '**', component: PageNotFoundComponent }
 ];

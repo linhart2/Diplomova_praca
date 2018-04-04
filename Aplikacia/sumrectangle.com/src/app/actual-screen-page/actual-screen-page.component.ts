@@ -53,9 +53,7 @@ export class ActualScreenPageComponent implements OnInit {
   }
 
   setTab(num: number) {
-    console.log(num);
-    console.log(this.createTaskSablona);
-    if (this.createTaskSablona === 0 ){
+    if (this.createTaskSablona === 0 ) {
       this.createTaskSablona = num;
     }
     if ( num !== this.createTaskSablona ) {
@@ -89,7 +87,6 @@ export class ActualScreenPageComponent implements OnInit {
   }
 
   public nastavSablonu(obj) {
-    console.log('x');
     this.pocetMoznosti = obj.length;
     switch (obj.length) {
       case 6:

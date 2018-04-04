@@ -1,0 +1,13 @@
+<div [className]="errorMessage.type">
+  {{errorMessage.msg}}
+</div>
+<div class="loader" *ngIf="!isLoadedPage"></div>
+<section class="PridajCvicenie bodyHeight" *ngIf="isLoadedPage">
+  <div class="container CreateExam">
+    <div class="row">
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <h1>Štatistiky triedy: </h1>
+      </div>
+    </div>
+  </div>
+</section>

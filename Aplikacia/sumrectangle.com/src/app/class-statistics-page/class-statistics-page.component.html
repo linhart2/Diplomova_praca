@@ -1,0 +1,34 @@
+<div [className]="errorMessage.type">
+  {{errorMessage.msg}}
+</div>
+<div class="loader" *ngIf="!isLoadedPage"></div>
+<section class="PridajCvicenie bodyHeight" *ngIf="isLoadedPage">
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <h1>Štatistiky triedy {{menoTriedy}}</h1>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <p>Počet všetkých riešených príkladov: {{vsetkyPriklady}}</p>
+        <p>Počet správne vyriešených príkladov: {{spravnePriklady}}</p>
+        <p>Počet nesprávne vyriešených príkladov: {{nespravnePriklady}}</p>
+        <h3>Zoznam štatistík žiakov:</h3>
+      </div>
+    </div>
+  </div>
+  <div class="container zoznamZiakov" *ngFor="let d of zoznamStatistikZiakov">
+    <div class="row">
+      <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+        <p>{{zoznamMienZiakov[d.$key]}}</p>
+      </div>
+      <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8">
+        <p>Správne: {{d.SPRAVNE}}</p>
+        <p>Nesprávne: {{d.NESPRAVNE}}</p>
+      </div>
+    </div>
+  </div>
+</section>
