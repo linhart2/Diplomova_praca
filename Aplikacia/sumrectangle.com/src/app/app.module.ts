@@ -29,6 +29,8 @@ import { OpenExamPageComponent } from './open-exam-page/open-exam-page.component
 import { ShowExamPageComponent } from './show-exam-page/show-exam-page.component';
 import { EditExamPageComponent } from './edit-exam-page/edit-exam-page.component';
 import { ActualScreenPageComponent } from './actual-screen-page/actual-screen-page.component';
+import { ClassStatisticsPageComponent } from './class-statistics-page/class-statistics-page.component';
+import { StudentStatisticsPageComponent } from './student-statistics-page/student-statistics-page.component';
 
 @NgModule({
   declarations: [
@@ -45,6 +47,8 @@ import { ActualScreenPageComponent } from './actual-screen-page/actual-screen-pa
     ShowExamPageComponent,
     EditExamPageComponent,
     ActualScreenPageComponent,
+    ClassStatisticsPageComponent,
+    StudentStatisticsPageComponent,
 
   ],
   imports: [
