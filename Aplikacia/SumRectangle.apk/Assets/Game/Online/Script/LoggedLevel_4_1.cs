@@ -500,10 +500,12 @@ public class LoggedLevel_4_1 : MonoBehaviour, UnityEngine.EventSystems.IHasChang
                 {
                     _fbc.zapisStavRozriesenejUlohy(_playerData.UserId, _keyPinnedExam, "1");
                 }
+                _fbc.logovanieStatistik(_playerData.UserId, _playerData.SelectedClass, "SPRAVNE");
                 congrats_show();
             }
             else
             {
+                _fbc.logovanieStatistik(_playerData.UserId, _playerData.SelectedClass, "NESPRAVNE");
                 nespravne_show();
             }
         }

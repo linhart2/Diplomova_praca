@@ -112,7 +112,7 @@ public class FirebaseCommunicationLibrary
         });
     }
 
-    public void Login(string email, string heslo, ILoadScene scena)
+    public void Login(string email, string heslo, ILoadScene scena, Text x)
     {
         this.scena = scena;
         Firebase.Auth.Credential credential =
@@ -127,13 +127,14 @@ public class FirebaseCommunicationLibrary
             if (task.IsFaulted)
             {
                 Debug.LogError("SignInWithCredentialAsync encountered an error: " + task.Exception);
+                x.text = "Nesprávne meno alebo heslo.";
                 return;
             }
             Firebase.Auth.FirebaseUser newUser = task.Result;
             Debug.LogFormat("User signed in successfully: {0} ({1})",
-                newUser.DisplayName, newUser.UserId);
-
+                            newUser.DisplayName, newUser.UserId);
             SceneManager.LoadScene("Loading");
+            x.text = "";
         });
     }
     #endregion
@@ -191,6 +192,31 @@ public class FirebaseCommunicationLibrary
     public void zapisDatumActualScreen(string path)
     {
         mDatabaseRef.Child(path).SetValueAsync(DateTime.Now.ToString("dd.MM.yyyy HH.mm.ss"));
+    }
+
+    public void logovanieStatistik(string userId, string classId, string typLogu)
+    {
+        FirebaseDatabase.DefaultInstance.GetReference("/STATISTICS/" + classId + "/" + userId + "/" + typLogu)
+                    .GetValueAsync().ContinueWith(task =>
+                    {
+                        if (task.IsCompleted)
+                        {
+                            DataSnapshot snapshot = task.Result;
+                            var num = 0;
+                            if (snapshot.Value == null)
+                            {
+                                num = 1;
+                            }
+                            else
+                            {
+                                if (int.TryParse(snapshot.Value.ToString(), out num))
+                                {
+                                    num++;
+                                }
+                            }
+                            mDatabaseRef.Child("/STATISTICS").Child(classId).Child(userId).Child(typLogu).SetValueAsync(num);
+                        }
+                    });
     }
     #endregion
     #region removeFromDB

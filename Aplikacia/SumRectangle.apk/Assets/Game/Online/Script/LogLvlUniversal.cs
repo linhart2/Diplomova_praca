@@ -35,7 +35,6 @@ public class LogLvlUniversal : MonoBehaviour, UnityEngine.EventSystems.IHasChang
     private FirebaseCommunicationLibrary _fbc;
     private Dictionary<string, string> _examArray;
     private List<int> _zoznamCiselPrikladu = new List<int>();
-    private string pathToSharedData;
     private string _pathActualPlayerScreen;
     private string _pathActualPlayerScreenDate;
     private int _pomSuc0 = -1;
@@ -124,7 +123,7 @@ public class LogLvlUniversal : MonoBehaviour, UnityEngine.EventSystems.IHasChang
         _pathActualPlayerScreen = string.Format("/USERS/{0}/ACTUAL_SCREEN/SCREEN", _playerData.UserId);
         _pathActualPlayerScreenDate = string.Format("/USERS/{0}/ACTUAL_SCREEN/DATE", _playerData.UserId);
 
-        pathToSharedData = _playerData.cestaKZdielanymDatam;
+        _pathToSharedData = _playerData.cestaKZdielanymDatam;
         _playerData.cestaKZdielanymDatam = null;
         int rozlisTypUlohy = _playerData.selectedExamOnBoard != null ? 0 : 1;
         switch (rozlisTypUlohy)
@@ -144,11 +143,11 @@ public class LogLvlUniversal : MonoBehaviour, UnityEngine.EventSystems.IHasChang
                 break;
         }
 
-        if (pathToSharedData != null && pathToSharedData != string.Empty)
+        if (_pathToSharedData != null && _pathToSharedData != string.Empty)
         {
             _useButtonShareSchreenWith = true;
             _controlChangeData = FirebaseDatabase.DefaultInstance
-                                            .GetReference(pathToSharedData);
+                                            .GetReference(_pathToSharedData);
             _controlChangeData.ChildChanged += HandleChildChanged;
             _controlChangeData.ChildAdded += HandleChildChanged;
         }
@@ -323,7 +322,7 @@ public class LogLvlUniversal : MonoBehaviour, UnityEngine.EventSystems.IHasChang
                             else if (task.IsCompleted)
                             {
                                 DataSnapshot snapshot = task.Result;
-                                if (snapshot.Child("selectClass").Value.Equals(_playerData.SelectedClass))
+                                if (snapshot.Child("selectClass").Value.Equals(_playerData.SelectedClass) && key != _playerData.UserId)
                                     generateStudentToogleList(key, new Vector3(-1.5f, 0, 0), value);
                                 loading.enabled = false;
                             }
@@ -482,7 +481,7 @@ public class LogLvlUniversal : MonoBehaviour, UnityEngine.EventSystems.IHasChang
         _fbc.zapisDatumActualScreen(_pathActualPlayerScreenDate);
         if (_useButtonShareSchreenWith && zaznamenajDoDB)
         {
-            _fbc.UpdateResult(_examArray, pathToSharedData);
+            _fbc.UpdateResult(_examArray, _pathToSharedData);
         }
         if (kontrola.Count == _pocetPoliKtoreSaKontroluju)
         {
@@ -498,10 +497,12 @@ public class LogLvlUniversal : MonoBehaviour, UnityEngine.EventSystems.IHasChang
             bool pom = _pomSuc0 == -1 && _pomSuc1 == -1 ? _skontroluj.Vyhodnot(kontrola) : _skontroluj.Vyhodnot(kontrola, _pomSuc1, _pomSuc0, _pomSuc0Hodnota + _pomSuc1Hodnota);
             if (pom)
             {
+                _fbc.logovanieStatistik(_playerData.UserId, _playerData.SelectedClass, "SPRAVNE");
                 congrats_show();
             }
             else
             {
+                _fbc.logovanieStatistik(_playerData.UserId, _playerData.SelectedClass, "NESPRAVNE");
                 nespravne_show();
             }
         }

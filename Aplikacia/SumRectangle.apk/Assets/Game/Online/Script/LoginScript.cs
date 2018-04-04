@@ -40,7 +40,7 @@ public class LoginScript : MonoBehaviour
             setFieldColor(txtLoginName, red);
             return;
         }
-        fbc.Login(email, password, new LoadScene(19));
+        fbc.Login(email, password, new LoadScene(19), GameObject.Find("CHYBA").GetComponent<Text>());
     }
 
     private void setFieldColor(InputField name, Color color)
